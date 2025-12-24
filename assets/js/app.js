@@ -9,6 +9,7 @@ import { initNotes } from "./modules/notes.js";
 import { initPomodoro } from "./modules/pomodoro.js";
 import { storage } from "./utils/storage.js";
 
+
 const SELECTORS = {
   splash: "#aura-splash",
   intro: "#intro-screen",

@@ -2,557 +2,136 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <title>Aura – Focus. Learn. Grow.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aura</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="theme-color" content="#020617" />
+  <!-- PWA manifest -->
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="theme-color" content="#111" />
 
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <!-- Styles -->
+  <link rel="stylesheet" href="/assets/css/style.css" />
+
+  <!-- Fonts (optional) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <!-- ==========================
-       SPLASH SCREEN
-       ========================== -->
-  <div class="aura-splash" id="aura-splash">
-    <div class="aura-noise-bg aura-noise-bg-strong"></div>
-    <div class="aura-splash-inner">
-      <div class="aura-logo-diamond aura-logo-diamond-splash">
-        <svg viewBox="0 0 120 120" class="aura-logo-diamond-svg" aria-hidden="true">
-          <polygon class="diamond-outer" points="60,8 108,60 60,112 12,60" />
-          <polygon class="diamond-facet" points="60,8 108,60 60,60" />
-          <polygon class="diamond-facet" points="60,8 12,60 60,60" />
-          <polygon class="diamond-facet" points="12,60 60,112 60,60" />
-          <polygon class="diamond-facet" points="108,60 60,112 60,60" />
-        </svg>
-      </div>
-      <h1 class="aura-splash-title">Aura</h1>
-    </div>
+
+  <!-- Splash screen -->
+  <div id="aura-splash" class="aura-splash"></div>
+
+  <!-- Intro screen -->
+  <div id="intro-screen" class="aura-intro" aria-hidden="true">
+    <h1 class="intro-title">Welcome to Aura</h1>
   </div>
 
-  <!-- ==========================
-       INTRO (AFTER SPLASH)
-       ========================== -->
-  <div class="aura-intro" id="intro-screen">
-    <div class="aura-noise-bg"></div>
-    <div class="aura-intro-inner">
-      <div class="aura-logo-diamond">
-        <svg viewBox="0 0 120 120" class="aura-logo-diamond-svg" aria-hidden="true">
-          <polygon class="diamond-outer" points="60,8 108,60 60,112 12,60" />
-          <polygon class="diamond-facet" points="60,8 108,60 60,60" />
-          <polygon class="diamond-facet" points="60,8 12,60 60,60" />
-          <polygon class="diamond-facet" points="12,60 60,112 60,60" />
-          <polygon class="diamond-facet" points="108,60 60,112 60,60" />
-        </svg>
-      </div>
-      <div class="aura-intro-text">
-        <h1 class="aura-intro-title">Aura</h1>
-        <p class="aura-intro-subtitle">Focus. Learn. Grow.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==========================
-       MAIN APP
-       ========================== -->
-  <div class="aura-app" id="app-shell" aria-hidden="true">
-    <div class="aura-noise-bg"></div>
-
+  <!-- App shell -->
+  <div id="app-shell" class="aura-app" aria-hidden="true">
     <!-- Top bar -->
     <header class="aura-topbar">
-      <span class="aura-topbar-title" id="topbar-title">Home</span>
-      <div class="aura-topbar-right">
-        <button class="aura-topbar-light-toggle" id="theme-toggle" aria-label="Toggle theme">
-          <span class="theme-toggle-knob"></span>
-          <span class="theme-toggle-label theme-toggle-dark">Dark</span>
-          <span class="theme-toggle-label theme-toggle-light">Light</span>
-        </button>
-        <button class="aura-topbar-right-button" id="topbar-settings-shortcut">
-          Settings
-        </button>
-      </div>
+      <h2 id="topbar-title">Home</h2>
+      <button id="theme-toggle">🌓</button>
     </header>
 
-    <!-- Main content -->
-    <main class="aura-main">
-      <!-- HOME -->
-      <section
-        class="aura-screen aura-screen-active"
-        id="screen-home"
-        data-screen="home"
-      >
-        <div class="screen-padding home-layout">
-          <!-- Left column – focus / continue -->
-          <div class="home-col">
-            <section class="aura-card aura-card-darkglass aura-glow">
-              <div class="aura-card-body home-main-card">
-                <div>
-                  <p class="aura-card-label">Continue</p>
-                  <h2 class="home-main-title">Pomodoro session</h2>
-                  <p class="home-main-subtitle">
-                    Stay in flow, one session at a time.
-                  </p>
-                </div>
-                <div class="home-main-timer-preview">
-                  <span id="home-focus-time" class="home-main-time">25:00</span>
-                  <button
-                    class="aura-button-primary"
-                    data-nav-target="pomodoro"
-                  >
-                    Open timer
-                  </button>
-                </div>
-              </div>
-            </section>
-
-            <section class="aura-card aura-card-darkglass aura-glow home-quick-row">
-              <div class="home-quick-item">
-                <p class="home-quick-label">Decks</p>
-                <p class="home-quick-value" id="home-decks-count">3</p>
-              </div>
-              <div class="home-quick-item">
-                <p class="home-quick-label">Notes</p>
-                <p class="home-quick-value" id="home-notes-count">5</p>
-              </div>
-              <div class="home-quick-item">
-                <p class="home-quick-label">Sessions today</p>
-                <p class="home-quick-value" id="home-today-sessions">0</p>
-              </div>
-            </section>
-          </div>
-
-          <!-- Right column – previews -->
-          <div class="home-col">
-            <section class="aura-card aura-card-darkglass aura-glow home-subcard">
-              <div class="aura-card-header-row">
-                <div>
-                  <p class="aura-card-label">Next up</p>
-                  <h3 class="home-subcard-title">Flashcards</h3>
-                </div>
-                <button
-                  class="aura-button-ghost-sm"
-                  data-nav-target="decks"
-                >
-                  Open decks
-                </button>
-              </div>
-              <p class="home-subcard-text">
-                Pick up where you left off. Your decks are waiting.
-              </p>
-            </section>
-
-            <section class="aura-card aura-card-darkglass aura-glow home-subcard">
-              <div class="aura-card-header-row">
-                <div>
-                  <p class="aura-card-label">Capture</p>
-                  <h3 class="home-subcard-title">Quick note</h3>
-                </div>
-                <button
-                  class="aura-button-ghost-sm"
-                  data-open-note-editor="new"
-                >
-                  New note
-                </button>
-              </div>
-              <p class="home-subcard-text">
-                Jot down an idea before it slips away. Notes live close to your mind.
-              </p>
-            </section>
-          </div>
-        </div>
+    <!-- Screens -->
+    <main class="aura-screen" data-screen="home">
+      <section>
+        <h3>Focus time</h3>
+        <p id="home-focus-time">25:00</p>
+        <button data-nav-target="timer">Open timer</button>
       </section>
+    </main>
 
-      <!-- DECKS -->
-      <section class="aura-screen" id="screen-decks" data-screen="decks">
-        <div class="screen-padding">
-          <div class="aura-section-header-row">
-            <div>
-              <h2 class="aura-screen-title">Decks</h2>
-              <p class="aura-screen-subtitle">
-                Beautiful, flipping flashcards for what matters.
-              </p>
-            </div>
-            <button class="aura-button-ghost" id="add-deck-button">
-              New deck
-            </button>
-          </div>
-
-          <div class="aura-search-row">
-            <div class="aura-search-field">
-              <span class="aura-search-placeholder-label">Search decks</span>
-              <input
-                type="text"
-                id="deck-search-input"
-                autocomplete="off"
-              />
-            </div>
-          </div>
-
-          <div class="aura-stack aura-gap-md" id="deck-list">
-            <!-- Example decks -->
-            <article class="aura-card aura-card-darkglass aura-glow deck-card" data-deck-id="1">
-              <div class="aura-card-body-row">
-                <div>
-                  <h3 class="aura-card-title">Neuroscience basics</h3>
-                  <p class="aura-card-meta">24 cards · Last session: today</p>
-                </div>
-                <button class="aura-button-ghost-sm deck-open-button">
-                  Study
-                </button>
-              </div>
-            </article>
-
-            <article class="aura-card aura-card-darkglass aura-glow deck-card" data-deck-id="2">
-              <div class="aura-card-body-row">
-                <div>
-                  <h3 class="aura-card-title">Cognitive biases</h3>
-                  <p class="aura-card-meta">18 cards · 2 days ago</p>
-                </div>
-                <button class="aura-button-ghost-sm deck-open-button">
-                  Study
-                </button>
-              </div>
-            </article>
-
-            <article class="aura-card aura-card-darkglass aura-glow deck-card" data-deck-id="3">
-              <div class="aura-card-body-row">
-                <div>
-                  <h3 class="aura-card-title">Language learning</h3>
-                  <p class="aura-card-meta">32 cards · Not started</p>
-                </div>
-                <button class="aura-button-ghost-sm deck-open-button">
-                  Study
-                </button>
-              </div>
-            </article>
-          </div>
-        </div>
-
-        <!-- Deck viewer overlay -->
-        <div class="aura-overlay" id="deck-viewer-overlay" aria-hidden="true">
-          <div class="aura-overlay-inner aura-card-darkglass aura-glow">
-            <header class="aura-overlay-header">
-              <button class="aura-overlay-text-button" id="close-deck-viewer">
-                Close
-              </button>
-              <span class="aura-overlay-title" id="deck-viewer-title">
-                Deck
-              </span>
-              <button
-                class="aura-overlay-text-button aura-overlay-text-strong"
-                id="add-card-button"
-              >
-                Add card
-              </button>
-            </header>
-
-            <div class="aura-overlay-body deck-viewer-body">
-              <div class="flashcard-shell">
-                <div class="flashcard flip" id="flashcard">
-                  <div class="flashcard-face flashcard-front" id="flashcard-front">
-                    Front
-                  </div>
-                  <div class="flashcard-face flashcard-back" id="flashcard-back">
-                    Back
-                  </div>
-                </div>
-              </div>
-              <div class="flashcard-controls">
-                <button class="aura-button-secondary" id="flashcard-prev">
-                  Previous
-                </button>
-                <button class="aura-button-primary" id="flashcard-flip">
-                  Flip
-                </button>
-                <button class="aura-button-secondary" id="flashcard-next">
-                  Next
-                </button>
-              </div>
-              <div class="flashcard-meta-row">
-                <span id="flashcard-progress">Card 1 / 1</span>
-                <button class="aura-button-ghost-sm" id="edit-card-button">
-                  Edit card
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+    <main class="aura-screen" data-screen="timer">
+      <section>
+        <h3>Pomodoro Timer</h3>
+        <p id="pomodoro-time">25:00</p>
+        <p id="pomodoro-mode-label">Focus</p>
+        <button id="pomodoro-toggle">Start</button>
+        <button id="pomodoro-reset">Reset</button>
       </section>
+    </main>
 
-      <!-- NOTES -->
-      <section class="aura-screen" id="screen-notes" data-screen="notes">
-        <div class="screen-padding">
-          <div class="aura-section-header-row">
-            <div>
-              <h2 class="aura-screen-title">Notes</h2>
-              <p class="aura-screen-subtitle">
-                A rich-text space for what you don’t want to forget.
-              </p>
-            </div>
-            <button class="aura-button-ghost" id="add-note-button">
-              New note
-            </button>
-          </div>
-
-          <div class="aura-search-row">
-            <div class="aura-search-field">
-              <span class="aura-search-placeholder-label">Search notes</span>
-              <input
-                type="text"
-                id="note-search-input"
-                autocomplete="off"
-              />
-            </div>
-          </div>
-
-          <div class="aura-stack aura-gap-md" id="notes-list">
-            <article class="aura-card aura-card-darkglass aura-glow note-card" data-note-id="1">
-              <div class="aura-card-body">
-                <h3 class="aura-card-title">Why spaced repetition works</h3>
-                <p class="aura-card-snippet">
-                  Forgetting is a feature, not a bug. Spacing helps your brain decide what to keep…
-                </p>
-              </div>
-            </article>
-
-            <article class="aura-card aura-card-darkglass aura-glow note-card" data-note-id="2">
-              <div class="aura-card-body">
-                <h3 class="aura-card-title">Study ritual – 25 minutes</h3>
-                <p class="aura-card-snippet">
-                  1. Set intention. 2. Remove friction. 3. Start tiny. 4. Reflect, don’t judge…
-                </p>
-              </div>
-            </article>
-          </div>
-        </div>
-
-        <!-- Rich text editor overlay -->
-        <div class="aura-overlay" id="note-editor-overlay" aria-hidden="true">
-          <div class="aura-overlay-inner aura-card-darkglass aura-glow note-editor-shell">
-            <header class="aura-overlay-header">
-              <button class="aura-overlay-text-button" id="close-note-editor">
-                Cancel
-              </button>
-              <span class="aura-overlay-title" id="note-editor-title-label">
-                New note
-              </span>
-              <button
-                class="aura-overlay-text-button aura-overlay-text-strong"
-                id="save-note-button"
-              >
-                Done
-              </button>
-            </header>
-
-            <div class="note-editor-toolbar">
-              <button data-command="bold"><b>B</b></button>
-              <button data-command="italic"><i>I</i></button>
-              <button data-command="underline"><u>U</u></button>
-              <button data-command="formatBlock" data-value="h2">H2</button>
-              <button data-command="formatBlock" data-value="h3">H3</button>
-              <button data-command="insertUnorderedList">• List</button>
-              <button data-command="insertOrderedList">1. List</button>
-              <button data-command="formatBlock" data-value="blockquote">“Quote”</button>
-              <button data-command="removeFormat">Clear</button>
-            </div>
-
-            <div class="aura-overlay-body note-editor-body">
-              <input
-                type="text"
-                id="note-editor-title-input"
-                class="aura-input aura-input-title"
-                placeholder="Title"
-              />
-              <div
-                id="note-editor-content"
-                class="note-editor-content"
-                contenteditable="true"
-                spellcheck="true"
-              ></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- POMODORO -->
-      <section class="aura-screen" id="screen-pomodoro" data-screen="pomodoro">
-        <div class="screen-padding">
-          <div class="aura-section-header">
-            <h2 class="aura-screen-title">Pomodoro</h2>
-            <p class="aura-screen-subtitle">
-              Gentle focus with settings that fit you.
-            </p>
-          </div>
-
-          <div class="aura-stack aura-gap-lg">
-            <article class="aura-card aura-card-darkglass aura-glow aura-timer-card">
-              <div class="aura-timer-shell">
-                <div class="aura-timer-inner">
-                  <div id="pomodoro-time" class="aura-timer-time">25:00</div>
-                  <div id="pomodoro-mode-label" class="aura-timer-label">
-                    Focus
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            <div class="aura-stack aura-gap-md">
-              <button
-                class="aura-button-primary aura-button-full"
-                id="pomodoro-toggle"
-              >
-                Start
-              </button>
-              <button
-                class="aura-button-secondary aura-button-full"
-                id="pomodoro-reset"
-              >
-                Reset
-              </button>
-            </div>
-
-            <!-- Segmented controls for presets -->
-            <section class="aura-card aura-card-darkglass aura-glow pomodoro-settings-card">
-              <h3 class="pomodoro-settings-title">Quick focus presets</h3>
-              <div class="pomodoro-segment-group" data-setting="focus">
-                <button class="pomodoro-segment pomodoro-segment-active" data-mins="25">25 min</button>
-                <button class="pomodoro-segment" data-mins="50">50 min</button>
-                <button class="pomodoro-segment" data-mins="15">15 min</button>
-                <button class="pomodoro-segment pomodoro-segment-custom" data-mins="custom">Custom</button>
-              </div>
-            </section>
-          </div>
-        </div>
-
-        <!-- Custom time modal -->
-        <div class="aura-overlay" id="pomodoro-custom-overlay" aria-hidden="true">
-          <div class="aura-overlay-inner aura-card-darkglass aura-glow">
-            <header class="aura-overlay-header">
-              <button class="aura-overlay-text-button" id="close-pomodoro-custom">
-                Cancel
-              </button>
-              <span class="aura-overlay-title">
-                Custom focus duration
-              </span>
-              <button
-                class="aura-overlay-text-button aura-overlay-text-strong"
-                id="save-pomodoro-custom"
-              >
-                Save
-              </button>
-            </header>
-            <div class="aura-overlay-body pomodoro-custom-body">
-              <label class="pomodoro-custom-label">
-                Minutes
-                <input
-                  type="number"
-                  min="1"
-                  max="180"
-                  id="pomodoro-custom-mins"
-                  class="pomodoro-custom-input"
-                  value="25"
-                />
-              </label>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- SETTINGS -->
-      <section class="aura-screen" id="screen-settings" data-screen="settings">
-        <div class="screen-padding">
-          <div class="aura-section-header">
-            <h2 class="aura-screen-title">Settings</h2>
-            <p class="aura-screen-subtitle">
-              Tune Aura so it feels like it’s yours.
-            </p>
-          </div>
-
-          <div class="aura-stack aura-gap-md">
-            <article class="aura-card aura-card-darkglass aura-glow">
-              <div class="aura-card-body-row aura-settings-row">
-                <div>
-                  <p class="aura-settings-title">Theme</p>
-                  <p class="aura-settings-subtitle">
-                    Switch between dark and light modes.
-                  </p>
-                </div>
-                <button class="aura-button-ghost-sm" id="settings-theme-toggle">
-                  Toggle theme
-                </button>
-              </div>
-            </article>
-
-            <article class="aura-card aura-card-darkglass aura-glow">
-              <div class="aura-card-body-row aura-settings-row">
-                <div>
-                  <p class="aura-settings-title">Focus sounds</p>
-                  <p class="aura-settings-subtitle">
-                    Subtle ticking while the timer runs.
-                  </p>
-                </div>
-                <label class="aura-switch">
-                  <input type="checkbox" id="setting-focus-sounds" />
-                  <span class="aura-switch-slider"></span>
-                </label>
-              </div>
-            </article>
-
-            <article class="aura-card aura-card-darkglass aura-glow">
-              <div class="aura-card-body-row aura-settings-row">
-                <div>
-                  <p class="aura-settings-title">Gentle reminders</p>
-                  <p class="aura-settings-subtitle">
-                    Occasional nudges, never guilt.
-                  </p>
-                </div>
-                <label class="aura-switch">
-                  <input type="checkbox" id="setting-gentle-reminders" />
-                  <span class="aura-switch-slider"></span>
-                </label>
-              </div>
-            </article>
-
-            <article class="aura-card aura-card-darkglass aura-glow">
-              <div class="aura-card-body">
-                <p class="aura-settings-title">About Aura</p>
-                <p class="aura-settings-subtitle">
-                  Aura is designed to feel like a space, not a dashboard. Quiet, calm, and yours.
-                </p>
-              </div>
-            </article>
-          </div>
+    <main class="aura-screen" data-screen="decks">
+      <section>
+        <h3>Flashcards</h3>
+        <div id="deck-list">
+          <div class="deck-card" data-deck-id="1">Neuroscience basics</div>
+          <div class="deck-card" data-deck-id="2">Cognitive biases</div>
+          <div class="deck-card" data-deck-id="3">Language learning</div>
         </div>
       </section>
     </main>
 
+    <main class="aura-screen" data-screen="notes">
+      <section>
+        <h3>Notes</h3>
+        <input type="text" id="note-search-input" placeholder="Search notes..." />
+        <div id="notes-list"></div>
+        <button id="add-note-button">Add note</button>
+      </section>
+    </main>
+
+    <main class="aura-screen" data-screen="settings">
+      <section>
+        <h3>Settings</h3>
+        <button id="settings-theme-toggle">Toggle theme</button>
+      </section>
+    </main>
+
     <!-- Bottom nav -->
-    <nav class="aura-bottom-nav-shell" aria-label="Main navigation">
-      <div class="aura-bottom-nav-pill aura-glow">
-        <button
-          class="aura-bottom-nav-item aura-bottom-nav-item-active"
-          data-screen-target="home"
-        >
-          Home
-        </button>
-        <button class="aura-bottom-nav-item" data-screen-target="decks">
-          Decks
-        </button>
-        <button class="aura-bottom-nav-item" data-screen-target="notes">
-          Notes
-        </button>
-        <button class="aura-bottom-nav-item" data-screen-target="pomodoro">
-          Pomodoro
-        </button>
-        <button class="aura-bottom-nav-item" data-screen-target="settings">
-          Settings
-        </button>
-      </div>
+    <nav class="aura-bottom-nav">
+      <button class="aura-bottom-nav-item" data-screen-target="home">Home</button>
+      <button class="aura-bottom-nav-item" data-screen-target="timer">Timer</button>
+      <button class="aura-bottom-nav-item" data-screen-target="decks">Decks</button>
+      <button class="aura-bottom-nav-item" data-screen-target="notes">Notes</button>
+      <button class="aura-bottom-nav-item" data-screen-target="settings">Settings</button>
     </nav>
   </div>
 
-  <!-- Main JS entry (ES module) -->
-  <script type="module" src="assets/js/app.js"></script>
+  <!-- Overlays -->
+  <div id="deck-viewer-overlay" class="aura-overlay" aria-hidden="true">
+    <h2 id="deck-viewer-title"></h2>
+    <div id="flashcard" class="flashcard">
+      <div id="flashcard-front" class="flashcard-face"></div>
+      <div id="flashcard-back" class="flashcard-face"></div>
+    </div>
+    <p id="flashcard-progress"></p>
+    <button id="flashcard-flip">Flip</button>
+    <button id="flashcard-prev">Prev</button>
+    <button id="flashcard-next">Next</button>
+    <button id="add-card-button">Add card</button>
+    <button id="edit-card-button">Edit card</button>
+    <button id="close-deck-viewer">Close</button>
+  </div>
+
+  <div id="note-editor-overlay" class="aura-overlay" aria-hidden="true">
+    <h2 id="note-editor-title-label">New note</h2>
+    <input type="text" id="note-editor-title-input" placeholder="Note title" />
+    <div class="note-editor-toolbar">
+      <button data-command="bold">B</button>
+      <button data-command="italic">I</button>
+      <button data-command="underline">U</button>
+    </div>
+    <div id="note-editor-content" contenteditable="true"></div>
+    <button id="save-note-button">Save</button>
+    <button id="close-note-editor">Close</button>
+  </div>
+
+  <div id="pomodoro-custom-overlay" class="aura-overlay" aria-hidden="true">
+    <h2>Custom duration</h2>
+    <input type="number" id="pomodoro-custom-mins" placeholder="Minutes" />
+    <button id="save-pomodoro-custom">Save</button>
+    <button id="close-pomodoro-custom">Cancel</button>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="/assets/js/app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js");
+    }
+  </script>
 </body>
 </html>
