@@ -1,27 +1,24 @@
-// intro.js — handles splash + intro animations
+// intro.js — handles splash + intro transitions
 
 export function initIntro() {
   const splash = document.getElementById("aura-splash");
   const intro = document.getElementById("intro-screen");
-  const app = document.getElementById("app-shell");
+  const appRoot = document.getElementById("app-root");
 
-  if (!splash || !intro || !app) return;
+  if (!splash || !intro || !appRoot) {
+    return;
+  }
 
-  // Splash is handled mostly by CSS animation.
-  // After splash fades, show intro.
-  setTimeout(() => {
-    splash.style.display = "none";
-    intro.classList.add("aura-intro-active");
+  // Start with splash visible; then show intro; then app
+  window.setTimeout(() => {
+    splash.classList.add("is-hidden");
+    intro.classList.add("is-visible");
 
-    // After intro shows, fade it out
-    setTimeout(() => {
-      intro.classList.add("aura-intro-fade-out");
-
-      setTimeout(() => {
-        intro.style.display = "none";
-        app.classList.add("aura-app-active");
-        app.removeAttribute("aria-hidden");
-      }, 500);
-    }, 900);
-  }, 900);
+    // After intro delay, hide intro and reveal app
+    window.setTimeout(() => {
+      intro.classList.remove("is-visible");
+      intro.classList.add("is-hidden");
+      appRoot.setAttribute("aria-hidden", "false");
+    }, 1300);
+  }, 800);
 }

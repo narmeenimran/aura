@@ -1,55 +1,82 @@
-// navigation.js — handles switching between screens + nav state
+// navigation.js — handles switching screens and syncing nav (sidebar + bottom nav)
 
 export function initNavigation() {
-  const screens = document.querySelectorAll(".aura-screen");
-  const navItems = document.querySelectorAll(".aura-bottom-nav-item");
+  const screens = Array.from(
+    document.querySelectorAll(".aura-screen[data-screen]")
+  );
+  const sidebarItems = Array.from(
+    document.querySelectorAll(".sidebar-item[data-screen-target]")
+  );
+  const bottomNavItems = Array.from(
+    document.querySelectorAll(".bottom-nav-item[data-screen-target]")
+  );
   const topbarTitle = document.getElementById("topbar-title");
 
-  function showScreen(name) {
-    // Hide all screens
-    screens.forEach((s) => s.classList.remove("aura-screen-active"));
-
-    // Show target screen
-    const target = document.querySelector(`[data-screen="${name}"]`);
-    if (target) {
-      target.classList.add("aura-screen-active");
-    }
-
-    // Update topbar title
-    if (topbarTitle) {
-      const navBtn = document.querySelector(
-        `.aura-bottom-nav-item[data-screen-target="${name}"]`
-      );
-      if (navBtn) {
-        topbarTitle.textContent = navBtn.textContent.trim();
-      }
-    }
-
-    // Update bottom nav active state
-    navItems.forEach((btn) => {
-      btn.classList.remove("aura-bottom-nav-item-active");
-      if (btn.getAttribute("data-screen-target") === name) {
-        btn.classList.add("aura-bottom-nav-item-active");
-      }
-    });
+  if (!screens.length) {
+    return;
   }
 
-  // Bottom nav click handling
-  navItems.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const target = btn.getAttribute("data-screen-target");
-      if (target) showScreen(target);
+  function setActiveScreen(targetScreen) {
+    if (!targetScreen) return;
+
+    // Screens
+    screens.forEach((screen) => {
+      const isTarget = screen.dataset.screen === targetScreen;
+      screen.classList.toggle("is-active", isTarget);
     });
+
+    // Sidebar
+    sidebarItems.forEach((btn) => {
+      const isActive = btn.dataset.screenTarget === targetScreen;
+      btn.classList.toggle("is-active", isActive);
+    });
+
+    // Bottom nav
+    bottomNavItems.forEach((btn) => {
+      const isActive = btn.dataset.screenTarget === targetScreen;
+      btn.classList.toggle("is-active", isActive);
+    });
+
+    // Topbar title
+    if (topbarTitle) {
+      const label =
+        targetScreen.charAt(0).toUpperCase() + targetScreen.slice(1);
+      topbarTitle.textContent = label;
+    }
+  }
+
+  function handleNavClick(evt) {
+    const target = evt.currentTarget;
+    const screenTarget = target.dataset.screenTarget;
+    if (!screenTarget) return;
+    setActiveScreen(screenTarget);
+  }
+
+  // Attach listeners
+  sidebarItems.forEach((btn) => {
+    btn.addEventListener("click", handleNavClick);
   });
 
-  // Buttons inside the UI that navigate to screens
-  document.querySelectorAll("[data-nav-target]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const target = btn.getAttribute("data-nav-target");
-      if (target) showScreen(target);
-    });
+  bottomNavItems.forEach((btn) => {
+    btn.addEventListener("click", handleNavClick);
   });
 
-  // Default screen
-  showScreen("home");
+  // Also allow in-screen buttons with data-screen-target
+  document.addEventListener("click", (evt) => {
+    const el = evt.target;
+    if (!(el instanceof HTMLElement)) return;
+    const screenTarget = el.dataset.screenTarget;
+    if (!screenTarget) return;
+    setActiveScreen(screenTarget);
+  });
+
+  // Initial active screen
+  const initial =
+    sidebarItems.find((b) => b.classList.contains("is-active"))?.dataset
+      .screenTarget ||
+    bottomNavItems.find((b) => b.classList.contains("is-active"))?.dataset
+      .screenTarget ||
+    screens[0].dataset.screen;
+
+  setActiveScreen(initial);
 }
