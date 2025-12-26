@@ -9,12 +9,10 @@ export function initIntro() {
     return;
   }
 
-  // Start with splash visible; then show intro; then app
   window.setTimeout(() => {
     splash.classList.add("is-hidden");
     intro.classList.add("is-visible");
 
-    // After intro delay, hide intro and reveal app
     window.setTimeout(() => {
       intro.classList.remove("is-visible");
       intro.classList.add("is-hidden");

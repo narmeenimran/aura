@@ -1,31 +1,28 @@
-// theme.js — handles theme switching + persistence
+// theme.js — light/dark theme with persistence
 
 import { storage } from "../utils/storage.js";
+
+const THEME_KEY = "aura_theme";
 
 export function initTheme() {
   const root = document.documentElement;
   const settingsToggle = document.getElementById("settings-theme-toggle");
-  const topbarToggle = document.getElementById("theme-toggle");
 
-  // Load saved theme
-  const saved = storage.get("theme");
-  if (saved) {
-    root.setAttribute("data-theme", saved);
+  const saved = storage.get(THEME_KEY);
+  const initialTheme = saved === "dark" || saved === "light" ? saved : "light";
+  root.setAttribute("data-theme", initialTheme);
+
+  function applyTheme(theme) {
+    root.setAttribute("data-theme", theme);
+    storage.set(THEME_KEY, theme);
   }
 
   function toggleTheme() {
-    const current = root.getAttribute("data-theme") || "dark";
+    const current = root.getAttribute("data-theme") === "dark" ? "dark" : "light";
     const next = current === "dark" ? "light" : "dark";
-    root.setAttribute("data-theme", next);
-    storage.set("theme", next);
+    applyTheme(next);
   }
 
-  // Top bar toggle
-  if (topbarToggle) {
-    topbarToggle.addEventListener("click", toggleTheme);
-  }
-
-  // Settings screen toggle
   if (settingsToggle) {
     settingsToggle.addEventListener("click", toggleTheme);
   }

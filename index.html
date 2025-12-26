@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +7,7 @@
 
   <!-- PWA manifest -->
   <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#050509" />
+  <meta name="theme-color" content="#f5f3ff" />
 
   <!-- Favicon / icons -->
   <link rel="icon" href="/assets/img/icon-192.png" sizes="192x192" />
@@ -16,8 +16,11 @@
   <!-- Styles -->
   <link rel="stylesheet" href="/assets/css/style.css" />
 
-  <!-- Fonts (optional) -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
 </head>
 <body>
 
@@ -59,36 +62,70 @@
       <main class="aura-screens">
         <!-- Home screen -->
         <section class="aura-screen is-active" data-screen="home">
-          <h3 class="screen-title">Home</h3>
+          <h3 class="screen-title">Today</h3>
+          <div class="screen-section-grid">
+            <div class="screen-section-card stat-card">
+              <p class="stat-label">Focus time today</p>
+              <p id="home-focus-minutes" class="stat-value">0 min</p>
+            </div>
+            <div class="screen-section-card stat-card">
+              <p class="stat-label">Decks</p>
+              <p id="home-deck-count" class="stat-value">0</p>
+            </div>
+            <div class="screen-section-card stat-card">
+              <p class="stat-label">Notes</p>
+              <p id="home-note-count" class="stat-value">0</p>
+            </div>
+          </div>
+
           <div class="screen-section-card">
-            <h4>Focus time</h4>
-            <p id="home-focus-time" class="focus-time-display">25:00</p>
-            <button class="primary-button" data-screen-target="timer">Open timer</button>
+            <h4>Quick actions</h4>
+            <div class="button-row wrap">
+              <button class="primary-button" data-screen-target="timer">
+                Start focus session
+              </button>
+              <button class="secondary-button" data-screen-target="decks">
+                Review flashcards
+              </button>
+              <button class="secondary-button" data-screen-target="notes">
+                Capture a note
+              </button>
+            </div>
           </div>
         </section>
 
         <!-- Timer screen -->
         <section class="aura-screen" data-screen="timer">
-          <h3 class="screen-title">Pomodoro Timer</h3>
+          <h3 class="screen-title">Pomodoro timer</h3>
           <div class="screen-section-card">
+            <div class="timer-mode-tabs">
+              <button class="timer-mode-tab is-active" data-mode="focus">Focus</button>
+              <button class="timer-mode-tab" data-mode="shortBreak">Short break</button>
+              <button class="timer-mode-tab" data-mode="longBreak">Long break</button>
+            </div>
+
             <p id="pomodoro-time" class="timer-display">25:00</p>
             <p id="pomodoro-mode-label" class="timer-mode-label">Focus</p>
+
             <div class="button-row">
               <button id="pomodoro-toggle" class="primary-button">Start</button>
               <button id="pomodoro-reset" class="secondary-button">Reset</button>
             </div>
+
+            <button id="pomodoro-custom-open" class="ghost-button full-width">
+              Custom duration
+            </button>
           </div>
         </section>
 
         <!-- Decks screen -->
         <section class="aura-screen" data-screen="decks">
-          <h3 class="screen-title">Flashcards</h3>
+          <h3 class="screen-title">Flashcard decks</h3>
           <div class="screen-section-card">
-            <div id="deck-list" class="deck-list">
-              <button class="deck-card" data-deck-id="1">Neuroscience basics</button>
-              <button class="deck-card" data-deck-id="2">Cognitive biases</button>
-              <button class="deck-card" data-deck-id="3">Language learning</button>
+            <div class="button-row">
+              <button id="add-deck-button" class="primary-button">New deck</button>
             </div>
+            <div id="deck-list" class="deck-list"></div>
           </div>
         </section>
 
@@ -103,7 +140,9 @@
               placeholder="Search notes..."
             />
             <div id="notes-list" class="notes-list"></div>
-            <button id="add-note-button" class="primary-button full-width">Add note</button>
+            <button id="add-note-button" class="primary-button full-width">
+              Add note
+            </button>
           </div>
         </section>
 
@@ -111,8 +150,9 @@
         <section class="aura-screen" data-screen="settings">
           <h3 class="screen-title">Settings</h3>
           <div class="screen-section-card">
+            <p class="settings-label">Appearance</p>
             <button id="settings-theme-toggle" class="secondary-button full-width">
-              Toggle theme
+              Toggle light / dark
             </button>
           </div>
         </section>
@@ -129,26 +169,35 @@
     </div>
   </div>
 
-  <!-- Overlays (simple placeholders, layout-safe) -->
+  <!-- Deck viewer overlay -->
   <div id="deck-viewer-overlay" class="aura-overlay" aria-hidden="true">
     <div class="overlay-content">
-      <h2 id="deck-viewer-title">Deck</h2>
+      <div class="overlay-header-row">
+        <h2 id="deck-viewer-title">Deck</h2>
+        <button id="rename-deck-button" class="ghost-button">Rename deck</button>
+      </div>
+
       <div id="flashcard" class="flashcard">
         <div id="flashcard-front" class="flashcard-face"></div>
-        <div id="flashcard-back" class="flashcard-face"></div>
+        <div id="flashcard-back" class="flashcard-face is-hidden"></div>
       </div>
+
       <p id="flashcard-progress" class="overlay-meta"></p>
+
       <div class="button-row wrap">
         <button id="flashcard-flip" class="secondary-button">Flip</button>
         <button id="flashcard-prev" class="secondary-button">Prev</button>
         <button id="flashcard-next" class="secondary-button">Next</button>
         <button id="add-card-button" class="secondary-button">Add card</button>
         <button id="edit-card-button" class="secondary-button">Edit card</button>
+        <button id="delete-card-button" class="ghost-button">Delete card</button>
+        <button id="delete-deck-button" class="ghost-button">Delete deck</button>
         <button id="close-deck-viewer" class="ghost-button full-width">Close</button>
       </div>
     </div>
   </div>
 
+  <!-- Note editor overlay -->
   <div id="note-editor-overlay" class="aura-overlay" aria-hidden="true">
     <div class="overlay-content">
       <h2 id="note-editor-title-label">New note</h2>
@@ -163,14 +212,20 @@
         <button data-command="italic" class="toolbar-button">I</button>
         <button data-command="underline" class="toolbar-button">U</button>
       </div>
-      <div id="note-editor-content" class="note-editor-content" contenteditable="true"></div>
+      <div
+        id="note-editor-content"
+        class="note-editor-content"
+        contenteditable="true"
+      ></div>
       <div class="button-row">
         <button id="save-note-button" class="primary-button">Save</button>
+        <button id="delete-note-button" class="ghost-button">Delete</button>
         <button id="close-note-editor" class="ghost-button">Close</button>
       </div>
     </div>
   </div>
 
+  <!-- Pomodoro custom overlay -->
   <div id="pomodoro-custom-overlay" class="aura-overlay" aria-hidden="true">
     <div class="overlay-content">
       <h2>Custom duration</h2>

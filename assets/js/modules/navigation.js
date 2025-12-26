@@ -19,25 +19,21 @@ export function initNavigation() {
   function setActiveScreen(targetScreen) {
     if (!targetScreen) return;
 
-    // Screens
     screens.forEach((screen) => {
       const isTarget = screen.dataset.screen === targetScreen;
       screen.classList.toggle("is-active", isTarget);
     });
 
-    // Sidebar
     sidebarItems.forEach((btn) => {
       const isActive = btn.dataset.screenTarget === targetScreen;
       btn.classList.toggle("is-active", isActive);
     });
 
-    // Bottom nav
     bottomNavItems.forEach((btn) => {
       const isActive = btn.dataset.screenTarget === targetScreen;
       btn.classList.toggle("is-active", isActive);
     });
 
-    // Topbar title
     if (topbarTitle) {
       const label =
         targetScreen.charAt(0).toUpperCase() + targetScreen.slice(1);
@@ -52,7 +48,6 @@ export function initNavigation() {
     setActiveScreen(screenTarget);
   }
 
-  // Attach listeners
   sidebarItems.forEach((btn) => {
     btn.addEventListener("click", handleNavClick);
   });
@@ -61,7 +56,6 @@ export function initNavigation() {
     btn.addEventListener("click", handleNavClick);
   });
 
-  // Also allow in-screen buttons with data-screen-target
   document.addEventListener("click", (evt) => {
     const el = evt.target;
     if (!(el instanceof HTMLElement)) return;
@@ -70,7 +64,6 @@ export function initNavigation() {
     setActiveScreen(screenTarget);
   });
 
-  // Initial active screen
   const initial =
     sidebarItems.find((b) => b.classList.contains("is-active"))?.dataset
       .screenTarget ||
