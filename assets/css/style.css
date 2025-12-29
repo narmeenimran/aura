@@ -1,32 +1,31 @@
 /* -----------------------------------------------------------
-   ROOT VARIABLES
+   iOS 17 SOFT-GLASS — ROOT VARIABLES
 ----------------------------------------------------------- */
 
 :root {
-  --bottom-nav-height: 70px;
-
-  --bg: #f7f6fb;
-  --text: #1b1633;
-  --text-muted: #6a628f;
-
-  --surface: rgba(255, 255, 255, 0.35);
-  --surface-strong: rgba(255, 255, 255, 0.55);
-  --border: rgba(255, 255, 255, 0.25);
-
-  --blur-soft: 18px;
-
   --accent: #7b5cff;
-  --accent-soft: rgba(123, 92, 255, 0.15);
   --accent-strong: #5b3bff;
+
+  --bg: #f5f5f7;
+  --text: #1b1b1f;
+  --text-muted: #6a6a6f;
+
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-strong: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.35);
+
+  --blur: 22px;
 
   --radius-lg: 22px;
   --radius-md: 14px;
-  --radius-sm: 8px;
+  --radius-sm: 10px;
 
-  --shadow-soft: 0 18px 45px rgba(35, 26, 81, 0.15);
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
 
-  --transition-fast: 0.15s ease-out;
-  --transition-med: 0.25s ease-out;
+  --bottom-nav-height: 70px;
+
+  --transition-fast: 0.15s ease;
+  --transition-med: 0.25s ease;
 }
 
 /* -----------------------------------------------------------
@@ -36,12 +35,12 @@
 html, body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
   width: 100%;
   height: 100%;
+  overflow-x: hidden;
   background: var(--bg);
-  color: var(--text);
   font-family: "Inter", sans-serif;
+  color: var(--text);
 }
 
 * {
@@ -49,7 +48,7 @@ html, body {
 }
 
 /* -----------------------------------------------------------
-   REMOVE ALL DESKTOP UI
+   REMOVE DESKTOP UI COMPLETELY
 ----------------------------------------------------------- */
 
 .aura-sidebar,
@@ -58,28 +57,25 @@ html, body {
 }
 
 /* -----------------------------------------------------------
-   APP SHELL (MOBILE ONLY)
+   APP SHELL
 ----------------------------------------------------------- */
 
 .aura-app-shell {
-  margin: 0 !important;
   width: 100%;
+  margin: 0;
 }
 
 /* -----------------------------------------------------------
-   SCREEN WRAPPER
+   SCREENS WRAPPER
 ----------------------------------------------------------- */
 
 .aura-screens {
   width: 100%;
   height: calc(100dvh - var(--bottom-nav-height));
   overflow-y: auto;
-  padding-bottom: var(--bottom-nav-height);
+  padding: 20px;
+  padding-bottom: calc(var(--bottom-nav-height) + 20px);
 }
-
-/* -----------------------------------------------------------
-   SCREEN TRANSITIONS
------------------------------------------------------------ */
 
 .aura-screen {
   display: none;
@@ -90,6 +86,71 @@ html, body {
 .aura-screen.is-active {
   display: block;
   opacity: 1;
+}
+
+/* -----------------------------------------------------------
+   GLASS CARD (iOS 17)
+----------------------------------------------------------- */
+
+.glass-card {
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+/* -----------------------------------------------------------
+   BUTTONS — iOS STYLE
+----------------------------------------------------------- */
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* Primary (purple) */
+.primary-button {
+  background: var(--accent);
+  color: white;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  font-size: 1.1rem;
+  width: 100%;
+  box-shadow: var(--shadow);
+}
+
+/* Secondary (glass) */
+.secondary-button {
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--glass-border);
+  padding: 14px;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  color: var(--accent-strong);
+}
+
+/* Ghost (white) */
+.ghost-button {
+  background: white;
+  border: 1px solid #e0e0e0;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+}
+
+/* Full width helper */
+.full-width {
+  width: 100%;
 }
 
 /* -----------------------------------------------------------
@@ -105,21 +166,21 @@ html, body {
 .todo-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 12px;
+  margin: 0 0 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .todo-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(var(--blur-soft));
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* -----------------------------------------------------------
@@ -127,6 +188,7 @@ html, body {
 ----------------------------------------------------------- */
 
 .screen-title {
+  font-size: 1.6rem;
   margin-bottom: 16px;
 }
 
@@ -138,31 +200,31 @@ html, body {
 }
 
 .deck-card {
-  padding: 18px;
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
+  padding: 18px;
+  box-shadow: var(--shadow);
   cursor: pointer;
-  text-align: left;
 }
 
 /* Slide-in viewer */
-.deck-viewer-panel {
+#deck-viewer-panel {
   position: fixed;
   top: 0;
   right: -100%;
   width: 100%;
   height: 100dvh;
-  background: var(--surface-strong);
-  backdrop-filter: blur(var(--blur-soft));
-  border-left: 1px solid var(--border);
+  background: var(--glass-strong);
+  backdrop-filter: blur(var(--blur));
+  border-left: 1px solid var(--glass-border);
   padding: 24px;
   transition: right var(--transition-med);
   z-index: 999;
 }
 
-.deck-viewer-panel.is-visible {
+#deck-viewer-panel.is-visible {
   right: 0;
 }
 
@@ -171,15 +233,15 @@ html, body {
   width: 100%;
   height: 260px;
   perspective: 1400px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .flashcard-inner {
   width: 100%;
   height: 100%;
   position: relative;
-  transition: transform var(--transition-med);
   transform-style: preserve-3d;
+  transition: transform var(--transition-med);
 }
 
 .flashcard.is-flipped .flashcard-inner {
@@ -190,24 +252,86 @@ html, body {
   position: absolute;
   width: 100%;
   height: 100%;
-  backface-visibility: hidden;
-  background: var(--surface);
+  background: white;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  padding: 24px;
-  box-shadow: var(--shadow-soft);
+  border: 1px solid #e0e0e0;
+  backface-visibility: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
 }
 
 /* -----------------------------------------------------------
    NOTES
 ----------------------------------------------------------- */
 
-.note-search,
-.note-editor {
+.note-search {
+  background: white;
+  border: 1px solid #e0e0e0;
+  padding: 14px;
+  border-radius: var(--radius-md);
   width: 100%;
+  margin-bottom: 16px;
+}
+
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* -----------------------------------------------------------
+   FULL-SCREEN NOTE EDITOR (iOS Notes)
+----------------------------------------------------------- */
+
+#note-editor-overlay .overlay-content {
+  width: 100%;
+  height: 100dvh;
+  max-width: 100%;
+  border-radius: 0;
+  background: white;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+#note-editor-title-input {
+  font-size: 1.3rem;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid #e0e0e0;
+}
+
+.note-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.note-toolbar button {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+}
+
+#note-editor-content {
+  flex: 1;
+  width: 100%;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  overflow-y: auto;
 }
 
 /* -----------------------------------------------------------
@@ -219,7 +343,26 @@ html, body {
   flex-direction: column;
   align-items: center;
   gap: 18px;
-  width: 100%;
+}
+
+.timer-ring-bg {
+  stroke: rgba(0,0,0,0.15);
+  stroke-width: 10;
+  fill: none;
+}
+
+.timer-ring-progress {
+  stroke: var(--accent);
+  stroke-width: 10;
+  fill: none;
+  stroke-linecap: round;
+  transform-origin: center;
+  transform: rotate(-90deg);
+}
+
+.timer-display {
+  font-size: 2.4rem;
+  font-weight: 600;
 }
 
 /* -----------------------------------------------------------
@@ -229,12 +372,11 @@ html, body {
 .aura-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
-  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(10px);
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 24px;
   z-index: 999;
   opacity: 0;
   transition: opacity var(--transition-fast);
@@ -245,31 +387,19 @@ html, body {
   opacity: 1;
 }
 
-.overlay-content {
-  width: 100%;
-  max-width: 420px;
-  background: var(--surface-strong);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  padding: 28px;
-  box-shadow: var(--shadow-soft);
-}
-
 /* -----------------------------------------------------------
-   BOTTOM NAV (MOBILE ONLY)
+   BOTTOM NAV (iOS STYLE)
 ----------------------------------------------------------- */
 
 .aura-bottom-nav {
   position: fixed;
-  bottom: env(safe-area-inset-bottom);
+  bottom: 0;
   left: 0;
-  width: 100%;
   height: var(--bottom-nav-height);
-
-  background: rgba(255, 255, 255, 0);
-  backdrop-filter: blur(var(--blur-soft));
-  border-top: 1px solid var(--border);
-
+  width: 100%;
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  border-top: 1px solid var(--glass-border);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -281,100 +411,8 @@ html, body {
   border: none;
   color: var(--text-muted);
   font-size: 0.9rem;
-  cursor: pointer;
 }
 
 .bottom-nav-item.is-active {
   color: var(--accent-strong);
-}
-/* -----------------------------------------------------------
-   FIX TIMER RING COLORS
------------------------------------------------------------ */
-
-.timer-ring-bg {
-  stroke: rgba(0,0,0,0.15) !important;
-}
-
-.timer-ring-progress {
-  stroke: var(--accent) !important;
-}
-
-
-/* -----------------------------------------------------------
-   FIX NOTES EDITOR (iPhone Notes style)
------------------------------------------------------------ */
-
-.note-editor {
-  width: 100% !important;
-  min-height: 60vh !important;
-  padding: 16px !important;
-  font-size: 1.1rem !important;
-  line-height: 1.6 !important;
-  background: #ffffff !important;
-  border-radius: 12px !important;
-  border: 1px solid #e0e0e0 !important;
-}
-
-.note-search {
-  width: 100% !important;
-  padding: 14px 16px !important;
-  border-radius: 12px !important;
-  background: #ffffff !important;
-  border: 1px solid #e0e0e0 !important;
-}
-
-
-/* -----------------------------------------------------------
-   FIX FLASHCARD FLIP (restore width + 3D)
------------------------------------------------------------ */
-
-.flashcard {
-  width: 100% !important;
-  max-width: 100% !important;
-  perspective: 1400px !important;
-}
-
-.flashcard-inner {
-  width: 100% !important;
-  height: 100% !important;
-  transform-style: preserve-3d !important;
-}
-
-.flashcard-face {
-  backface-visibility: hidden !important;
-}
-
-
-/* -----------------------------------------------------------
-   MAKE FLASHCARD BUTTONS BIGGER + NICER (iOS style)
------------------------------------------------------------ */
-
-.button-row button,
-#flashcard-flip,
-#flashcard-prev,
-#flashcard-next,
-#add-card-button,
-#edit-card-button {
-  padding: 14px 18px !important;
-  font-size: 1.05rem !important;
-  border-radius: 12px !important;
-  margin: 6px !important;
-  min-width: 90px !important;
-}
-
-.secondary-button {
-  background: #f0f0ff !important;
-  border: 1px solid #d0d0ff !important;
-  color: #4a3aff !important;
-}
-
-.primary-button {
-  background: #7b5cff !important;
-  color: white !important;
-  border: none !important;
-}
-
-.ghost-button {
-  background: #ffffff !important;
-  border: 1px solid #e0e0e0 !important;
 }
