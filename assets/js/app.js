@@ -1,9 +1,9 @@
-// app.js — navigation, onboarding, theme toggle, module init
+// app.js — navigation, onboarding, settings, todo list, module init
 
 import { initFlashcards } from "./modules/flashcards.js";
-import { initHome, updateHomeStats } from "./modules/home.js";
 import { initNotes } from "./modules/notes.js";
 import { initTimer } from "./modules/timer.js";
+import { initHome } from "./modules/home.js";
 
 /* -----------------------------------------------------------
    ELEMENTS
@@ -21,9 +21,10 @@ const screens = document.querySelectorAll(".aura-screen");
 const topbarTitle = document.getElementById("topbar-title");
 
 const themeToggle = document.getElementById("settings-theme-toggle");
+const changeNameBtn = document.getElementById("settings-change-name");
 
 /* -----------------------------------------------------------
-   ONBOARDING — ASK NAME
+   NAME STORAGE
 ----------------------------------------------------------- */
 
 function loadName() {
@@ -34,12 +35,16 @@ function saveName(name) {
   localStorage.setItem("aura_username", name);
 }
 
-function showGreeting() {
+function updateGreeting() {
   const name = loadName();
   if (name && homeGreeting) {
     homeGreeting.textContent = `hello, ${name.toLowerCase()}`;
   }
 }
+
+/* -----------------------------------------------------------
+   ONBOARDING
+----------------------------------------------------------- */
 
 function handleOnboarding() {
   const saved = loadName();
@@ -47,7 +52,7 @@ function handleOnboarding() {
   if (saved) {
     onboardingScreen.style.display = "none";
     appRoot.style.display = "flex";
-    showGreeting();
+    updateGreeting();
     return;
   }
 
@@ -56,10 +61,24 @@ function handleOnboarding() {
     if (!name) return;
 
     saveName(name);
-    showGreeting();
+    updateGreeting();
 
     onboardingScreen.style.display = "none";
     appRoot.style.display = "flex";
+  });
+}
+
+/* -----------------------------------------------------------
+   CHANGE NAME (SETTINGS)
+----------------------------------------------------------- */
+
+function initChangeName() {
+  changeNameBtn.addEventListener("click", () => {
+    const newName = prompt("Enter your new name:");
+    if (!newName) return;
+
+    saveName(newName.trim());
+    updateGreeting();
   });
 }
 
@@ -107,7 +126,6 @@ function initThemeToggle() {
     localStorage.setItem("aura_theme", next);
   });
 
-  // Load saved theme
   const saved = localStorage.getItem("aura_theme");
   if (saved) {
     document.documentElement.setAttribute("data-theme", saved);
@@ -122,14 +140,13 @@ function initApp() {
   handleOnboarding();
   initNavigation();
   initThemeToggle();
+  initChangeName();
 
   // Initialize modules
-  initHome();
-  initFlashcards();
-  initNotes();
-  initTimer();
-
-  updateHomeStats();
+  initHome();        // greeting + to‑do list
+  initFlashcards();  // decks + cards
+  initNotes();       // advanced editor
+  initTimer();       // pomodoro
 }
 
 initApp();

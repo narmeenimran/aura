@@ -1,7 +1,7 @@
 /* -----------------------------------------------------------
-   AURA — FINAL GLASSMORPHISM THEME (G‑Soft + T1 Pastel Tint)
-   Classic Layout + Minimal Home + Onboarding
-   Mobile‑First Vertical Scrolling Only
+   AURA — FINAL REBUILD
+   Smooth Anki Flip • Editable To‑Do List • Advanced Editor
+   Mobile‑First • No Horizontal Scroll • No Zoom
 ----------------------------------------------------------- */
 
 :root {
@@ -33,7 +33,7 @@
   --shadow-soft: 0 18px 45px rgba(35, 26, 81, 0.15);
 
   --transition-fast: 0.18s ease-out;
-  --transition-med: 0.28s ease-out;
+  --transition-med: 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 /* -----------------------------------------------------------
@@ -62,7 +62,6 @@ html, body {
   color: var(--text);
   font-family: "Inter", sans-serif;
 
-  /* NO HORIZONTAL SCROLL EVER */
   overflow-x: hidden !important;
   max-width: 100vw;
 }
@@ -138,7 +137,7 @@ input, textarea {
 }
 
 /* -----------------------------------------------------------
-   FLOATING SIDEBAR (DESKTOP ONLY)
+   SIDEBAR (DESKTOP)
 ----------------------------------------------------------- */
 
 .aura-sidebar {
@@ -248,7 +247,7 @@ input, textarea {
 }
 
 /* -----------------------------------------------------------
-   HOME GREETING
+   HOME — GREETING + TO‑DO LIST
 ----------------------------------------------------------- */
 
 .home-greeting {
@@ -258,25 +257,50 @@ input, textarea {
   text-transform: lowercase;
 }
 
-/* -----------------------------------------------------------
-   GLASS CARDS
------------------------------------------------------------ */
+.todo-title {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
 
-.glass-card {
-  background: linear-gradient(
-      135deg,
-      var(--pastel-lav),
-      var(--pastel-peach),
-      var(--pastel-mint),
-      var(--pastel-blue)
-    ),
-    var(--surface);
+.todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-  backdrop-filter: blur(var(--blur-soft));
-  border-radius: var(--radius-lg);
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
   border: 1px solid var(--border);
-  padding: 24px;
-  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(var(--blur-soft));
+}
+
+.todo-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.todo-text {
+  flex: 1;
+  font-size: 1rem;
+}
+
+.todo-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-soft));
 }
 
 /* -----------------------------------------------------------
@@ -328,15 +352,15 @@ input, textarea {
 }
 
 /* -----------------------------------------------------------
-   FLASHCARDS — Vertical Flip
+   FLASHCARDS — Smooth Soft Flip (F2)
 ----------------------------------------------------------- */
 
 .flashcard {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
-  min-height: 200px;
-  perspective: 1200px;
+  min-height: 220px;
+  perspective: 1400px;
 }
 
 .flashcard-inner {
@@ -348,7 +372,7 @@ input, textarea {
 }
 
 .flashcard.is-flipped .flashcard-inner {
-  transform: rotateX(180deg);
+  transform: rotateY(180deg);
 }
 
 .flashcard-face {
@@ -366,41 +390,34 @@ input, textarea {
 }
 
 .flashcard-back {
-  transform: rotateX(180deg);
+  transform: rotateY(180deg);
 }
 
 /* -----------------------------------------------------------
-   DECK LIST
+   NOTES — ADVANCED EDITOR
 ----------------------------------------------------------- */
 
-.deck-card {
-  width: 100%;
-  padding: 18px;
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  backdrop-filter: blur(var(--blur-soft));
+.note-editor-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.toolbar-button {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
-  margin-bottom: 14px;
+  background: var(--surface);
   cursor: pointer;
-  transition: var(--transition-fast);
 }
 
-.deck-card:hover {
-  background: var(--accent-soft);
-}
-
-/* -----------------------------------------------------------
-   NOTES
------------------------------------------------------------ */
-
-.text-input {
-  width: 100%;
-  padding: 12px 14px;
+.note-editor-content {
+  min-height: 200px;
+  padding: 14px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: var(--surface);
   backdrop-filter: blur(var(--blur-soft));
-  color: var(--text);
 }
 
 /* -----------------------------------------------------------

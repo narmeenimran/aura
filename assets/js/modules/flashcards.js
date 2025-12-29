@@ -1,22 +1,46 @@
-// flashcards.js — clean vertical flip + deck CRUD + overlay
+// flashcards.js — smooth soft flip (F2) + full deck system
 
 import { storage } from "../utils/storage.js";
-import { updateHomeStats } from "./home.js";
 
-const STORAGE_KEY = "aura_decks";
+const DECK_KEY = "aura_flashcard_decks";
 
 let decks = [];
 let currentDeckId = null;
-let currentCardIndex = 0;
+let currentIndex = 0;
 
-// Elements
+/* -----------------------------------------------------------
+   LOAD + SAVE
+----------------------------------------------------------- */
+
+function loadDecks() {
+  const saved = storage.get(DECK_KEY);
+  if (Array.isArray(saved)) {
+    decks = saved;
+  } else {
+    decks = [];
+    saveDecks();
+  }
+}
+
+function saveDecks() {
+  storage.set(DECK_KEY, decks);
+}
+
+/* -----------------------------------------------------------
+   ELEMENTS
+----------------------------------------------------------- */
+
 let deckListEl;
+
 let overlayEl;
-let titleEl;
-let frontEl;
-let backEl;
-let progressEl;
+let overlayTitleEl;
+
 let flashcardEl;
+let flashcardInnerEl;
+let flashcardFrontEl;
+let flashcardBackEl;
+
+let progressEl;
 
 let flipBtn;
 let prevBtn;
@@ -24,64 +48,22 @@ let nextBtn;
 let addCardBtn;
 let editCardBtn;
 let deleteCardBtn;
-let renameDeckBtn;
 let deleteDeckBtn;
-let closeBtn;
+let renameDeckBtn;
+let closeOverlayBtn;
+
 let addDeckBtn;
-
-/* -----------------------------------------------------------
-   DEFAULT STARTER DECKS
------------------------------------------------------------ */
-function defaultDecks() {
-  return [
-    {
-      id: "1",
-      name: "Neuroscience basics",
-      cards: [
-        { front: "What is a neuron?", back: "A cell that transmits nerve impulses." },
-        { front: "What is synaptic plasticity?", back: "The ability of synapses to strengthen or weaken." }
-      ]
-    },
-    {
-      id: "2",
-      name: "Cognitive biases",
-      cards: [
-        { front: "Confirmation bias", back: "Seeking info that confirms existing beliefs." },
-        { front: "Anchoring", back: "Relying too heavily on the first piece of information." }
-      ]
-    }
-  ];
-}
-
-/* -----------------------------------------------------------
-   LOAD + SAVE
------------------------------------------------------------ */
-function loadDecks() {
-  const saved = storage.get(STORAGE_KEY);
-  if (Array.isArray(saved) && saved.length) {
-    decks = saved;
-  } else {
-    decks = defaultDecks();
-    saveDecks();
-  }
-}
-
-function saveDecks() {
-  storage.set(STORAGE_KEY, decks);
-  updateHomeStats();
-}
 
 /* -----------------------------------------------------------
    RENDER DECK LIST
 ----------------------------------------------------------- */
-function renderDeckList() {
-  if (!deckListEl) return;
 
+function renderDeckList() {
   deckListEl.innerHTML = "";
 
-  if (!decks.length) {
+  if (decks.length === 0) {
     const empty = document.createElement("p");
-    empty.textContent = "No decks yet. Create your first one.";
+    empty.textContent = "No decks yet.";
     empty.className = "overlay-meta";
     deckListEl.appendChild(empty);
     return;
@@ -105,219 +87,223 @@ function renderDeckList() {
 }
 
 /* -----------------------------------------------------------
-   HELPERS
+   OPEN DECK
 ----------------------------------------------------------- */
-function findDeck(id) {
-  return decks.find((d) => d.id === id) || null;
-}
 
-function getCurrentDeck() {
-  return currentDeckId ? findDeck(currentDeckId) : null;
+function openDeck(id) {
+  currentDeckId = id;
+  currentIndex = 0;
+
+  const deck = decks.find((d) => d.id === id);
+  if (!deck) return;
+
+  overlayTitleEl.textContent = deck.name;
+
+  overlayEl.classList.add("is-visible");
+  overlayEl.setAttribute("aria-hidden", "false");
+
+  renderCard();
 }
 
 /* -----------------------------------------------------------
-   FLASHCARD VIEW UPDATE
+   CLOSE DECK
 ----------------------------------------------------------- */
-function updateFlashcardView() {
-  const deck = getCurrentDeck();
+
+function closeDeck() {
+  overlayEl.classList.remove("is-visible");
+  overlayEl.setAttribute("aria-hidden", "true");
+
+  flashcardEl.classList.remove("is-flipped");
+}
+
+/* -----------------------------------------------------------
+   RENDER CARD
+----------------------------------------------------------- */
+
+function renderCard() {
+  const deck = decks.find((d) => d.id === currentDeckId);
   if (!deck) return;
 
-  if (!deck.cards.length) {
-    frontEl.textContent = "This deck is empty. Add your first card.";
-    backEl.textContent = "";
+  if (deck.cards.length === 0) {
+    flashcardFrontEl.textContent = "No cards yet.";
+    flashcardBackEl.textContent = "Add a card to begin.";
     progressEl.textContent = "0 / 0";
     return;
   }
 
-  if (currentCardIndex < 0) currentCardIndex = 0;
-  if (currentCardIndex >= deck.cards.length) {
-    currentCardIndex = deck.cards.length - 1;
-  }
+  const card = deck.cards[currentIndex];
 
-  const card = deck.cards[currentCardIndex];
+  flashcardFrontEl.textContent = card.front;
+  flashcardBackEl.textContent = card.back;
 
-  frontEl.textContent = card.front;
-  backEl.textContent = card.back;
-  progressEl.textContent = `${currentCardIndex + 1} / ${deck.cards.length}`;
-}
-
-/* -----------------------------------------------------------
-   OVERLAY CONTROL
------------------------------------------------------------ */
-function openOverlay() {
-  overlayEl.classList.add("is-visible");
-  overlayEl.setAttribute("aria-hidden", "false");
-}
-
-function closeOverlay() {
-  overlayEl.classList.remove("is-visible");
-  overlayEl.setAttribute("aria-hidden", "true");
-
-  currentDeckId = null;
-  currentCardIndex = 0;
+  progressEl.textContent = `${currentIndex + 1} / ${deck.cards.length}`;
 
   flashcardEl.classList.remove("is-flipped");
 }
 
 /* -----------------------------------------------------------
-   OPEN DECK
+   FLIP CARD (F2 — smooth soft flip)
 ----------------------------------------------------------- */
-function openDeck(deckId) {
-  const deck = findDeck(deckId);
-  if (!deck) return;
 
-  currentDeckId = deckId;
-  currentCardIndex = 0;
-
-  titleEl.textContent = deck.name;
-  flashcardEl.classList.remove("is-flipped");
-  updateFlashcardView();
-  openOverlay();
-}
-
-/* -----------------------------------------------------------
-   CARD ACTIONS
------------------------------------------------------------ */
 function flipCard() {
   flashcardEl.classList.toggle("is-flipped");
 }
 
-function prevCard() {
-  const deck = getCurrentDeck();
-  if (!deck || !deck.cards.length) return;
-
-  currentCardIndex =
-    (currentCardIndex - 1 + deck.cards.length) % deck.cards.length;
-
-  flashcardEl.classList.remove("is-flipped");
-  updateFlashcardView();
-}
+/* -----------------------------------------------------------
+   NEXT / PREV
+----------------------------------------------------------- */
 
 function nextCard() {
-  const deck = getCurrentDeck();
-  if (!deck || !deck.cards.length) return;
+  const deck = decks.find((d) => d.id === currentDeckId);
+  if (!deck || deck.cards.length === 0) return;
 
-  currentCardIndex = (currentCardIndex + 1) % deck.cards.length;
-
-  flashcardEl.classList.remove("is-flipped");
-  updateFlashcardView();
+  currentIndex = (currentIndex + 1) % deck.cards.length;
+  renderCard();
 }
 
-function addCard() {
-  const deck = getCurrentDeck();
+function prevCard() {
+  const deck = decks.find((d) => d.id === currentDeckId);
+  if (!deck || deck.cards.length === 0) return;
+
+  currentIndex = (currentIndex - 1 + deck.cards.length) % deck.cards.length;
+  renderCard();
+}
+
+/* -----------------------------------------------------------
+   ADD DECK
+----------------------------------------------------------- */
+
+function addDeck() {
+  const name = prompt("Deck name:");
+  if (!name || !name.trim()) return;
+
+  decks.push({
+    id: String(Date.now()),
+    name: name.trim(),
+    cards: []
+  });
+
+  saveDecks();
+  renderDeckList();
+}
+
+/* -----------------------------------------------------------
+   RENAME DECK
+----------------------------------------------------------- */
+
+function renameDeck() {
+  const deck = decks.find((d) => d.id === currentDeckId);
   if (!deck) return;
 
-  const front = window.prompt("Front of card:");
+  const newName = prompt("New deck name:", deck.name);
+  if (!newName || !newName.trim()) return;
+
+  deck.name = newName.trim();
+  saveDecks();
+
+  overlayTitleEl.textContent = deck.name;
+  renderDeckList();
+}
+
+/* -----------------------------------------------------------
+   DELETE DECK
+----------------------------------------------------------- */
+
+function deleteDeck() {
+  const confirmDelete = window.confirm("Delete this deck?");
+  if (!confirmDelete) return;
+
+  decks = decks.filter((d) => d.id !== currentDeckId);
+  saveDecks();
+
+  closeDeck();
+  renderDeckList();
+}
+
+/* -----------------------------------------------------------
+   ADD CARD
+----------------------------------------------------------- */
+
+function addCard() {
+  const front = prompt("Front:");
   if (!front) return;
 
-  const back = window.prompt("Back of card:");
-  if (back === null) return;
+  const back = prompt("Back:");
+  if (!back) return;
+
+  const deck = decks.find((d) => d.id === currentDeckId);
+  if (!deck) return;
 
   deck.cards.push({ front, back });
   saveDecks();
 
-  currentCardIndex = deck.cards.length - 1;
-  flashcardEl.classList.remove("is-flipped");
-  updateFlashcardView();
-  renderDeckList();
+  currentIndex = deck.cards.length - 1;
+  renderCard();
 }
 
+/* -----------------------------------------------------------
+   EDIT CARD
+----------------------------------------------------------- */
+
 function editCard() {
-  const deck = getCurrentDeck();
-  if (!deck || !deck.cards.length) return;
+  const deck = decks.find((d) => d.id === currentDeckId);
+  if (!deck || deck.cards.length === 0) return;
 
-  const card = deck.cards[currentCardIndex];
+  const card = deck.cards[currentIndex];
 
-  const newFront = window.prompt("Edit front:", card.front);
-  if (newFront === null) return;
+  const newFront = prompt("Edit front:", card.front);
+  if (!newFront) return;
 
-  const newBack = window.prompt("Edit back:", card.back);
-  if (newBack === null) return;
+  const newBack = prompt("Edit back:", card.back);
+  if (!newBack) return;
 
   card.front = newFront;
   card.back = newBack;
 
   saveDecks();
-  flashcardEl.classList.remove("is-flipped");
-  updateFlashcardView();
-  renderDeckList();
+  renderCard();
 }
 
+/* -----------------------------------------------------------
+   DELETE CARD
+----------------------------------------------------------- */
+
 function deleteCard() {
-  const deck = getCurrentDeck();
-  if (!deck || !deck.cards.length) return;
+  const deck = decks.find((d) => d.id === currentDeckId);
+  if (!deck || deck.cards.length === 0) return;
 
   const confirmDelete = window.confirm("Delete this card?");
   if (!confirmDelete) return;
 
-  deck.cards.splice(currentCardIndex, 1);
+  deck.cards.splice(currentIndex, 1);
+  saveDecks();
 
-  if (currentCardIndex >= deck.cards.length) {
-    currentCardIndex = deck.cards.length - 1;
+  if (currentIndex >= deck.cards.length) {
+    currentIndex = deck.cards.length - 1;
   }
-  if (currentCardIndex < 0) currentCardIndex = 0;
 
-  saveDecks();
-  flashcardEl.classList.remove("is-flipped");
-  updateFlashcardView();
-  renderDeckList();
-}
-
-/* -----------------------------------------------------------
-   DECK ACTIONS
------------------------------------------------------------ */
-function renameDeck() {
-  const deck = getCurrentDeck();
-  if (!deck) return;
-
-  const newName = window.prompt("Rename deck:", deck.name);
-  if (!newName) return;
-
-  deck.name = newName;
-  saveDecks();
-
-  titleEl.textContent = deck.name;
-  renderDeckList();
-}
-
-function deleteDeck() {
-  const deck = getCurrentDeck();
-  if (!deck) return;
-
-  const confirmDelete = window.confirm(
-    `Delete deck "${deck.name}" and all its cards?`
-  );
-  if (!confirmDelete) return;
-
-  decks = decks.filter((d) => d.id !== deck.id);
-  saveDecks();
-
-  renderDeckList();
-  closeOverlay();
-}
-
-function addDeck() {
-  const name = window.prompt("Deck name:");
-  if (!name) return;
-
-  const id = String(Date.now());
-  decks.push({ id, name, cards: [] });
-
-  saveDecks();
-  renderDeckList();
+  renderCard();
 }
 
 /* -----------------------------------------------------------
    INIT
 ----------------------------------------------------------- */
+
 export function initFlashcards() {
+  loadDecks();
+
   deckListEl = document.getElementById("deck-list");
+  addDeckBtn = document.getElementById("add-deck-button");
+
   overlayEl = document.getElementById("deck-viewer-overlay");
-  titleEl = document.getElementById("deck-viewer-title");
-  frontEl = document.getElementById("flashcard-front");
-  backEl = document.getElementById("flashcard-back");
-  progressEl = document.getElementById("flashcard-progress");
+  overlayTitleEl = document.getElementById("deck-viewer-title");
+
   flashcardEl = document.getElementById("flashcard");
+  flashcardInnerEl = document.querySelector(".flashcard-inner");
+  flashcardFrontEl = document.getElementById("flashcard-front");
+  flashcardBackEl = document.getElementById("flashcard-back");
+
+  progressEl = document.getElementById("flashcard-progress");
 
   flipBtn = document.getElementById("flashcard-flip");
   prevBtn = document.getElementById("flashcard-prev");
@@ -325,26 +311,28 @@ export function initFlashcards() {
   addCardBtn = document.getElementById("add-card-button");
   editCardBtn = document.getElementById("edit-card-button");
   deleteCardBtn = document.getElementById("delete-card-button");
-  renameDeckBtn = document.getElementById("rename-deck-button");
   deleteDeckBtn = document.getElementById("delete-deck-button");
-  closeBtn = document.getElementById("close-deck-viewer");
-  addDeckBtn = document.getElementById("add-deck-button");
+  renameDeckBtn = document.getElementById("rename-deck-button");
+  closeOverlayBtn = document.getElementById("close-deck-viewer");
 
-  loadDecks();
   renderDeckList();
+
+  addDeckBtn.addEventListener("click", addDeck);
 
   flipBtn.addEventListener("click", flipCard);
   prevBtn.addEventListener("click", prevCard);
   nextBtn.addEventListener("click", nextCard);
+
   addCardBtn.addEventListener("click", addCard);
   editCardBtn.addEventListener("click", editCard);
   deleteCardBtn.addEventListener("click", deleteCard);
+
   renameDeckBtn.addEventListener("click", renameDeck);
   deleteDeckBtn.addEventListener("click", deleteDeck);
-  closeBtn.addEventListener("click", closeOverlay);
-  addDeckBtn.addEventListener("click", addDeck);
+
+  closeOverlayBtn.addEventListener("click", closeDeck);
 
   overlayEl.addEventListener("click", (evt) => {
-    if (evt.target === overlayEl) closeOverlay();
+    if (evt.target === overlayEl) closeDeck();
   });
 }

@@ -62,9 +62,19 @@
       <!-- SCREENS -->
       <main class="aura-screens">
 
-        <!-- HOME (EMPTY + GREETING) -->
+        <!-- HOME (GREETING + TO-DO LIST) -->
         <section class="aura-screen is-active" data-screen="home">
           <h1 id="home-greeting" class="home-greeting">hello,</h1>
+
+          <div class="todo-section">
+            <h3 class="todo-title">today:</h3>
+
+            <ul id="todo-list" class="todo-list"></ul>
+
+            <button id="todo-add-button" class="ghost-button full-width">
+              + add item
+            </button>
+          </div>
         </section>
 
         <!-- TIMER -->
@@ -133,6 +143,13 @@
               Toggle light / dark
             </button>
           </div>
+
+          <div class="glass-card">
+            <p class="settings-label">Profile</p>
+            <button id="settings-change-name" class="secondary-button full-width">
+              Change name
+            </button>
+          </div>
         </section>
 
       </main>
@@ -197,6 +214,9 @@
         <button data-command="bold" class="toolbar-button">B</button>
         <button data-command="italic" class="toolbar-button">I</button>
         <button data-command="underline" class="toolbar-button">U</button>
+        <button data-command="insertUnorderedList" class="toolbar-button">• List</button>
+        <button data-command="insertOrderedList" class="toolbar-button">1. List</button>
+        <button data-command="checkbox" class="toolbar-button">☑</button>
       </div>
 
       <div
@@ -228,8 +248,8 @@
       />
 
       <div class="button-row">
-        <button id="save-pomodoro-custom" class="primary-button">Save</button>
-        <button id="close-pomodoro-custom" class="ghost-button">Cancel</button>
+        <button id="save-pomodoro-custom" class="primary-button"> Save </button>
+        <button id="close-pomodoro-custom" class="ghost-button"> Cancel </button>
       </div>
     </div>
   </div>

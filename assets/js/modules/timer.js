@@ -1,9 +1,12 @@
-// timer.js — Pomodoro logic + custom duration + saving focus minutes
+// timer.js — clean Pomodoro + custom duration + focus tracking
 
 import { storage } from "../utils/storage.js";
-import { updateHomeStats } from "./home.js";
 
 const FOCUS_MIN_KEY = "aura_focus_minutes_today";
+
+/* -----------------------------------------------------------
+   STATE
+----------------------------------------------------------- */
 
 let mode = "focus";
 let durations = {
@@ -15,12 +18,16 @@ let durations = {
 let remaining = durations.focus;
 let interval = null;
 
-// Elements
+/* -----------------------------------------------------------
+   ELEMENTS
+----------------------------------------------------------- */
+
 let timeEl;
 let modeLabelEl;
 let toggleBtn;
 let resetBtn;
 let customOpenBtn;
+
 let customOverlay;
 let customInput;
 let customSaveBtn;
@@ -44,9 +51,13 @@ function updateDisplay() {
   const secs = remaining % 60;
 
   timeEl.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-  modeLabelEl.textContent = mode === "focus" ? "Focus" :
-                            mode === "shortBreak" ? "Short break" :
-                            "Long break";
+
+  modeLabelEl.textContent =
+    mode === "focus"
+      ? "Focus"
+      : mode === "shortBreak"
+      ? "Short break"
+      : "Long break";
 }
 
 /* -----------------------------------------------------------
@@ -108,7 +119,6 @@ function saveFocusMinutes(mins) {
   map[today] = (map[today] || 0) + mins;
 
   storage.set(FOCUS_MIN_KEY, map);
-  updateHomeStats();
 }
 
 /* -----------------------------------------------------------
@@ -163,7 +173,7 @@ export function initTimer() {
   customSaveBtn = document.getElementById("save-pomodoro-custom");
   customCloseBtn = document.getElementById("close-pomodoro-custom");
 
-  // Mode tabs
+  /* Mode tabs */
   document.querySelectorAll(".timer-mode-tab").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".timer-mode-tab").forEach((b) =>
@@ -175,6 +185,7 @@ export function initTimer() {
     });
   });
 
+  /* Buttons */
   toggleBtn.addEventListener("click", toggleTimer);
   resetBtn.addEventListener("click", resetTimer);
 

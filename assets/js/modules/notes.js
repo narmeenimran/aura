@@ -1,4 +1,4 @@
-// notes.js — clean notes list + editor overlay
+// notes.js — advanced editor + toolbar + auto-save
 
 import { storage } from "../utils/storage.js";
 
@@ -6,19 +6,6 @@ const STORAGE_KEY = "aura_notes";
 
 let notes = [];
 let currentNoteId = null;
-
-// Elements
-let notesListEl;
-let searchInput;
-let addNoteBtn;
-
-let overlayEl;
-let titleLabelEl;
-let titleInputEl;
-let contentEl;
-let saveBtn;
-let deleteBtn;
-let closeBtn;
 
 /* -----------------------------------------------------------
    LOAD + SAVE
@@ -39,19 +26,34 @@ function saveNotes() {
 }
 
 /* -----------------------------------------------------------
+   ELEMENTS
+----------------------------------------------------------- */
+
+let notesListEl;
+let searchInput;
+let addNoteBtn;
+
+let overlayEl;
+let titleLabelEl;
+let titleInputEl;
+let contentEl;
+
+let saveBtn;
+let deleteBtn;
+let closeBtn;
+
+/* -----------------------------------------------------------
    RENDER NOTES LIST
 ----------------------------------------------------------- */
 
 function renderNotesList(filter = "") {
-  if (!notesListEl) return;
-
   notesListEl.innerHTML = "";
 
   const filtered = notes.filter((note) =>
     note.title.toLowerCase().includes(filter.toLowerCase())
   );
 
-  if (!filtered.length) {
+  if (filtered.length === 0) {
     const empty = document.createElement("p");
     empty.textContent = "No notes yet.";
     empty.className = "overlay-meta";
@@ -61,7 +63,7 @@ function renderNotesList(filter = "") {
 
   filtered.forEach((note) => {
     const card = document.createElement("button");
-    card.className = "deck-card"; // same style as decks
+    card.className = "deck-card";
     card.dataset.noteId = note.id;
 
     card.innerHTML = `
@@ -77,7 +79,7 @@ function renderNotesList(filter = "") {
 }
 
 /* -----------------------------------------------------------
-   OPEN NOTE EDITOR
+   OPEN NOTE
 ----------------------------------------------------------- */
 
 function openNote(id) {
@@ -93,6 +95,10 @@ function openNote(id) {
   overlayEl.classList.add("is-visible");
   overlayEl.setAttribute("aria-hidden", "false");
 }
+
+/* -----------------------------------------------------------
+   CLOSE NOTE
+----------------------------------------------------------- */
 
 function closeNoteEditor() {
   overlayEl.classList.remove("is-visible");
@@ -131,7 +137,6 @@ function saveNote() {
   const now = Date.now();
 
   if (currentNoteId) {
-    // Edit existing
     const note = notes.find((n) => n.id === currentNoteId);
     if (!note) return;
 
@@ -139,7 +144,6 @@ function saveNote() {
     note.content = content;
     note.updated = now;
   } else {
-    // New note
     notes.push({
       id: String(now),
       title,
@@ -170,6 +174,23 @@ function deleteNote() {
   closeNoteEditor();
 }
 
+/* -----------------------------------------------------------
+   TOOLBAR COMMANDS
+----------------------------------------------------------- */
+
+function applyCommand(cmd) {
+  if (cmd === "checkbox") {
+    document.execCommand("insertHTML", false, `<input type="checkbox"> `);
+    return;
+  }
+
+  document.execCommand(cmd, false, null);
+}
+
+/* -----------------------------------------------------------
+   INIT
+----------------------------------------------------------- */
+
 export function initNotes() {
   notesListEl = document.getElementById("notes-list");
   searchInput = document.getElementById("note-search-input");
@@ -187,25 +208,33 @@ export function initNotes() {
   loadNotes();
   renderNotesList();
 
-  // Search
+  /* Search */
   searchInput.addEventListener("input", () => {
     renderNotesList(searchInput.value);
   });
 
-  // Add note
+  /* Add note */
   addNoteBtn.addEventListener("click", addNote);
 
-  // Save
+  /* Save */
   saveBtn.addEventListener("click", saveNote);
 
-  // Delete
+  /* Delete */
   deleteBtn.addEventListener("click", deleteNote);
 
-  // Close
+  /* Close */
   closeBtn.addEventListener("click", closeNoteEditor);
 
-  // Close overlay when clicking outside
+  /* Close overlay when clicking outside */
   overlayEl.addEventListener("click", (evt) => {
     if (evt.target === overlayEl) closeNoteEditor();
+  });
+
+  /* Toolbar buttons */
+  document.querySelectorAll(".toolbar-button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const cmd = btn.dataset.command;
+      applyCommand(cmd);
+    });
   });
 }
