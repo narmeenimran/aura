@@ -287,3 +287,94 @@ html, body {
 .bottom-nav-item.is-active {
   color: var(--accent-strong);
 }
+/* -----------------------------------------------------------
+   FIX TIMER RING COLORS
+----------------------------------------------------------- */
+
+.timer-ring-bg {
+  stroke: rgba(0,0,0,0.15) !important;
+}
+
+.timer-ring-progress {
+  stroke: var(--accent) !important;
+}
+
+
+/* -----------------------------------------------------------
+   FIX NOTES EDITOR (iPhone Notes style)
+----------------------------------------------------------- */
+
+.note-editor {
+  width: 100% !important;
+  min-height: 60vh !important;
+  padding: 16px !important;
+  font-size: 1.1rem !important;
+  line-height: 1.6 !important;
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.note-search {
+  width: 100% !important;
+  padding: 14px 16px !important;
+  border-radius: 12px !important;
+  background: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+
+/* -----------------------------------------------------------
+   FIX FLASHCARD FLIP (restore width + 3D)
+----------------------------------------------------------- */
+
+.flashcard {
+  width: 100% !important;
+  max-width: 100% !important;
+  perspective: 1400px !important;
+}
+
+.flashcard-inner {
+  width: 100% !important;
+  height: 100% !important;
+  transform-style: preserve-3d !important;
+}
+
+.flashcard-face {
+  backface-visibility: hidden !important;
+}
+
+
+/* -----------------------------------------------------------
+   MAKE FLASHCARD BUTTONS BIGGER + NICER (iOS style)
+----------------------------------------------------------- */
+
+.button-row button,
+#flashcard-flip,
+#flashcard-prev,
+#flashcard-next,
+#add-card-button,
+#edit-card-button {
+  padding: 14px 18px !important;
+  font-size: 1.05rem !important;
+  border-radius: 12px !important;
+  margin: 6px !important;
+  min-width: 90px !important;
+}
+
+.secondary-button {
+  background: #f0f0ff !important;
+  border: 1px solid #d0d0ff !important;
+  color: #4a3aff !important;
+}
+
+.primary-button {
+  background: #7b5cff !important;
+  color: white !important;
+  border: none !important;
+}
+
+.ghost-button {
+  background: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+}
