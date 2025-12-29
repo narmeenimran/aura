@@ -1,14 +1,17 @@
-// notes.js — notes CRUD, simple search, editor overlay
+// notes.js — clean notes list + editor overlay
 
 import { storage } from "../utils/storage.js";
-import { updateHomeStats } from "./home.js";
 
 const STORAGE_KEY = "aura_notes";
 
 let notes = [];
-let listEl;
+let currentNoteId = null;
+
+// Elements
+let notesListEl;
 let searchInput;
-let addBtn;
+let addNoteBtn;
+
 let overlayEl;
 let titleLabelEl;
 let titleInputEl;
@@ -17,7 +20,9 @@ let saveBtn;
 let deleteBtn;
 let closeBtn;
 
-let editingNoteId = null;
+/* -----------------------------------------------------------
+   LOAD + SAVE
+----------------------------------------------------------- */
 
 function loadNotes() {
   const saved = storage.get(STORAGE_KEY);
@@ -25,184 +30,182 @@ function loadNotes() {
     notes = saved;
   } else {
     notes = [];
+    saveNotes();
   }
 }
 
 function saveNotes() {
   storage.set(STORAGE_KEY, notes);
-  updateHomeStats();
 }
 
-function getPreviewText(html) {
-  const tmp = document.createElement("div");
-  tmp.innerHTML = html || "";
-  const text = (tmp.textContent || "").trim();
-  return text.length > 80 ? text.slice(0, 77) + "..." : text;
-}
+/* -----------------------------------------------------------
+   RENDER NOTES LIST
+----------------------------------------------------------- */
 
-function renderNotes() {
-  if (!listEl) return;
-  const query = (searchInput?.value || "").toLowerCase().trim();
-  listEl.innerHTML = "";
+function renderNotesList(filter = "") {
+  if (!notesListEl) return;
 
-  if (!notes.length) {
+  notesListEl.innerHTML = "";
+
+  const filtered = notes.filter((note) =>
+    note.title.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  if (!filtered.length) {
     const empty = document.createElement("p");
-    empty.textContent = "No notes yet. Capture your first thought.";
+    empty.textContent = "No notes yet.";
     empty.className = "overlay-meta";
-    listEl.appendChild(empty);
+    notesListEl.appendChild(empty);
     return;
   }
 
-  notes
-    .filter((note) => {
-      if (!query) return true;
-      const haystack = (note.title + " " + getPreviewText(note.content)).toLowerCase();
-      return haystack.includes(query);
-    })
-    .sort((a, b) => b.updatedAt - a.updatedAt)
-    .forEach((note) => {
-      const item = document.createElement("div");
-      item.className = "note-list-item";
-      item.dataset.noteId = note.id;
+  filtered.forEach((note) => {
+    const card = document.createElement("button");
+    card.className = "deck-card"; // same style as decks
+    card.dataset.noteId = note.id;
 
-      const title = document.createElement("div");
-      title.className = "note-list-title";
-      title.textContent = note.title || "Untitled";
+    card.innerHTML = `
+      <div style="font-weight:600; margin-bottom:4px;">${note.title}</div>
+      <div style="font-size:0.85rem; color:var(--text-muted);">
+        ${new Date(note.updated).toLocaleDateString()}
+      </div>
+    `;
 
-      const preview = document.createElement("div");
-      preview.className = "note-list-preview";
-      preview.textContent = getPreviewText(note.content);
-
-      item.appendChild(title);
-      item.appendChild(preview);
-
-      item.addEventListener("click", () => openEditor(note.id));
-      listEl.appendChild(item);
-    });
+    card.addEventListener("click", () => openNote(note.id));
+    notesListEl.appendChild(card);
+  });
 }
 
-function openOverlay() {
-  if (!overlayEl) return;
+/* -----------------------------------------------------------
+   OPEN NOTE EDITOR
+----------------------------------------------------------- */
+
+function openNote(id) {
+  const note = notes.find((n) => n.id === id);
+  if (!note) return;
+
+  currentNoteId = id;
+
+  titleLabelEl.textContent = "Edit note";
+  titleInputEl.value = note.title;
+  contentEl.innerHTML = note.content;
+
   overlayEl.classList.add("is-visible");
   overlayEl.setAttribute("aria-hidden", "false");
 }
 
-function closeOverlay() {
-  if (!overlayEl) return;
+function closeNoteEditor() {
   overlayEl.classList.remove("is-visible");
   overlayEl.setAttribute("aria-hidden", "true");
-  editingNoteId = null;
+
+  currentNoteId = null;
+  titleInputEl.value = "";
+  contentEl.innerHTML = "";
 }
 
-function newNote() {
-  editingNoteId = null;
-  if (titleLabelEl) titleLabelEl.textContent = "New note";
-  if (titleInputEl) titleInputEl.value = "";
-  if (contentEl) contentEl.innerHTML = "";
-  if (deleteBtn) deleteBtn.style.display = "none";
-  openOverlay();
+/* -----------------------------------------------------------
+   ADD NOTE
+----------------------------------------------------------- */
+
+function addNote() {
+  currentNoteId = null;
+
+  titleLabelEl.textContent = "New note";
+  titleInputEl.value = "";
+  contentEl.innerHTML = "";
+
+  overlayEl.classList.add("is-visible");
+  overlayEl.setAttribute("aria-hidden", "false");
 }
 
-function openEditor(noteId) {
-  const note = notes.find((n) => n.id === noteId);
-  editingNoteId = note ? note.id : null;
-
-  if (titleLabelEl) {
-    titleLabelEl.textContent = note ? "Edit note" : "New note";
-  }
-  if (titleInputEl) {
-    titleInputEl.value = note?.title || "";
-  }
-  if (contentEl) {
-    contentEl.innerHTML = note?.content || "";
-  }
-  if (deleteBtn) {
-    deleteBtn.style.display = note ? "inline-block" : "none";
-  }
-
-  openOverlay();
-}
+/* -----------------------------------------------------------
+   SAVE NOTE
+----------------------------------------------------------- */
 
 function saveNote() {
-  const title = titleInputEl?.value.trim() || "";
-  const content = contentEl?.innerHTML || "";
+  const title = titleInputEl.value.trim();
+  const content = contentEl.innerHTML.trim();
+
+  if (!title) return;
+
   const now = Date.now();
 
-  if (editingNoteId) {
-    const note = notes.find((n) => n.id === editingNoteId);
+  if (currentNoteId) {
+    // Edit existing
+    const note = notes.find((n) => n.id === currentNoteId);
     if (!note) return;
-    note.title = title || "Untitled";
+
+    note.title = title;
     note.content = content;
-    note.updatedAt = now;
+    note.updated = now;
   } else {
-    const id = String(now);
+    // New note
     notes.push({
-      id,
-      title: title || "Untitled",
+      id: String(now),
+      title,
       content,
-      createdAt: now,
-      updatedAt: now,
+      updated: now
     });
   }
 
   saveNotes();
-  renderNotes();
-  closeOverlay();
+  renderNotesList(searchInput.value);
+  closeNoteEditor();
 }
+
+/* -----------------------------------------------------------
+   DELETE NOTE
+----------------------------------------------------------- */
 
 function deleteNote() {
-  if (!editingNoteId) return;
+  if (!currentNoteId) return;
+
   const confirmDelete = window.confirm("Delete this note?");
   if (!confirmDelete) return;
-  notes = notes.filter((n) => n.id !== editingNoteId);
-  saveNotes();
-  renderNotes();
-  closeOverlay();
-}
 
-function applyFormatting(command) {
-  document.execCommand(command, false, null);
+  notes = notes.filter((n) => n.id !== currentNoteId);
+
+  saveNotes();
+  renderNotesList(searchInput.value);
+  closeNoteEditor();
 }
 
 export function initNotes() {
-  listEl = document.getElementById("notes-list");
+  notesListEl = document.getElementById("notes-list");
   searchInput = document.getElementById("note-search-input");
-  addBtn = document.getElementById("add-note-button");
+  addNoteBtn = document.getElementById("add-note-button");
+
   overlayEl = document.getElementById("note-editor-overlay");
   titleLabelEl = document.getElementById("note-editor-title-label");
   titleInputEl = document.getElementById("note-editor-title-input");
   contentEl = document.getElementById("note-editor-content");
+
   saveBtn = document.getElementById("save-note-button");
   deleteBtn = document.getElementById("delete-note-button");
   closeBtn = document.getElementById("close-note-editor");
 
   loadNotes();
-  renderNotes();
+  renderNotesList();
 
-  if (addBtn) addBtn.addEventListener("click", newNote);
+  // Search
+  searchInput.addEventListener("input", () => {
+    renderNotesList(searchInput.value);
+  });
 
-  if (searchInput) {
-    searchInput.addEventListener("input", renderNotes);
-  }
+  // Add note
+  addNoteBtn.addEventListener("click", addNote);
 
-  if (saveBtn) saveBtn.addEventListener("click", saveNote);
-  if (deleteBtn) deleteBtn.addEventListener("click", deleteNote);
-  if (closeBtn) closeBtn.addEventListener("click", closeOverlay);
+  // Save
+  saveBtn.addEventListener("click", saveNote);
 
-  if (overlayEl) {
-    overlayEl.addEventListener("click", (evt) => {
-      if (evt.target === overlayEl) {
-        closeOverlay();
-      }
-    });
-  }
+  // Delete
+  deleteBtn.addEventListener("click", deleteNote);
 
-  const toolbarButtons = Array.from(
-    document.querySelectorAll(".note-editor-toolbar .toolbar-button")
-  );
-  toolbarButtons.forEach((btn) => {
-    const cmd = btn.dataset.command;
-    if (!cmd) return;
-    btn.addEventListener("click", () => applyFormatting(cmd));
+  // Close
+  closeBtn.addEventListener("click", closeNoteEditor);
+
+  // Close overlay when clicking outside
+  overlayEl.addEventListener("click", (evt) => {
+    if (evt.target === overlayEl) closeNoteEditor();
   });
 }

@@ -2,8 +2,9 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>aura</title>
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Aura</title>
 
   <link rel="stylesheet" href="/assets/css/style.css" />
   <link rel="manifest" href="/manifest.webmanifest" />
@@ -16,10 +17,29 @@
 
 <body>
 
-  <!-- App Root -->
-  <div class="app-root">
+  <!-- ONBOARDING: ASK NAME -->
+  <div id="onboarding-screen" class="onboarding-screen">
+    <div class="onboarding-card">
+      <h1 class="onboarding-title">welcome</h1>
+      <p class="onboarding-sub">what’s your name?</p>
 
-    <!-- Floating Sidebar (Desktop Only) -->
+      <input
+        id="onboarding-name-input"
+        class="text-input"
+        type="text"
+        placeholder="enter your name"
+      />
+
+      <button id="onboarding-submit" class="primary-button full-width">
+        continue
+      </button>
+    </div>
+  </div>
+
+  <!-- APP ROOT -->
+  <div id="app-root" class="app-root" style="display:none;">
+
+    <!-- FLOATING SIDEBAR (DESKTOP ONLY) -->
     <aside class="aura-sidebar">
       <div class="sidebar-header">Aura</div>
       <nav class="sidebar-nav">
@@ -31,46 +51,20 @@
       </nav>
     </aside>
 
-    <!-- App Shell -->
+    <!-- APP SHELL -->
     <div class="aura-app-shell">
 
-      <!-- Topbar -->
+      <!-- TOPBAR -->
       <header class="aura-topbar">
         <h2 id="topbar-title" class="topbar-title">Home</h2>
       </header>
 
-      <!-- Screens -->
+      <!-- SCREENS -->
       <main class="aura-screens">
 
-        <!-- HOME (H2 Dashboard) -->
+        <!-- HOME (EMPTY + GREETING) -->
         <section class="aura-screen is-active" data-screen="home">
-          <h3 class="screen-title">Welcome back</h3>
-
-          <div class="glass-card">
-            <div class="stats-grid">
-              <div class="stat-item">
-                <p class="stat-label">Focus today</p>
-                <p id="home-focus-minutes" class="stat-value">0 min</p>
-              </div>
-              <div class="stat-item">
-                <p class="stat-label">Flashcards</p>
-                <p id="home-deck-count" class="stat-value">0</p>
-              </div>
-              <div class="stat-item">
-                <p class="stat-label">Notes</p>
-                <p id="home-note-count" class="stat-value">0</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="glass-card">
-            <h4>Quick actions</h4>
-            <div class="button-row wrap">
-              <button class="primary-button" data-screen-target="timer">Start focus session</button>
-              <button class="secondary-button" data-screen-target="flashcards">Review flashcards</button>
-              <button class="secondary-button" data-screen-target="notes">Add note</button>
-            </div>
-          </div>
+          <h1 id="home-greeting" class="home-greeting">hello,</h1>
         </section>
 
         <!-- TIMER -->
@@ -143,7 +137,7 @@
 
       </main>
 
-      <!-- Bottom Nav (Mobile) -->
+      <!-- BOTTOM NAV (MOBILE) -->
       <nav class="aura-bottom-nav">
         <button class="bottom-nav-item is-active" data-screen-target="home">Home</button>
         <button class="bottom-nav-item" data-screen-target="timer">Timer</button>
