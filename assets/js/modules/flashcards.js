@@ -1,4 +1,4 @@
-// flashcards.js — decks + cards with CRUD + overlay viewer
+// flashcards.js — pastel flashcards + deck CRUD + viewer overlay
 
 import { storage } from "../utils/storage.js";
 import { updateHomeStats } from "./home.js";
@@ -10,6 +10,7 @@ let currentDeckId = null;
 let currentCardIndex = 0;
 let showingBack = false;
 
+// Elements
 let deckListEl;
 let overlayEl;
 let titleEl;
@@ -27,34 +28,51 @@ let deleteDeckBtn;
 let closeBtn;
 let addDeckBtn;
 
+// Default starter decks
 function defaultDecks() {
   return [
     {
       id: "1",
       name: "Neuroscience basics",
       cards: [
-        { front: "What is a neuron?", back: "A specialized cell that transmits nerve impulses." },
-        { front: "What is synaptic plasticity?", back: "The ability of synapses to strengthen or weaken over time." },
-      ],
+        {
+          front: "What is a neuron?",
+          back: "A specialized cell that transmits nerve impulses."
+        },
+        {
+          front: "What is synaptic plasticity?",
+          back: "The ability of synapses to strengthen or weaken over time."
+        }
+      ]
     },
     {
       id: "2",
       name: "Cognitive biases",
       cards: [
-        { front: "Confirmation bias", back: "Tendency to search for or interpret information that confirms our beliefs." },
-        { front: "Anchoring", back: "Relying too heavily on the first piece of information seen." },
-      ],
+        {
+          front: "Confirmation bias",
+          back: "Seeking information that confirms existing beliefs."
+        },
+        {
+          front: "Anchoring",
+          back: "Relying too heavily on the first piece of information seen."
+        }
+      ]
     },
     {
       id: "3",
       name: "Language learning",
       cards: [
-        { front: "Best way to retain vocabulary?", back: "Spaced repetition and active recall." },
-      ],
-    },
+        {
+          front: "Best way to retain vocabulary?",
+          back: "Spaced repetition and active recall."
+        }
+      ]
+    }
   ];
 }
 
+// Load decks
 function loadDecks() {
   const saved = storage.get(STORAGE_KEY);
   if (Array.isArray(saved) && saved.length) {
@@ -65,11 +83,13 @@ function loadDecks() {
   }
 }
 
+// Save decks
 function saveDecks() {
   storage.set(STORAGE_KEY, decks);
   updateHomeStats();
 }
 
+// Render deck list (Decks screen)
 function renderDeckList() {
   if (!deckListEl) return;
   deckListEl.innerHTML = "";
@@ -92,14 +112,17 @@ function renderDeckList() {
   });
 }
 
+// Find deck
 function findDeckById(id) {
   return decks.find((d) => d.id === id) || null;
 }
 
+// Current deck
 function getCurrentDeck() {
   return currentDeckId ? findDeckById(currentDeckId) : null;
 }
 
+// Update flashcard view
 function updateFlashcardView() {
   const deck = getCurrentDeck();
   if (!deck || !frontEl || !backEl || !progressEl) return;
@@ -131,12 +154,14 @@ function updateFlashcardView() {
   progressEl.textContent = `${currentCardIndex + 1} / ${deck.cards.length}`;
 }
 
+// Open overlay
 function openOverlay() {
   if (!overlayEl) return;
   overlayEl.classList.add("is-visible");
   overlayEl.setAttribute("aria-hidden", "false");
 }
 
+// Close overlay
 function closeOverlay() {
   if (!overlayEl) return;
   overlayEl.classList.remove("is-visible");
@@ -146,6 +171,7 @@ function closeOverlay() {
   showingBack = false;
 }
 
+// Open deck
 function openDeck(deckId) {
   const deck = findDeckById(deckId);
   if (!deck || !titleEl) return;
@@ -153,66 +179,84 @@ function openDeck(deckId) {
   currentDeckId = deckId;
   currentCardIndex = 0;
   showingBack = false;
+
   titleEl.textContent = deck.name;
   updateFlashcardView();
   openOverlay();
 }
 
+// Flip card
 function flipCard() {
   showingBack = !showingBack;
   updateFlashcardView();
 }
 
+// Prev card
 function prevCard() {
   const deck = getCurrentDeck();
   if (!deck || !deck.cards.length) return;
-  currentCardIndex = (currentCardIndex - 1 + deck.cards.length) % deck.cards.length;
+
+  currentCardIndex =
+    (currentCardIndex - 1 + deck.cards.length) % deck.cards.length;
+
   showingBack = false;
   updateFlashcardView();
 }
 
+// Next card
 function nextCard() {
   const deck = getCurrentDeck();
   if (!deck || !deck.cards.length) return;
+
   currentCardIndex = (currentCardIndex + 1) % deck.cards.length;
+
   showingBack = false;
   updateFlashcardView();
 }
 
+// Add card
 function addCard() {
   const deck = getCurrentDeck();
   if (!deck) return;
 
   const front = window.prompt("Front of card:");
   if (!front) return;
+
   const back = window.prompt("Back of card:");
   if (back === null) return;
 
   deck.cards.push({ front, back });
   saveDecks();
+
   currentCardIndex = deck.cards.length - 1;
   showingBack = false;
+
   updateFlashcardView();
   renderDeckList();
 }
 
+// Edit card
 function editCard() {
   const deck = getCurrentDeck();
   if (!deck || !deck.cards.length) return;
+
   const card = deck.cards[currentCardIndex];
 
   const newFront = window.prompt("Edit front:", card.front);
   if (newFront === null) return;
+
   const newBack = window.prompt("Edit back:", card.back);
   if (newBack === null) return;
 
   card.front = newFront;
   card.back = newBack;
+
   saveDecks();
   updateFlashcardView();
   renderDeckList();
 }
 
+// Delete card
 function deleteCard() {
   const deck = getCurrentDeck();
   if (!deck || !deck.cards.length) return;
@@ -221,6 +265,7 @@ function deleteCard() {
   if (!confirmDelete) return;
 
   deck.cards.splice(currentCardIndex, 1);
+
   if (currentCardIndex >= deck.cards.length) {
     currentCardIndex = deck.cards.length - 1;
   }
@@ -231,6 +276,7 @@ function deleteCard() {
   renderDeckList();
 }
 
+// Delete deck
 function deleteDeck() {
   const deck = getCurrentDeck();
   if (!deck) return;
@@ -242,10 +288,12 @@ function deleteDeck() {
 
   decks = decks.filter((d) => d.id !== deck.id);
   saveDecks();
+
   renderDeckList();
   closeOverlay();
 }
 
+// Rename deck
 function renameDeck() {
   const deck = getCurrentDeck();
   if (!deck || !titleEl) return;
@@ -255,20 +303,26 @@ function renameDeck() {
 
   deck.name = newName;
   saveDecks();
+
   titleEl.textContent = deck.name;
   renderDeckList();
 }
 
+// Add deck
 function addDeck() {
   const name = window.prompt("Deck name:");
   if (!name) return;
+
   const id = String(Date.now());
   const deck = { id, name, cards: [] };
+
   decks.push(deck);
   saveDecks();
+
   renderDeckList();
 }
 
+// Init
 export function initFlashcards() {
   deckListEl = document.getElementById("deck-list");
   overlayEl = document.getElementById("deck-viewer-overlay");
@@ -276,6 +330,7 @@ export function initFlashcards() {
   frontEl = document.getElementById("flashcard-front");
   backEl = document.getElementById("flashcard-back");
   progressEl = document.getElementById("flashcard-progress");
+
   flipBtn = document.getElementById("flashcard-flip");
   prevBtn = document.getElementById("flashcard-prev");
   nextBtn = document.getElementById("flashcard-next");

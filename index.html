@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aura</title>
 
-  <!-- PWA manifest -->
+  <!-- Manifest -->
   <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#f5f3ff" />
+  <meta name="theme-color" content="#faf9ff" />
 
-  <!-- Favicon / icons -->
+  <!-- Icons -->
   <link rel="icon" href="/assets/img/icon-192.png" sizes="192x192" />
   <link rel="icon" href="/assets/img/icon-512.png" sizes="512x512" />
 
@@ -22,12 +22,13 @@
     rel="stylesheet"
   />
 </head>
+
 <body>
 
-  <!-- Splash screen -->
+  <!-- Splash -->
   <div id="aura-splash" class="aura-splash"></div>
 
-  <!-- Intro screen -->
+  <!-- Intro -->
   <div id="intro-screen" class="aura-intro" aria-hidden="true">
     <div class="aura-intro-content">
       <h1 class="intro-title">Aura</h1>
@@ -35,9 +36,10 @@
     </div>
   </div>
 
-  <!-- App layout root -->
+  <!-- App Root -->
   <div id="app-root" class="app-root" aria-hidden="true">
-    <!-- Desktop sidebar (text only) -->
+
+    <!-- Sidebar (Desktop) -->
     <aside class="aura-sidebar">
       <div class="sidebar-header">
         <span class="sidebar-app-name">Aura</span>
@@ -51,33 +53,48 @@
       </nav>
     </aside>
 
-    <!-- App shell -->
+    <!-- App Shell -->
     <div id="app-shell" class="aura-app-shell">
-      <!-- Top bar -->
+
+      <!-- Topbar -->
       <header class="aura-topbar">
         <h2 id="topbar-title" class="topbar-title">Home</h2>
       </header>
 
-      <!-- Screens container -->
+      <!-- Screens -->
       <main class="aura-screens">
-        <!-- Home screen -->
+
+        <!-- HOME -->
         <section class="aura-screen is-active" data-screen="home">
           <h3 class="screen-title">Today</h3>
-          <div class="screen-section-grid">
-            <div class="screen-section-card stat-card">
-              <p class="stat-label">Focus time today</p>
-              <p id="home-focus-minutes" class="stat-value">0 min</p>
-            </div>
-            <div class="screen-section-card stat-card">
-              <p class="stat-label">Decks</p>
-              <p id="home-deck-count" class="stat-value">0</p>
-            </div>
-            <div class="screen-section-card stat-card">
-              <p class="stat-label">Notes</p>
-              <p id="home-note-count" class="stat-value">0</p>
+
+          <!-- Stats -->
+          <div class="screen-section-card">
+            <div class="screen-section-grid">
+              <div class="stat-card">
+                <p class="stat-label">Focus time today</p>
+                <p id="home-focus-minutes" class="stat-value">0 min</p>
+              </div>
+              <div class="stat-card">
+                <p class="stat-label">Decks</p>
+                <p id="home-deck-count" class="stat-value">0</p>
+              </div>
+              <div class="stat-card">
+                <p class="stat-label">Notes</p>
+                <p id="home-note-count" class="stat-value">0</p>
+              </div>
             </div>
           </div>
 
+          <!-- Featured Decks -->
+          <div class="screen-section-card">
+            <h4>Your decks</h4>
+            <div id="home-deck-preview" class="home-deck-preview">
+              <!-- Filled dynamically by home.js -->
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
           <div class="screen-section-card">
             <h4>Quick actions</h4>
             <div class="button-row wrap">
@@ -94,10 +111,12 @@
           </div>
         </section>
 
-        <!-- Timer screen -->
+        <!-- TIMER -->
         <section class="aura-screen" data-screen="timer">
           <h3 class="screen-title">Pomodoro timer</h3>
+
           <div class="screen-section-card">
+
             <div class="timer-mode-tabs">
               <button class="timer-mode-tab is-active" data-mode="focus">Focus</button>
               <button class="timer-mode-tab" data-mode="shortBreak">Short break</button>
@@ -118,20 +137,23 @@
           </div>
         </section>
 
-        <!-- Decks screen -->
+        <!-- DECKS -->
         <section class="aura-screen" data-screen="decks">
           <h3 class="screen-title">Flashcard decks</h3>
+
           <div class="screen-section-card">
             <div class="button-row">
               <button id="add-deck-button" class="primary-button">New deck</button>
             </div>
+
             <div id="deck-list" class="deck-list"></div>
           </div>
         </section>
 
-        <!-- Notes screen -->
+        <!-- NOTES -->
         <section class="aura-screen" data-screen="notes">
           <h3 class="screen-title">Notes</h3>
+
           <div class="screen-section-card">
             <input
               type="text"
@@ -139,16 +161,19 @@
               class="text-input"
               placeholder="Search notes..."
             />
+
             <div id="notes-list" class="notes-list"></div>
+
             <button id="add-note-button" class="primary-button full-width">
               Add note
             </button>
           </div>
         </section>
 
-        <!-- Settings screen -->
+        <!-- SETTINGS -->
         <section class="aura-screen" data-screen="settings">
           <h3 class="screen-title">Settings</h3>
+
           <div class="screen-section-card">
             <p class="settings-label">Appearance</p>
             <button id="settings-theme-toggle" class="secondary-button full-width">
@@ -156,9 +181,10 @@
             </button>
           </div>
         </section>
+
       </main>
 
-      <!-- Bottom nav (mobile only) -->
+      <!-- Bottom Nav (Mobile) -->
       <nav class="aura-bottom-nav">
         <button class="bottom-nav-item is-active" data-screen-target="home">Home</button>
         <button class="bottom-nav-item" data-screen-target="timer">Timer</button>
@@ -166,12 +192,14 @@
         <button class="bottom-nav-item" data-screen-target="notes">Notes</button>
         <button class="bottom-nav-item" data-screen-target="settings">Settings</button>
       </nav>
+
     </div>
   </div>
 
-  <!-- Deck viewer overlay -->
+  <!-- FLASHCARD OVERLAY -->
   <div id="deck-viewer-overlay" class="aura-overlay" aria-hidden="true">
     <div class="overlay-content">
+
       <div class="overlay-header-row">
         <h2 id="deck-viewer-title">Deck</h2>
         <button id="rename-deck-button" class="ghost-button">Rename deck</button>
@@ -194,29 +222,34 @@
         <button id="delete-deck-button" class="ghost-button">Delete deck</button>
         <button id="close-deck-viewer" class="ghost-button full-width">Close</button>
       </div>
+
     </div>
   </div>
 
-  <!-- Note editor overlay -->
+  <!-- NOTE EDITOR OVERLAY -->
   <div id="note-editor-overlay" class="aura-overlay" aria-hidden="true">
     <div class="overlay-content">
       <h2 id="note-editor-title-label">New note</h2>
+
       <input
         type="text"
         id="note-editor-title-input"
         class="text-input"
         placeholder="Note title"
       />
+
       <div class="note-editor-toolbar">
         <button data-command="bold" class="toolbar-button">B</button>
         <button data-command="italic" class="toolbar-button">I</button>
         <button data-command="underline" class="toolbar-button">U</button>
       </div>
+
       <div
         id="note-editor-content"
         class="note-editor-content"
         contenteditable="true"
       ></div>
+
       <div class="button-row">
         <button id="save-note-button" class="primary-button">Save</button>
         <button id="delete-note-button" class="ghost-button">Delete</button>
@@ -225,10 +258,11 @@
     </div>
   </div>
 
-  <!-- Pomodoro custom overlay -->
+  <!-- CUSTOM TIMER OVERLAY -->
   <div id="pomodoro-custom-overlay" class="aura-overlay" aria-hidden="true">
     <div class="overlay-content">
       <h2>Custom duration</h2>
+
       <input
         type="number"
         id="pomodoro-custom-mins"
@@ -237,6 +271,7 @@
         min="1"
         max="180"
       />
+
       <div class="button-row">
         <button id="save-pomodoro-custom" class="primary-button">Save</button>
         <button id="close-pomodoro-custom" class="ghost-button">Cancel</button>
@@ -246,10 +281,12 @@
 
   <!-- Scripts -->
   <script type="module" src="/assets/js/app.js"></script>
+
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/service-worker.js").catch(() => {});
     }
   </script>
+
 </body>
 </html>
