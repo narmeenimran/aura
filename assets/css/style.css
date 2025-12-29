@@ -123,12 +123,6 @@ body {
   }
 }
 
-.topbar-title {
-  margin: 0;
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-
 /* -----------------------------------------------------------
    APP SHELL LAYOUT
 ----------------------------------------------------------- */
@@ -166,11 +160,6 @@ body {
     padding-top: var(--topbar-height);
     height: calc(100dvh - var(--topbar-height));
   }
-}
-
-.aura-screen > *:first-child {
-  margin-top: 0;
-  padding-top: 6px;
 }
 
 /* -----------------------------------------------------------
@@ -267,8 +256,13 @@ body {
   z-index: 999;
 }
 
-.deck-viewer-panel.is-visible {
-  right: 0;
+/* FIX PANEL WIDTH ON MOBILE */
+@media (max-width: 880px) {
+  .deck-viewer-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    right: -100% !important;
+  }
 }
 
 /* Flashcard */
@@ -277,6 +271,13 @@ body {
   height: 260px;
   perspective: 1400px;
   margin-bottom: 12px;
+}
+
+/* FIX FLASHCARD WIDTH ON MOBILE */
+@media (max-width: 880px) {
+  .flashcard {
+    width: 100% !important;
+  }
 }
 
 .flashcard-inner {
@@ -310,50 +311,9 @@ body {
    NOTES
 ----------------------------------------------------------- */
 
-.note-search {
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  backdrop-filter: blur(var(--blur-soft));
-}
-
+.note-search,
 .note-editor {
   width: 100%;
-  min-height: 180px;
-  padding: 14px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  backdrop-filter: blur(var(--blur-soft));
-}
-
-/* NOTES TOOLBAR */
-.note-toolbar {
-  display: flex;
-  gap: 8px;
-  margin: 12px 0;
-  padding: 8px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  backdrop-filter: blur(var(--blur-soft));
-}
-
-.note-toolbar button {
-  background: transparent;
-  border: none;
-  padding: 6px 10px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  color: var(--text);
-  font-size: 0.9rem;
-  transition: background var(--transition-fast);
-}
-
-.note-toolbar button:hover {
-  background: var(--accent-soft);
 }
 
 /* -----------------------------------------------------------
@@ -365,32 +325,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 18px;
-}
-
-.timer-ring {
-  transform: rotate(-90deg);
-}
-
-.timer-ring-bg {
-  fill: none;
-  stroke: rgba(0,0,0,0.1);
-  stroke-width: 12;
-}
-
-.timer-ring-progress {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 12;
-  stroke-linecap: round;
-  stroke-dasharray: 628;
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 1s linear;
-}
-
-.timer-display {
-  font-size: 2.4rem;
-  font-weight: 600;
-  margin-top: -20px;
+  width: 100%;
 }
 
 /* -----------------------------------------------------------
@@ -431,21 +366,6 @@ body {
 
 .aura-overlay.is-visible .overlay-content {
   transform: scale(1);
-}
-
-/* -----------------------------------------------------------
-   PROFILE MODAL
------------------------------------------------------------ */
-
-.profile-preview {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background-size: cover;
-  background-position: center;
-  background: linear-gradient(135deg, #b69fff, #ffb4d2, #96e6c8, #a0beff);
-  border: 1px solid var(--border);
-  margin-bottom: 12px;
 }
 
 /* -----------------------------------------------------------
