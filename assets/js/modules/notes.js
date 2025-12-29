@@ -1,4 +1,4 @@
-// notes.js — advanced editor + toolbar + full-width search bar + auto-save
+// notes.js — clean notes system with overlay editor + toolbar
 
 import { storage } from "../utils/storage.js";
 

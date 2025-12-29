@@ -1,5 +1,3 @@
-// pomodoro.js — pomodoro timer with multiple modes and custom durations
-
 import { storage } from "../utils/storage.js";
 import { updateHomeStats } from "./home.js";
 

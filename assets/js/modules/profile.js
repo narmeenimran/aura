@@ -1,4 +1,4 @@
-// profile.js — profile picture + age + name (PFP3 pastel default)
+// profile.js — profile picture + age + name (darker pastel circle)
 
 import { updateGreeting } from "../app.js";
 
@@ -44,15 +44,13 @@ function loadProfile() {
 ----------------------------------------------------------- */
 
 function saveProfile() {
-  // Save picture (already saved on upload)
-
   // Save age
   const age = ageInput.value.trim();
   if (age) {
     localStorage.setItem(PROFILE_AGE_KEY, age);
   }
 
-  // Save name (optional)
+  // Ask for name change
   const newName = prompt("Enter your name (leave blank to keep current):");
   if (newName && newName.trim()) {
     localStorage.setItem(PROFILE_NAME_KEY, newName.trim());

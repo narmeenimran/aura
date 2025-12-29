@@ -1,22 +1,22 @@
 /* -----------------------------------------------------------
-   AURA — FINAL UPDATED CSS
-   Profile Circle • Standard Flashcards • Full Search Bar
+   AURA — FINAL CSS (B2‑B Glass Grid + Slide‑In Viewer)
 ----------------------------------------------------------- */
 
 :root {
-  --bg: #faf9ff;
+  --bg: #f7f6fb;
   --text: #1b1633;
   --text-muted: #6a628f;
 
   --surface: rgba(255, 255, 255, 0.35);
+  --surface-strong: rgba(255, 255, 255, 0.55);
   --border: rgba(255, 255, 255, 0.25);
 
   --blur-soft: 18px;
 
-  --pastel-lav: rgba(232, 217, 255, 0.35);
-  --pastel-peach: rgba(255, 220, 229, 0.35);
-  --pastel-mint: rgba(217, 255, 232, 0.35);
-  --pastel-blue: rgba(220, 234, 255, 0.35);
+  --pastel-dark-1: rgba(180, 150, 255, 0.45);
+  --pastel-dark-2: rgba(255, 180, 210, 0.45);
+  --pastel-dark-3: rgba(150, 230, 200, 0.45);
+  --pastel-dark-4: rgba(160, 190, 255, 0.45);
 
   --accent: #7b5cff;
   --accent-soft: rgba(123, 92, 255, 0.15);
@@ -42,6 +42,7 @@ html[data-theme="dark"] {
   --text-muted: rgba(255,255,255,0.6);
 
   --surface: rgba(20, 20, 30, 0.45);
+  --surface-strong: rgba(20, 20, 30, 0.65);
   --border: rgba(255, 255, 255, 0.08);
 
   --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
@@ -78,7 +79,7 @@ input, textarea {
 .aura-topbar {
   padding: 20px 24px;
   border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  background: var(--surface-strong);
   backdrop-filter: blur(var(--blur-soft));
   display: flex;
   align-items: center;
@@ -91,10 +92,10 @@ input, textarea {
   border-radius: 50%;
   background: linear-gradient(
     135deg,
-    var(--pastel-lav),
-    var(--pastel-peach),
-    var(--pastel-mint),
-    var(--pastel-blue)
+    var(--pastel-dark-1),
+    var(--pastel-dark-2),
+    var(--pastel-dark-3),
+    var(--pastel-dark-4)
   );
   border: 1px solid var(--border);
   cursor: pointer;
@@ -102,47 +103,14 @@ input, textarea {
 }
 
 /* -----------------------------------------------------------
-   PROFILE OVERLAY
------------------------------------------------------------ */
-
-.profile-picture-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.profile-preview {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background: linear-gradient(
-    135deg,
-    var(--pastel-lav),
-    var(--pastel-peach),
-    var(--pastel-mint),
-    var(--pastel-blue)
-  );
-  border: 1px solid var(--border);
-  background-size: cover;
-  background-position: center;
-}
-
-/* -----------------------------------------------------------
    HOME — MINIMAL
 ----------------------------------------------------------- */
 
 .home-greeting {
-  margin: 0;
+  margin: 0 0 20px;
   font-size: 2.4rem;
   font-weight: 600;
   text-transform: lowercase;
-}
-
-.todo-title {
-  margin: 0 0 10px;
-  font-size: 1.1rem;
-  font-weight: 600;
 }
 
 .todo-list {
@@ -172,29 +140,97 @@ input, textarea {
 }
 
 /* -----------------------------------------------------------
-   NOTES — FULL WIDTH SEARCH BAR
+   FLASHCARDS — GRID (B2‑B Glassmorphism)
 ----------------------------------------------------------- */
 
-.note-search {
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
+.deck-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 880px) {
+  .deck-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.deck-card {
+  padding: 18px;
+  border-radius: var(--radius-lg);
   background: var(--surface);
   backdrop-filter: blur(var(--blur-soft));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  text-align: left;
+  transition: transform var(--transition-fast);
+}
+
+.deck-card:hover {
+  transform: translateY(-3px);
+}
+
+.deck-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.deck-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.deck-action-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
   font-size: 1rem;
 }
 
 /* -----------------------------------------------------------
-   FLASHCARDS — STANDARD SIZE
+   FLASHCARDS — SLIDE-IN VIEWER (Option 3)
+----------------------------------------------------------- */
+
+.deck-viewer-panel {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 92%;
+  max-width: 420px;
+  height: 100vh;
+  background: var(--surface-strong);
+  backdrop-filter: blur(var(--blur-soft));
+  border-left: 1px solid var(--border);
+  box-shadow: -10px 0 40px rgba(0,0,0,0.15);
+  padding: 24px;
+  transition: right var(--transition-med);
+  z-index: 999;
+}
+
+.deck-viewer-panel.is-visible {
+  right: 0;
+}
+
+.deck-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+/* -----------------------------------------------------------
+   FLASHCARD VIEWER
 ----------------------------------------------------------- */
 
 .flashcard {
-  width: 90%;
-  max-width: 520px;
-  height: 280px;
-  margin: 0 auto;
+  width: 100%;
+  height: 260px;
   perspective: 1400px;
+  margin-bottom: 12px;
 }
 
 .flashcard-inner {
@@ -231,6 +267,24 @@ input, textarea {
 .flashcard-back {
   transform: rotateY(180deg);
 }
+
+/* -----------------------------------------------------------
+   NOTES
+----------------------------------------------------------- */
+
+.note-search {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-soft));
+  font-size: 1rem;
+}
+
+/* -----------------------------------------------------------
+   BUTTONS + INPUTS
+----------------------------------------------------------- */
 
 .text-input {
   width: 100%;
@@ -271,6 +325,10 @@ input, textarea {
   width: 100%;
 }
 
+/* -----------------------------------------------------------
+   PROFILE OVERLAY
+----------------------------------------------------------- */
+
 .aura-overlay {
   position: fixed;
   inset: 0;
@@ -290,12 +348,58 @@ input, textarea {
 .overlay-content {
   width: 100%;
   max-width: 420px;
-  background: var(--surface);
+  background: var(--surface-strong);
   backdrop-filter: blur(var(--blur-soft));
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   padding: 28px;
   box-shadow: var(--shadow-soft);
+}
+
+.profile-preview {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--pastel-dark-1),
+    var(--pastel-dark-2),
+    var(--pastel-dark-3),
+    var(--pastel-dark-4)
+  );
+  border: 1px solid var(--border);
+  background-size: cover;
+  background-position: center;
+}
+
+/* -----------------------------------------------------------
+   BOTTOM NAV
+----------------------------------------------------------- */
+
+.aura-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: var(--surface-strong);
+  backdrop-filter: blur(var(--blur-soft));
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  z-index: 900;
+}
+
+.bottom-nav-item {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.bottom-nav-item.is-active {
+  color: var(--accent-strong);
 }
 
 /* -----------------------------------------------------------
@@ -312,13 +416,7 @@ input, textarea {
 }
 
 @media (max-width: 879px) {
-  .app-root {
-    padding: 0;
-  }
   .aura-sidebar {
     display: none;
-  }
-  .aura-app-shell {
-    border-radius: 0;
   }
 }

@@ -1,4 +1,4 @@
-// flashcards.js — standard card size + smooth flip + full deck system
+// flashcards.js — B2‑B glass grid + slide‑in deck viewer (Option 3)
 
 import { storage } from "../utils/storage.js";
 
@@ -30,10 +30,10 @@ function saveDecks() {
    ELEMENTS
 ----------------------------------------------------------- */
 
-let deckListEl;
+let gridEl;
 
-let overlayEl;
-let overlayTitleEl;
+let panelEl;
+let panelTitleEl;
 
 let flashcardEl;
 let flashcardFrontEl;
@@ -47,46 +47,68 @@ let nextBtn;
 let addCardBtn;
 let editCardBtn;
 let deleteCardBtn;
-let deleteDeckBtn;
 let renameDeckBtn;
-let closeOverlayBtn;
+let deleteDeckBtn;
+let closePanelBtn;
 
 let addDeckBtn;
 
 /* -----------------------------------------------------------
-   RENDER DECK LIST
+   RENDER DECK GRID
 ----------------------------------------------------------- */
 
-function renderDeckList() {
-  deckListEl.innerHTML = "";
+function renderDeckGrid() {
+  gridEl.innerHTML = "";
 
   if (decks.length === 0) {
     const empty = document.createElement("p");
     empty.textContent = "No decks yet.";
     empty.className = "overlay-meta";
-    deckListEl.appendChild(empty);
+    gridEl.appendChild(empty);
     return;
   }
 
   decks.forEach((deck) => {
-    const card = document.createElement("button");
+    const card = document.createElement("div");
     card.className = "deck-card";
-    card.dataset.deckId = deck.id;
 
     card.innerHTML = `
-      <div style="font-weight:600; margin-bottom:4px;">${deck.name}</div>
-      <div style="font-size:0.85rem; color:var(--text-muted);">
+      <div class="deck-card-header">
+        <strong>${deck.name}</strong>
+        <div class="deck-card-actions">
+          <button class="deck-action-btn" data-edit="${deck.id}">✏️</button>
+          <button class="deck-action-btn" data-delete="${deck.id}">🗑</button>
+        </div>
+      </div>
+      <div style="margin-top:6px; font-size:0.85rem; color:var(--text-muted);">
         ${deck.cards.length} cards
       </div>
     `;
 
-    card.addEventListener("click", () => openDeck(deck.id));
-    deckListEl.appendChild(card);
+    // Open deck viewer
+    card.addEventListener("click", (evt) => {
+      if (evt.target.dataset.edit || evt.target.dataset.delete) return;
+      openDeck(deck.id);
+    });
+
+    // Edit deck
+    card.querySelector("[data-edit]")?.addEventListener("click", (evt) => {
+      evt.stopPropagation();
+      renameDeck(deck.id);
+    });
+
+    // Delete deck
+    card.querySelector("[data-delete]")?.addEventListener("click", (evt) => {
+      evt.stopPropagation();
+      deleteDeck(deck.id);
+    });
+
+    gridEl.appendChild(card);
   });
 }
 
 /* -----------------------------------------------------------
-   OPEN DECK
+   OPEN DECK (SLIDE-IN PANEL)
 ----------------------------------------------------------- */
 
 function openDeck(id) {
@@ -96,22 +118,19 @@ function openDeck(id) {
   const deck = decks.find((d) => d.id === id);
   if (!deck) return;
 
-  overlayTitleEl.textContent = deck.name;
+  panelTitleEl.textContent = deck.name;
 
-  overlayEl.classList.add("is-visible");
-  overlayEl.setAttribute("aria-hidden", "false");
+  panelEl.classList.add("is-visible");
 
   renderCard();
 }
 
 /* -----------------------------------------------------------
-   CLOSE DECK
+   CLOSE PANEL
 ----------------------------------------------------------- */
 
-function closeDeck() {
-  overlayEl.classList.remove("is-visible");
-  overlayEl.setAttribute("aria-hidden", "true");
-
+function closePanel() {
+  panelEl.classList.remove("is-visible");
   flashcardEl.classList.remove("is-flipped");
 }
 
@@ -141,7 +160,7 @@ function renderCard() {
 }
 
 /* -----------------------------------------------------------
-   FLIP CARD (F2)
+   FLIP CARD
 ----------------------------------------------------------- */
 
 function flipCard() {
@@ -183,15 +202,15 @@ function addDeck() {
   });
 
   saveDecks();
-  renderDeckList();
+  renderDeckGrid();
 }
 
 /* -----------------------------------------------------------
    RENAME DECK
 ----------------------------------------------------------- */
 
-function renameDeck() {
-  const deck = decks.find((d) => d.id === currentDeckId);
+function renameDeck(id) {
+  const deck = decks.find((d) => d.id === id);
   if (!deck) return;
 
   const newName = prompt("New deck name:", deck.name);
@@ -200,23 +219,29 @@ function renameDeck() {
   deck.name = newName.trim();
   saveDecks();
 
-  overlayTitleEl.textContent = deck.name;
-  renderDeckList();
+  renderDeckGrid();
+
+  if (id === currentDeckId) {
+    panelTitleEl.textContent = deck.name;
+  }
 }
 
 /* -----------------------------------------------------------
    DELETE DECK
 ----------------------------------------------------------- */
 
-function deleteDeck() {
+function deleteDeck(id) {
   const confirmDelete = window.confirm("Delete this deck?");
   if (!confirmDelete) return;
 
-  decks = decks.filter((d) => d.id !== currentDeckId);
+  decks = decks.filter((d) => d.id !== id);
   saveDecks();
 
-  closeDeck();
-  renderDeckList();
+  renderDeckGrid();
+
+  if (id === currentDeckId) {
+    closePanel();
+  }
 }
 
 /* -----------------------------------------------------------
@@ -291,11 +316,11 @@ function deleteCard() {
 export function initFlashcards() {
   loadDecks();
 
-  deckListEl = document.getElementById("deck-list");
+  gridEl = document.getElementById("deck-grid");
   addDeckBtn = document.getElementById("add-deck-button");
 
-  overlayEl = document.getElementById("deck-viewer-overlay");
-  overlayTitleEl = document.getElementById("deck-viewer-title");
+  panelEl = document.getElementById("deck-viewer-panel");
+  panelTitleEl = document.getElementById("deck-viewer-title");
 
   flashcardEl = document.getElementById("flashcard");
   flashcardFrontEl = document.getElementById("flashcard-front");
@@ -309,11 +334,11 @@ export function initFlashcards() {
   addCardBtn = document.getElementById("add-card-button");
   editCardBtn = document.getElementById("edit-card-button");
   deleteCardBtn = document.getElementById("delete-card-button");
-  deleteDeckBtn = document.getElementById("delete-deck-button");
   renameDeckBtn = document.getElementById("rename-deck-button");
-  closeOverlayBtn = document.getElementById("close-deck-viewer");
+  deleteDeckBtn = document.getElementById("delete-deck-button");
+  closePanelBtn = document.getElementById("close-deck-viewer");
 
-  renderDeckList();
+  renderDeckGrid();
 
   addDeckBtn.addEventListener("click", addDeck);
 
@@ -325,12 +350,8 @@ export function initFlashcards() {
   editCardBtn.addEventListener("click", editCard);
   deleteCardBtn.addEventListener("click", deleteCard);
 
-  renameDeckBtn.addEventListener("click", renameDeck);
-  deleteDeckBtn.addEventListener("click", deleteDeck);
+  renameDeckBtn.addEventListener("click", () => renameDeck(currentDeckId));
+  deleteDeckBtn.addEventListener("click", () => deleteDeck(currentDeckId));
 
-  closeOverlayBtn.addEventListener("click", closeDeck);
-
-  overlayEl.addEventListener("click", (evt) => {
-    if (evt.target === overlayEl) closeDeck();
-  });
+  closePanelBtn.addEventListener("click", closePanel);
 }

@@ -1,7 +1,7 @@
+import { initHome } from "./modules/home.js";
 import { initFlashcards } from "./modules/flashcards.js";
 import { initNotes } from "./modules/notes.js";
 import { initTimer } from "./modules/timer.js";
-import { initHome } from "./modules/home.js";
 import { initProfile } from "./modules/profile.js";
 
 const onboardingScreen = document.getElementById("onboarding-screen");
@@ -32,6 +32,8 @@ export function updateGreeting() {
   const name = loadName();
   if (name && homeGreeting) {
     homeGreeting.textContent = `hello, ${name.toLowerCase()}`;
+  } else if (homeGreeting) {
+    homeGreeting.textContent = "hello,";
   }
 }
 
@@ -59,8 +61,9 @@ function handleOnboarding() {
 
 function initChangeName() {
   changeNameBtn.addEventListener("click", () => {
-    const newName = prompt("Enter your new name:");
-    if (!newName) return;
+    const current = loadName() || "";
+    const newName = prompt("Enter your new name:", current);
+    if (!newName || !newName.trim()) return;
 
     saveName(newName.trim());
     updateGreeting();
@@ -124,12 +127,11 @@ function initApp() {
   initChangeName();
   initProfileButton();
 
-  
-  initHome();       
-  initFlashcards();  
-  initNotes();       
-  initTimer();      
-  initProfile();     
+  initHome();        
+  initFlashcards(); 
+  initNotes();      
+  initTimer();     
+  initProfile();    
 }
 
 initApp();

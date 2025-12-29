@@ -1,5 +1,3 @@
-// theme.js — light/dark theme with persistence
-
 import { storage } from "../utils/storage.js";
 
 const THEME_KEY = "aura_theme";

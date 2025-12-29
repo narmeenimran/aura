@@ -1,12 +1,12 @@
-// storage.js — simple wrapper for localStorage
+// storage.js — safe wrapper for localStorage
 
 export const storage = {
   get(key) {
     try {
       const raw = localStorage.getItem(key);
       return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      console.error("Storage GET error:", e);
+    } catch (err) {
+      console.error("Storage GET error:", err);
       return null;
     }
   },
@@ -14,8 +14,16 @@ export const storage = {
   set(key, value) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {
-      console.error("Storage SET error:", e);
+    } catch (err) {
+      console.error("Storage SET error:", err);
+    }
+  },
+
+  remove(key) {
+    try {
+      localStorage.removeItem(key);
+    } catch (err) {
+      console.error("Storage REMOVE error:", err);
     }
   }
 };
