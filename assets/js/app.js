@@ -1,4 +1,4 @@
-// app.js — full navigation system with iOS-style slide transitions
+// app.js — navigation, transitions, swipe gestures, haptics
 
 import { initHome } from "./modules/home.js";
 import { initFlashcards } from "./modules/flashcards.js";
@@ -25,6 +25,7 @@ const themeToggle = document.getElementById("settings-theme-toggle");
 const changeNameBtn = document.getElementById("settings-change-name");
 
 const profileButton = document.getElementById("profile-button");
+const swipeLayer = document.getElementById("swipe-layer");
 
 /* -----------------------------------------------------------
    NAME STORAGE
@@ -40,11 +41,7 @@ function saveName(name) {
 
 export function updateGreeting() {
   const name = loadName();
-  if (name && homeGreeting) {
-    homeGreeting.textContent = `hello, ${name.toLowerCase()}`;
-  } else if (homeGreeting) {
-    homeGreeting.textContent = "hello,";
-  }
+  homeGreeting.textContent = name ? `hello, ${name.toLowerCase()}` : "hello,";
 }
 
 /* -----------------------------------------------------------
@@ -74,7 +71,7 @@ function handleOnboarding() {
 }
 
 /* -----------------------------------------------------------
-   CHANGE NAME (SETTINGS)
+   CHANGE NAME
 ----------------------------------------------------------- */
 
 function initChangeName() {
@@ -89,32 +86,36 @@ function initChangeName() {
 }
 
 /* -----------------------------------------------------------
-   NAVIGATION — iOS SLIDE TRANSITIONS
+   HAPTICS
 ----------------------------------------------------------- */
 
+function vibrate(ms = 10) {
+  if (navigator.vibrate) navigator.vibrate(ms);
+}
+
+/* -----------------------------------------------------------
+   SCREEN SWITCHING (S1 TRANSITION)
+----------------------------------------------------------- */
+
+let currentScreen = "home";
+
 function switchScreen(target) {
+  if (target === currentScreen) return;
+
   const newScreen = document.querySelector(`.aura-screen[data-screen="${target}"]`);
-  const oldScreen = document.querySelector(".aura-screen.is-active");
+  const oldScreen = document.querySelector(`.aura-screen[data-screen="${currentScreen}"]`);
 
-  if (newScreen === oldScreen) return;
+  if (!newScreen || !oldScreen) return;
 
-  // Prepare new screen
-  newScreen.classList.add("pre-enter");
-  newScreen.style.display = "block";
+  vibrate(10);
 
-  requestAnimationFrame(() => {
-    oldScreen.classList.add("slide-left");
-    newScreen.classList.add("slide-in");
-  });
+  // Hide old
+  oldScreen.classList.remove("is-active");
 
-  // After animation ends
-  setTimeout(() => {
-    oldScreen.classList.remove("is-active", "slide-left");
-    oldScreen.style.display = "none";
+  // Show new
+  newScreen.classList.add("is-active");
 
-    newScreen.classList.remove("pre-enter", "slide-in");
-    newScreen.classList.add("is-active");
-  }, 300);
+  currentScreen = target;
 
   // Update navbar + title
   navButtons.forEach((btn) => {
@@ -130,6 +131,62 @@ function initNavigation() {
       const target = btn.dataset.screenTarget;
       switchScreen(target);
     });
+  });
+}
+
+/* -----------------------------------------------------------
+   SWIPE NAVIGATION (W2)
+----------------------------------------------------------- */
+
+let startX = 0;
+let isSwiping = false;
+
+const screenOrder = ["home", "flashcards", "notes", "timer", "settings"];
+
+function getNextScreen(direction) {
+  const index = screenOrder.indexOf(currentScreen);
+  if (direction === "left") {
+    return screenOrder[index + 1] || null;
+  } else {
+    return screenOrder[index - 1] || null;
+  }
+}
+
+function initSwipeNavigation() {
+  swipeLayer.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+    isSwiping = true;
+  });
+
+  swipeLayer.addEventListener("touchmove", (e) => {
+    if (!isSwiping) return;
+  });
+
+  swipeLayer.addEventListener("touchend", (e) => {
+    if (!isSwiping) return;
+    isSwiping = false;
+
+    const endX = e.changedTouches[0].clientX;
+    const diff = endX - startX;
+
+    // Natural sensitivity (H1)
+    if (Math.abs(diff) < 40) return;
+
+    if (diff < 0) {
+      // Swipe left → next screen
+      const next = getNextScreen("left");
+      if (next) {
+        vibrate(15);
+        switchScreen(next);
+      }
+    } else {
+      // Swipe right → previous screen
+      const prev = getNextScreen("right");
+      if (prev) {
+        vibrate(15);
+        switchScreen(prev);
+      }
+    }
   });
 }
 
@@ -161,6 +218,7 @@ function initProfileButton() {
     const overlay = document.getElementById("profile-overlay");
     overlay.classList.add("is-visible");
     overlay.setAttribute("aria-hidden", "false");
+    vibrate(10);
   });
 }
 
@@ -171,6 +229,7 @@ function initProfileButton() {
 function initApp() {
   handleOnboarding();
   initNavigation();
+  initSwipeNavigation();
   initThemeToggle();
   initChangeName();
   initProfileButton();
@@ -180,7 +239,7 @@ function initApp() {
   initFlashcards();
   initNotes();
   initTimer();
-  initProfile();
+  initProfile();      
 }
 
 initApp();

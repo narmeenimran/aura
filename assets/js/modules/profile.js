@@ -1,4 +1,4 @@
-// profile.js — profile picture + age + name
+// profile.js — spacey modal + picture upload + haptics
 
 /* -----------------------------------------------------------
    STORAGE KEYS
@@ -18,6 +18,14 @@ let uploadInput;
 let ageInput;
 let saveBtn;
 let closeBtn;
+
+/* -----------------------------------------------------------
+   HAPTICS
+----------------------------------------------------------- */
+
+function vibrate(ms = 10) {
+  if (navigator.vibrate) navigator.vibrate(ms);
+}
 
 /* -----------------------------------------------------------
    LOAD PROFILE
@@ -54,6 +62,7 @@ function saveProfile() {
     localStorage.setItem(PROFILE_NAME_KEY, newName.trim());
   }
 
+  vibrate(15);
   closeProfile();
 }
 
@@ -74,6 +83,7 @@ function handlePictureUpload(event) {
 
     // Update preview
     previewEl.style.backgroundImage = `url(${dataURL})`;
+    vibrate(15);
   };
 
   reader.readAsDataURL(file);
@@ -86,6 +96,7 @@ function handlePictureUpload(event) {
 function closeProfile() {
   overlayEl.classList.remove("is-visible");
   overlayEl.setAttribute("aria-hidden", "true");
+  vibrate(10);
 }
 
 function initOverlayClose() {

@@ -1,11 +1,31 @@
-// timer.js — clean Pomodoro timer (25:00) with start/pause/reset
+// timer.js — Pomodoro timer with animated ring + haptics
 
-let timeLeft = 25 * 60; // 25 minutes
-let timerInterval = null;
+/* -----------------------------------------------------------
+   ELEMENTS
+----------------------------------------------------------- */
 
 let displayEl;
 let toggleBtn;
 let resetBtn;
+
+let ringEl; // SVG progress ring
+
+/* -----------------------------------------------------------
+   TIMER STATE
+----------------------------------------------------------- */
+
+let timeLeft = 25 * 60; // 25 minutes
+let timerInterval = null;
+
+const FULL_DASH = 628; // circumference of r=100 circle
+
+/* -----------------------------------------------------------
+   HAPTICS
+----------------------------------------------------------- */
+
+function vibrate(ms = 10) {
+  if (navigator.vibrate) navigator.vibrate(ms);
+}
 
 /* -----------------------------------------------------------
    FORMAT TIME
@@ -18,11 +38,16 @@ function formatTime(seconds) {
 }
 
 /* -----------------------------------------------------------
-   UPDATE DISPLAY
+   UPDATE DISPLAY + RING
 ----------------------------------------------------------- */
 
 function updateDisplay() {
   displayEl.textContent = formatTime(timeLeft);
+
+  const progress = timeLeft / (25 * 60);
+  const offset = FULL_DASH * (1 - progress);
+
+  ringEl.style.strokeDashoffset = offset;
 }
 
 /* -----------------------------------------------------------
@@ -32,6 +57,7 @@ function updateDisplay() {
 function startTimer() {
   if (timerInterval) return;
 
+  vibrate(15);
   toggleBtn.textContent = "Pause";
 
   timerInterval = setInterval(() => {
@@ -43,6 +69,7 @@ function startTimer() {
       timeLeft = 0;
       updateDisplay();
       toggleBtn.textContent = "Start";
+      vibrate(30);
       return;
     }
 
@@ -58,6 +85,7 @@ function pauseTimer() {
   clearInterval(timerInterval);
   timerInterval = null;
   toggleBtn.textContent = "Start";
+  vibrate(10);
 }
 
 /* -----------------------------------------------------------
@@ -68,6 +96,7 @@ function resetTimer() {
   pauseTimer();
   timeLeft = 25 * 60;
   updateDisplay();
+  vibrate(10);
 }
 
 /* -----------------------------------------------------------
@@ -90,6 +119,12 @@ export function initTimer() {
   displayEl = document.getElementById("pomodoro-time");
   toggleBtn = document.getElementById("pomodoro-toggle");
   resetBtn = document.getElementById("pomodoro-reset");
+
+  ringEl = document.querySelector(".timer-ring-progress");
+
+  // Initialize ring
+  ringEl.style.strokeDasharray = FULL_DASH;
+  ringEl.style.strokeDashoffset = 0;
 
   updateDisplay();
 

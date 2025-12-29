@@ -1,4 +1,4 @@
-// notes.js — clean notes system with overlay editor + toolbar
+// notes.js — clean notes system with modal editor + haptics
 
 import { storage } from "../utils/storage.js";
 
@@ -23,6 +23,14 @@ function loadNotes() {
 
 function saveNotes() {
   storage.set(STORAGE_KEY, notes);
+}
+
+/* -----------------------------------------------------------
+   HAPTICS
+----------------------------------------------------------- */
+
+function vibrate(ms = 10) {
+  if (navigator.vibrate) navigator.vibrate(ms);
 }
 
 /* -----------------------------------------------------------
@@ -79,7 +87,7 @@ function renderNotesList(filter = "") {
 }
 
 /* -----------------------------------------------------------
-   OPEN NOTE
+   OPEN NOTE (MODAL)
 ----------------------------------------------------------- */
 
 function openNote(id) {
@@ -94,6 +102,8 @@ function openNote(id) {
 
   overlayEl.classList.add("is-visible");
   overlayEl.setAttribute("aria-hidden", "false");
+
+  vibrate(10);
 }
 
 /* -----------------------------------------------------------
@@ -122,6 +132,8 @@ function addNote() {
 
   overlayEl.classList.add("is-visible");
   overlayEl.setAttribute("aria-hidden", "false");
+
+  vibrate(10);
 }
 
 /* -----------------------------------------------------------
@@ -155,6 +167,7 @@ function saveNote() {
   saveNotes();
   renderNotesList(searchInput.value);
   closeNoteEditor();
+  vibrate(15);
 }
 
 /* -----------------------------------------------------------
@@ -172,19 +185,7 @@ function deleteNote() {
   saveNotes();
   renderNotesList(searchInput.value);
   closeNoteEditor();
-}
-
-/* -----------------------------------------------------------
-   TOOLBAR COMMANDS
------------------------------------------------------------ */
-
-function applyCommand(cmd) {
-  if (cmd === "checkbox") {
-    document.execCommand("insertHTML", false, `<input type="checkbox"> `);
-    return;
-  }
-
-  document.execCommand(cmd, false, null);
+  vibrate(20);
 }
 
 /* -----------------------------------------------------------
@@ -228,13 +229,5 @@ export function initNotes() {
   /* Close overlay when clicking outside */
   overlayEl.addEventListener("click", (evt) => {
     if (evt.target === overlayEl) closeNoteEditor();
-  });
-
-  /* Toolbar buttons */
-  document.querySelectorAll(".toolbar-button").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const cmd = btn.dataset.command;
-      applyCommand(cmd);
-    });
   });
 }

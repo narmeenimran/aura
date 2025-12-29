@@ -60,7 +60,10 @@
         <div id="profile-button" class="profile-circle"></div>
       </header>
 
-      <!-- SCREENS WRAPPER (for sliding pages) -->
+      <!-- SWIPE LAYER -->
+      <div id="swipe-layer" class="swipe-layer"></div>
+
+      <!-- SCREENS WRAPPER -->
       <main class="aura-screens no-padding">
 
         <!-- HOME -->
@@ -139,7 +142,12 @@
         <section class="aura-screen" data-screen="timer">
           <h3 class="screen-title">Timer</h3>
 
-          <div class="glass-card">
+          <div class="timer-wrapper">
+            <svg class="timer-ring" width="220" height="220">
+              <circle class="timer-ring-bg" cx="110" cy="110" r="100" />
+              <circle class="timer-ring-progress" cx="110" cy="110" r="100" />
+            </svg>
+
             <p id="pomodoro-time" class="timer-display">25:00</p>
 
             <div class="button-row">
@@ -170,13 +178,13 @@
 
       </main>
 
-      <!-- BOTTOM NAV (MOBILE) -->
+      <!-- BOTTOM NAV -->
       <nav class="aura-bottom-nav">
-        <button class="bottom-nav-item is-active" data-screen-target="home"> Home </button>
-        <button class="bottom-nav-item" data-screen-target="flashcards"> Flashcards </button>
-        <button class="bottom-nav-item" data-screen-target="notes"> Notes </button>
-        <button class="bottom-nav-item" data-screen-target="timer"> Timer </button>
-        <button class="bottom-nav-item" data-screen-target="settings"> Settings </button>
+        <button class="bottom-nav-item is-active" data-screen-target="home">Home</button>
+        <button class="bottom-nav-item" data-screen-target="flashcards">Flashcards</button>
+        <button class="bottom-nav-item" data-screen-target="notes">Notes</button>
+        <button class="bottom-nav-item" data-screen-target="timer">Timer</button>
+        <button class="bottom-nav-item" data-screen-target="settings">Settings</button>
       </nav>
 
     </div>
@@ -184,7 +192,7 @@
 
   <!-- PROFILE OVERLAY -->
   <div id="profile-overlay" class="aura-overlay" aria-hidden="true">
-    <div class="overlay-content">
+    <div class="overlay-content profile-modal">
       <h2>Profile</h2>
 
       <div class="profile-picture-container">
@@ -204,6 +212,28 @@
       <div class="button-row">
         <button id="profile-save" class="primary-button">Save</button>
         <button id="profile-close" class="ghost-button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES EDITOR OVERLAY (N2: fade modal) -->
+  <div id="note-editor-overlay" class="aura-overlay" aria-hidden="true">
+    <div class="overlay-content note-modal">
+      <h2 id="note-editor-title-label">New note</h2>
+
+      <input
+        id="note-editor-title-input"
+        class="text-input"
+        type="text"
+        placeholder="Title"
+      />
+
+      <div id="note-editor-content" class="note-editor" contenteditable="true"></div>
+
+      <div class="button-row wrap">
+        <button id="save-note-button" class="primary-button">Save</button>
+        <button id="delete-note-button" class="ghost-button">Delete</button>
+        <button id="close-note-editor" class="ghost-button">Close</button>
       </div>
     </div>
   </div>

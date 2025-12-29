@@ -1,4 +1,4 @@
-// flashcards.js — full flashcard system with slide-in viewer
+// flashcards.js — fully fixed deck system with haptics + clean logic
 
 import { storage } from "../utils/storage.js";
 
@@ -27,12 +27,21 @@ function saveDecks() {
 }
 
 /* -----------------------------------------------------------
+   HAPTICS
+----------------------------------------------------------- */
+
+function vibrate(ms = 10) {
+  if (navigator.vibrate) navigator.vibrate(ms);
+}
+
+/* -----------------------------------------------------------
    ELEMENTS
 ----------------------------------------------------------- */
 
 let deckGridEl;
 let deckViewerEl;
 let deckViewerTitleEl;
+
 let flashcardEl;
 let flashcardFrontEl;
 let flashcardBackEl;
@@ -47,6 +56,7 @@ let deleteCardBtn;
 let renameDeckBtn;
 let deleteDeckBtn;
 let closeViewerBtn;
+let addDeckBtn;
 
 /* -----------------------------------------------------------
    RENDER DECK GRID
@@ -66,9 +76,7 @@ function renderDeckGrid() {
     card.dataset.deckId = deck.id;
 
     card.innerHTML = `
-      <div class="deck-card-header">
-        <strong>${deck.name}</strong>
-      </div>
+      <strong>${deck.name}</strong>
       <p style="font-size:0.85rem; color:var(--text-muted); margin-top:6px;">
         ${deck.cards.length} cards
       </p>
@@ -94,6 +102,7 @@ function openDeck(id) {
 
   updateFlashcard();
   deckViewerEl.classList.add("is-visible");
+  vibrate(10);
 }
 
 /* -----------------------------------------------------------
@@ -104,6 +113,7 @@ function closeDeckViewer() {
   deckViewerEl.classList.remove("is-visible");
   currentDeckId = null;
   currentCardIndex = 0;
+  vibrate(10);
 }
 
 /* -----------------------------------------------------------
@@ -133,6 +143,7 @@ function updateFlashcard() {
 
 function flipCard() {
   flashcardEl.classList.toggle("is-flipped");
+  vibrate(10);
 }
 
 /* -----------------------------------------------------------
@@ -146,6 +157,7 @@ function nextCard() {
   currentCardIndex = (currentCardIndex + 1) % deck.cards.length;
   flashcardEl.classList.remove("is-flipped");
   updateFlashcard();
+  vibrate(10);
 }
 
 function prevCard() {
@@ -157,6 +169,7 @@ function prevCard() {
 
   flashcardEl.classList.remove("is-flipped");
   updateFlashcard();
+  vibrate(10);
 }
 
 /* -----------------------------------------------------------
@@ -176,6 +189,7 @@ function addDeck() {
   decks.push(newDeck);
   saveDecks();
   renderDeckGrid();
+  vibrate(15);
 }
 
 /* -----------------------------------------------------------
@@ -197,6 +211,7 @@ function addCard() {
   saveDecks();
   updateFlashcard();
   renderDeckGrid();
+  vibrate(15);
 }
 
 /* -----------------------------------------------------------
@@ -221,6 +236,7 @@ function editCard() {
   saveDecks();
   updateFlashcard();
   renderDeckGrid();
+  vibrate(15);
 }
 
 /* -----------------------------------------------------------
@@ -243,6 +259,7 @@ function deleteCard() {
   saveDecks();
   updateFlashcard();
   renderDeckGrid();
+  vibrate(20);
 }
 
 /* -----------------------------------------------------------
@@ -261,6 +278,7 @@ function renameDeck() {
 
   deckViewerTitleEl.textContent = deck.name;
   renderDeckGrid();
+  vibrate(15);
 }
 
 /* -----------------------------------------------------------
@@ -276,6 +294,7 @@ function deleteDeck() {
   saveDecks();
   renderDeckGrid();
   closeDeckViewer();
+  vibrate(20);
 }
 
 /* -----------------------------------------------------------
@@ -301,11 +320,11 @@ export function initFlashcards() {
   renameDeckBtn = document.getElementById("rename-deck-button");
   deleteDeckBtn = document.getElementById("delete-deck-button");
   closeViewerBtn = document.getElementById("close-deck-viewer");
+  addDeckBtn = document.getElementById("add-deck-button");
 
   loadDecks();
   renderDeckGrid();
 
-  // Buttons
   flipBtn.addEventListener("click", flipCard);
   nextBtn.addEventListener("click", nextCard);
   prevBtn.addEventListener("click", prevCard);
@@ -315,4 +334,5 @@ export function initFlashcards() {
   renameDeckBtn.addEventListener("click", renameDeck);
   deleteDeckBtn.addEventListener("click", deleteDeck);
   closeViewerBtn.addEventListener("click", closeDeckViewer);
+  addDeckBtn.addEventListener("click", addDeck);
 }
