@@ -8,6 +8,9 @@
 ------------------------------------------------------------ */
 
 let userName = localStorage.getItem("aura-name") || "";
+let userAge = localStorage.getItem("aura-age") || "";
+let userPurpose = JSON.parse(localStorage.getItem("aura-purpose") || "[]");
+
 let decks = JSON.parse(localStorage.getItem("aura-decks") || "{}");
 let notes = JSON.parse(localStorage.getItem("aura-notes") || "[]");
 let todos = JSON.parse(localStorage.getItem("aura-todos") || "[]");
@@ -19,11 +22,23 @@ let timerInterval = null;
 let totalSeconds = 1500; // default 25 min
 let remainingSeconds = totalSeconds;
 
+/* Timer ring */
+const ring = document.querySelector(".timer-ring-progress");
+const radius = 100;
+const circumference = 2 * Math.PI * radius;
+if (ring) {
+  ring.style.strokeDasharray = circumference;
+  ring.style.strokeDashoffset = 0;
+}
+
 /* ------------------------------------------------------------
    ELEMENTS
 ------------------------------------------------------------ */
 
 const onboardingScreen = document.getElementById("onboarding-screen");
+const onboardingStepsContainer = document.querySelector(".onboarding-steps");
+const onboardingCards = document.querySelectorAll(".onboarding-card");
+
 const appRoot = document.getElementById("app-root");
 
 const screens = document.querySelectorAll(".aura-screen");
@@ -47,43 +62,102 @@ const hourInput = document.getElementById("timer-hours");
 const minuteInput = document.getElementById("timer-minutes");
 
 /* ------------------------------------------------------------
-   ONBOARDING
+   ONBOARDING WIZARD
 ------------------------------------------------------------ */
 
-if (!userName) {
+let onboardingStep = 1;
+
+function goToOnboardingStep(step) {
+  onboardingStep = step;
+  const offset = (step - 1) * -100;
+  onboardingStepsContainer.style.transform = `translateX(${offset}%)`;
+
+  onboardingCards.forEach(card => {
+    const s = parseInt(card.dataset.step, 10);
+    card.classList.toggle("is-active", s === step);
+  });
+}
+
+function finishOnboarding() {
+  onboardingScreen.style.display = "none";
+  appRoot.style.display = "block";
+
+  if (userName) {
+    const greet = document.getElementById("home-greeting");
+    if (greet) greet.textContent = `hello, ${userName}`;
+  }
+}
+
+if (!userName || !userAge || !userPurpose.length) {
   onboardingScreen.style.display = "flex";
+  appRoot.style.display = "none";
+  goToOnboardingStep(1);
 } else {
   onboardingScreen.style.display = "none";
   appRoot.style.display = "block";
-  document.getElementById("home-greeting").textContent = `hello, ${userName}`;
+  const greet = document.getElementById("home-greeting");
+  if (greet) greet.textContent = `hello, ${userName}`;
 }
 
-document.getElementById("onboarding-submit").addEventListener("click", () => {
-  const name = document.getElementById("onboarding-name-input").value.trim();
-  if (!name) return;
+/* Step 1: Name */
+const onboardingNext1 = document.getElementById("onboarding-next-1");
+if (onboardingNext1) {
+  onboardingNext1.addEventListener("click", () => {
+    const nameInput = document.getElementById("onboarding-name-input");
+    const name = (nameInput?.value || "").trim();
+    if (!name) return;
 
-  localStorage.setItem("aura-name", name);
-  userName = name;
+    userName = name;
+    localStorage.setItem("aura-name", userName);
+    goToOnboardingStep(2);
+  });
+}
 
-  onboardingScreen.style.display = "none";
-  appRoot.style.display = "block";
+/* Step 2: Age */
+const onboardingNext2 = document.getElementById("onboarding-next-2");
+if (onboardingNext2) {
+  onboardingNext2.addEventListener("click", () => {
+    const ageInput = document.getElementById("onboarding-age-input");
+    const ageValue = ageInput?.value.trim();
+    if (!ageValue) return;
 
-  document.getElementById("home-greeting").textContent = `hello, ${userName}`;
-});
+    userAge = ageValue;
+    localStorage.setItem("aura-age", userAge);
+    goToOnboardingStep(3);
+  });
+}
+
+/* Step 3: Purpose */
+const onboardingFinish = document.getElementById("onboarding-finish");
+if (onboardingFinish) {
+  onboardingFinish.addEventListener("click", () => {
+    const checks = document.querySelectorAll('input[name="purpose"]:checked');
+    const selected = Array.from(checks).map(c => c.value);
+    if (!selected.length) return;
+
+    userPurpose = selected;
+    localStorage.setItem("aura-purpose", JSON.stringify(userPurpose));
+    finishOnboarding();
+  });
+}
 
 /* ------------------------------------------------------------
-   CHANGE NAME IN SETTINGS
+   SETTINGS — CHANGE NAME
 ------------------------------------------------------------ */
 
-document.getElementById("settings-change-name").addEventListener("click", () => {
-  const newName = prompt("Enter your new name:");
-  if (!newName) return;
+const changeNameBtn = document.getElementById("settings-change-name");
+if (changeNameBtn) {
+  changeNameBtn.addEventListener("click", () => {
+    const newName = prompt("Enter your new name:", userName || "");
+    if (!newName) return;
 
-  userName = newName.trim();
-  localStorage.setItem("aura-name", userName);
+    userName = newName.trim();
+    localStorage.setItem("aura-name", userName);
 
-  document.getElementById("home-greeting").textContent = `hello, ${userName}`;
-});
+    const greet = document.getElementById("home-greeting");
+    if (greet) greet.textContent = `hello, ${userName}`;
+  });
+}
 
 /* ------------------------------------------------------------
    NAVIGATION
@@ -94,7 +168,8 @@ navButtons.forEach(btn => {
     const target = btn.dataset.screenTarget;
 
     screens.forEach(s => s.classList.remove("is-active"));
-    document.querySelector(`[data-screen="${target}"]`).classList.add("is-active");
+    const screen = document.querySelector(`[data-screen="${target}"]`);
+    if (screen) screen.classList.add("is-active");
 
     navButtons.forEach(b => b.classList.remove("is-active"));
     btn.classList.add("is-active");
@@ -111,8 +186,9 @@ function saveTodos() {
 
 function renderTodos() {
   const list = document.getElementById("todo-list");
-  list.innerHTML = "";
+  if (!list) return;
 
+  list.innerHTML = "";
   todos.forEach((item, index) => {
     const li = document.createElement("li");
     li.className = "todo-item";
@@ -133,14 +209,16 @@ function renderTodos() {
 
 renderTodos();
 
-document.getElementById("todo-add-button").addEventListener("click", () => {
-  const text = prompt("New item:");
-  if (!text) return;
-
-  todos.push(text);
-  saveTodos();
-  renderTodos();
-});
+const todoAddButton = document.getElementById("todo-add-button");
+if (todoAddButton) {
+  todoAddButton.addEventListener("click", () => {
+    const text = prompt("New item:");
+    if (!text) return;
+    todos.push(text.trim());
+    saveTodos();
+    renderTodos();
+  });
+}
 
 /* ------------------------------------------------------------
    FLASHCARDS — SAVE + RENDER DECKS
@@ -151,14 +229,33 @@ function saveDecks() {
 }
 
 function renderDecks() {
+  if (!deckGrid) return;
   deckGrid.innerHTML = "";
 
   Object.keys(decks).forEach(deckName => {
     const card = document.createElement("div");
     card.className = "deck-card";
-    card.textContent = deckName;
+    card.innerHTML = `
+      <div>${deckName}</div>
+    `;
 
+    // open deck when card clicked
     card.addEventListener("click", () => openDeck(deckName));
+
+    // delete button
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete deck";
+    deleteBtn.className = "ghost-button deck-delete-button";
+    deleteBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (confirm(`Delete deck "${deckName}"?`)) {
+        delete decks[deckName];
+        saveDecks();
+        renderDecks();
+      }
+    });
+
+    card.appendChild(deleteBtn);
     deckGrid.appendChild(card);
   });
 }
@@ -173,15 +270,20 @@ function openDeck(name) {
   currentDeck = name;
   currentCardIndex = 0;
 
-  document.getElementById("deck-viewer-title").textContent = name;
-  deckViewer.classList.add("is-visible");
+  const title = document.getElementById("deck-viewer-title");
+  if (title) title.textContent = name;
+
+  if (deckViewer) deckViewer.classList.add("is-visible");
 
   renderFlashcard();
 }
 
-document.getElementById("close-deck-viewer").addEventListener("click", () => {
-  deckViewer.classList.remove("is-visible");
-});
+const closeDeckViewerBtn = document.getElementById("close-deck-viewer");
+if (closeDeckViewerBtn) {
+  closeDeckViewerBtn.addEventListener("click", () => {
+    if (deckViewer) deckViewer.classList.remove("is-visible");
+  });
+}
 
 /* ------------------------------------------------------------
    FLASHCARDS — RENDER CARD
@@ -190,111 +292,150 @@ document.getElementById("close-deck-viewer").addEventListener("click", () => {
 function renderFlashcard() {
   const deck = decks[currentDeck];
   if (!deck || deck.length === 0) {
-    flashcardFront.textContent = "No cards yet";
-    flashcardBack.textContent = "";
-    flashcardProgress.textContent = "";
+    if (flashcardFront) flashcardFront.textContent = "No cards yet";
+    if (flashcardBack) flashcardBack.textContent = "";
+    if (flashcardProgress) flashcardProgress.textContent = "";
     return;
   }
 
   const card = deck[currentCardIndex];
-
-  flashcardFront.textContent = card.front;
-  flashcardBack.textContent = card.back;
-
-  flashcardProgress.textContent = `${currentCardIndex + 1} / ${deck.length}`;
+  if (flashcardFront) flashcardFront.textContent = card.front;
+  if (flashcardBack) flashcardBack.textContent = card.back;
+  if (flashcardProgress) {
+    flashcardProgress.textContent = `${currentCardIndex + 1} / ${deck.length}`;
+  }
 }
 
 /* ------------------------------------------------------------
    FLASHCARDS — BUTTONS
 ------------------------------------------------------------ */
 
-document.getElementById("flashcard-flip").addEventListener("click", () => {
-  flashcard.classList.toggle("is-flipped");
-});
+const flipBtn = document.getElementById("flashcard-flip");
+if (flipBtn && flashcard) {
+  flipBtn.addEventListener("click", () => {
+    flashcard.classList.toggle("is-flipped");
+  });
+}
 
-document.getElementById("flashcard-next").addEventListener("click", () => {
-  const deck = decks[currentDeck];
-  if (!deck) return;
+const nextBtn = document.getElementById("flashcard-next");
+if (nextBtn) {
+  nextBtn.addEventListener("click", () => {
+    const deck = decks[currentDeck];
+    if (!deck) return;
+    currentCardIndex = (currentCardIndex + 1) % deck.length;
+    if (flashcard) flashcard.classList.remove("is-flipped");
+    renderFlashcard();
+  });
+}
 
-  currentCardIndex = (currentCardIndex + 1) % deck.length;
-  flashcard.classList.remove("is-flipped");
-  renderFlashcard();
-});
+const prevBtn = document.getElementById("flashcard-prev");
+if (prevBtn) {
+  prevBtn.addEventListener("click", () => {
+    const deck = decks[currentDeck];
+    if (!deck) return;
+    currentCardIndex = (currentCardIndex - 1 + deck.length) % deck.length;
+    if (flashcard) flashcard.classList.remove("is-flipped");
+    renderFlashcard();
+  });
+}
 
-document.getElementById("flashcard-prev").addEventListener("click", () => {
-  const deck = decks[currentDeck];
-  if (!deck) return;
+/* ADD CARD */
+const addCardBtn = document.getElementById("add-card-button");
+if (addCardBtn) {
+  addCardBtn.addEventListener("click", () => {
+    if (!currentDeck) return;
+    const front = prompt("Front:");
+    const back = prompt("Back:");
+    if (!front || !back) return;
+    decks[currentDeck].push({ front, back });
+    saveDecks();
+    renderFlashcard();
+  });
+}
 
-  currentCardIndex = (currentCardIndex - 1 + deck.length) % deck.length;
-  flashcard.classList.remove("is-flipped");
-  renderFlashcard();
-});
+/* EDIT CARD */
+const editCardBtn = document.getElementById("edit-card-button");
+if (editCardBtn) {
+  editCardBtn.addEventListener("click", () => {
+    const deck = decks[currentDeck];
+    if (!deck || !deck.length) return;
 
-/* ------------------------------------------------------------
-   FLASHCARDS — ADD CARD
------------------------------------------------------------- */
+    const card = deck[currentCardIndex];
+    const newFront = prompt("Edit front:", card.front);
+    const newBack = prompt("Edit back:", card.back);
+    if (!newFront || !newBack) return;
 
-document.getElementById("add-card-button").addEventListener("click", () => {
-  const front = prompt("Front:");
-  const back = prompt("Back:");
+    card.front = newFront;
+    card.back = newBack;
+    saveDecks();
+    renderFlashcard();
+  });
+}
 
-  if (!front || !back) return;
+/* DELETE CARD */
+const deleteCardBtn = document.getElementById("delete-card-button");
+if (deleteCardBtn) {
+  deleteCardBtn.addEventListener("click", () => {
+    const deck = decks[currentDeck];
+    if (!deck || !deck.length) return;
 
-  decks[currentDeck].push({ front, back });
-  saveDecks();
-  renderFlashcard();
-});
+    deck.splice(currentCardIndex, 1);
+    if (currentCardIndex >= deck.length) currentCardIndex = 0;
+    saveDecks();
+    renderFlashcard();
+  });
+}
 
-/* ------------------------------------------------------------
-   FLASHCARDS — EDIT CARD
------------------------------------------------------------- */
+/* RENAME DECK */
+const renameDeckBtn = document.getElementById("rename-deck-button");
+if (renameDeckBtn) {
+  renameDeckBtn.addEventListener("click", () => {
+    if (!currentDeck) return;
+    const newName = prompt("Rename deck:", currentDeck);
+    if (!newName || newName === currentDeck) return;
 
-document.getElementById("edit-card-button").addEventListener("click", () => {
-  const deck = decks[currentDeck];
-  if (!deck) return;
+    decks[newName] = decks[currentDeck];
+    delete decks[currentDeck];
+    currentDeck = newName;
+    saveDecks();
+    renderDecks();
 
-  const card = deck[currentCardIndex];
+    const title = document.getElementById("deck-viewer-title");
+    if (title) title.textContent = newName;
+  });
+}
 
-  const newFront = prompt("Edit front:", card.front);
-  const newBack = prompt("Edit back:", card.back);
+/* DELETE CURRENT DECK */
+const deleteDeckBtn = document.getElementById("delete-deck-button");
+if (deleteDeckBtn) {
+  deleteDeckBtn.addEventListener("click", () => {
+    if (!currentDeck) return;
+    if (!confirm(`Delete deck "${currentDeck}"?`)) return;
 
-  if (!newFront || !newBack) return;
+    delete decks[currentDeck];
+    saveDecks();
+    renderDecks();
 
-  card.front = newFront;
-  card.back = newBack;
+    currentDeck = null;
+    if (deckViewer) deckViewer.classList.remove("is-visible");
+  });
+}
 
-  saveDecks();
-  renderFlashcard();
-});
-
-/* ------------------------------------------------------------
-   FLASHCARDS — DELETE CARD
------------------------------------------------------------- */
-
-document.getElementById("delete-card-button").addEventListener("click", () => {
-  const deck = decks[currentDeck];
-  if (!deck) return;
-
-  deck.splice(currentCardIndex, 1);
-
-  if (currentCardIndex >= deck.length) currentCardIndex = 0;
-
-  saveDecks();
-  renderFlashcard();
-});
-
-/* ------------------------------------------------------------
-   FLASHCARDS — ADD DECK
------------------------------------------------------------- */
-
-document.getElementById("add-deck-button").addEventListener("click", () => {
-  const name = prompt("Deck name:");
-  if (!name) return;
-
-  decks[name] = [];
-  saveDecks();
-  renderDecks();
-});
+/* ADD DECK (GLOBAL) */
+const addDeckBtn = document.getElementById("add-deck-button");
+if (addDeckBtn) {
+  addDeckBtn.addEventListener("click", () => {
+    const name = prompt("Deck name:");
+    if (!name) return;
+    if (decks[name]) {
+      alert("A deck with that name already exists.");
+      return;
+    }
+    decks[name] = [];
+    saveDecks();
+    renderDecks();
+  });
+}
 
 /* ------------------------------------------------------------
    NOTES — SAVE + RENDER
@@ -305,6 +446,7 @@ function saveNotes() {
 }
 
 function renderNotes() {
+  if (!notesList) return;
   notesList.innerHTML = "";
 
   notes.forEach((note, index) => {
@@ -312,9 +454,8 @@ function renderNotes() {
     card.className = "glass-card";
     card.innerHTML = `
       <h3>${note.title || "Untitled"}</h3>
-      <p>${note.content.slice(0, 80)}...</p>
+      <p>${(note.content || "").replace(/<[^>]*>/g, "").slice(0, 80)}...</p>
     `;
-
     card.addEventListener("click", () => openNoteEditor(index));
     notesList.appendChild(card);
   });
@@ -322,11 +463,9 @@ function renderNotes() {
 
 renderNotes();
 
-/* ------------------------------------------------------------
-   NOTES — OPEN EDITOR
------------------------------------------------------------- */
-
+/* OPEN NOTE EDITOR */
 function openNoteEditor(index = null) {
+  if (!noteEditorOverlay) return;
   noteEditorOverlay.classList.add("is-visible");
 
   if (index === null) {
@@ -341,120 +480,153 @@ function openNoteEditor(index = null) {
   }
 }
 
+/* ADD NOTE BUTTON */
+const addNoteBtn = document.getElementById("add-note-button");
+if (addNoteBtn) {
+  addNoteBtn.addEventListener("click", () => {
+    openNoteEditor(null);
+  });
+}
+
+/* CLOSE NOTE EDITOR */
+const closeNoteEditorBtn = document.getElementById("close-note-editor");
+if (closeNoteEditorBtn) {
+  closeNoteEditorBtn.addEventListener("click", () => {
+    noteEditorOverlay.classList.remove("is-visible");
+  });
+}
+
+/* SAVE NOTE */
+const saveNoteBtn = document.getElementById("save-note-button");
+if (saveNoteBtn) {
+  saveNoteBtn.addEventListener("click", () => {
+    const title = noteEditorTitle.value.trim();
+    const content = noteEditorContent.innerHTML.trim();
+    if (!content) return;
+
+    const editing = noteEditorOverlay.dataset.editing;
+    if (editing === "new") {
+      notes.push({ title, content });
+    } else {
+      notes[editing] = { title, content };
+    }
+
+    saveNotes();
+    renderNotes();
+    noteEditorOverlay.classList.remove("is-visible");
+  });
+}
+
+/* DELETE NOTE */
+const deleteNoteBtn = document.getElementById("delete-note-button");
+if (deleteNoteBtn) {
+  deleteNoteBtn.addEventListener("click", () => {
+    const editing = noteEditorOverlay.dataset.editing;
+    if (editing === "new") return;
+
+    notes.splice(editing, 1);
+    saveNotes();
+    renderNotes();
+    noteEditorOverlay.classList.remove("is-visible");
+  });
+}
+
 /* ------------------------------------------------------------
-   NOTES — CLOSE EDITOR
------------------------------------------------------------- */
-
-document.getElementById("close-note-editor").addEventListener("click", () => {
-  noteEditorOverlay.classList.remove("is-visible");
-});
-
-/* ------------------------------------------------------------
-   NOTES — SAVE NOTE
------------------------------------------------------------- */
-
-document.getElementById("save-note-button").addEventListener("click", () => {
-  const title = noteEditorTitle.value.trim();
-  const content = noteEditorContent.innerHTML.trim();
-
-  if (!content) return;
-
-  const editing = noteEditorOverlay.dataset.editing;
-
-  if (editing === "new") {
-    notes.push({ title, content });
-  } else {
-    notes[editing] = { title, content };
-  }
-
-  saveNotes();
-  renderNotes();
-  noteEditorOverlay.classList.remove("is-visible");
-});
-
-/* ------------------------------------------------------------
-   NOTES — DELETE NOTE
------------------------------------------------------------- */
-
-document.getElementById("delete-note-button").addEventListener("click", () => {
-  const editing = noteEditorOverlay.dataset.editing;
-  if (editing === "new") return;
-
-  notes.splice(editing, 1);
-  saveNotes();
-  renderNotes();
-  noteEditorOverlay.classList.remove("is-visible");
-});
-
-/* ------------------------------------------------------------
-   TIMER — CUSTOM TIME
+   TIMER — CUSTOM TIME + RING
 ------------------------------------------------------------ */
 
 function getCustomTime() {
-  const h = parseInt(hourInput.value) || 0;
-  const m = parseInt(minuteInput.value) || 0;
-  return h * 3600 + m * 60;
+  const h = parseInt(hourInput?.value || "0", 10) || 0;
+  const m = parseInt(minuteInput?.value || "0", 10) || 0;
+  const seconds = h * 3600 + m * 60;
+  return seconds > 0 ? seconds : 1500; // fallback 25 min
 }
 
 function updateTimerDisplay() {
   const m = Math.floor(remainingSeconds / 60);
   const s = remainingSeconds % 60;
-  timerDisplay.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  if (timerDisplay) {
+    timerDisplay.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }
 }
 
-/* ------------------------------------------------------------
-   TIMER — START / STOP
------------------------------------------------------------- */
+function updateRing() {
+  if (!ring) return;
+  const percent = remainingSeconds / totalSeconds;
+  ring.style.strokeDashoffset = circumference * (1 - percent);
+}
 
-document.getElementById("pomodoro-toggle").addEventListener("click", () => {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    timerInterval = null;
-    document.getElementById("pomodoro-toggle").textContent = "Start";
-    return;
-  }
-
-  totalSeconds = getCustomTime();
-  remainingSeconds = totalSeconds;
-
-  updateTimerDisplay();
-
-  timerInterval = setInterval(() => {
-    remainingSeconds--;
-
-    if (remainingSeconds <= 0) {
+/* START / PAUSE */
+const pomodoroToggleBtn = document.getElementById("pomodoro-toggle");
+if (pomodoroToggleBtn) {
+  pomodoroToggleBtn.addEventListener("click", () => {
+    if (timerInterval) {
       clearInterval(timerInterval);
       timerInterval = null;
-      remainingSeconds = 0;
+      pomodoroToggleBtn.textContent = "Start";
+      return;
     }
 
+    totalSeconds = getCustomTime();
+    remainingSeconds = totalSeconds;
     updateTimerDisplay();
-  }, 1000);
+    updateRing();
 
-  document.getElementById("pomodoro-toggle").textContent = "Pause";
-});
+    timerInterval = setInterval(() => {
+      remainingSeconds--;
+      if (remainingSeconds <= 0) {
+        remainingSeconds = 0;
+        updateTimerDisplay();
+        updateRing();
+        clearInterval(timerInterval);
+        timerInterval = null;
+        pomodoroToggleBtn.textContent = "Start";
+        return;
+      }
+      updateTimerDisplay();
+      updateRing();
+    }, 1000);
 
-/* ------------------------------------------------------------
-   TIMER — RESET
------------------------------------------------------------- */
+    pomodoroToggleBtn.textContent = "Pause";
+  });
+}
 
-document.getElementById("pomodoro-reset").addEventListener("click", () => {
-  clearInterval(timerInterval);
-  timerInterval = null;
+/* RESET */
+const pomodoroResetBtn = document.getElementById("pomodoro-reset");
+if (pomodoroResetBtn) {
+  pomodoroResetBtn.addEventListener("click", () => {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    totalSeconds = getCustomTime();
+    remainingSeconds = totalSeconds;
+    updateTimerDisplay();
+    updateRing();
 
-  remainingSeconds = getCustomTime();
-  updateTimerDisplay();
-
-  document.getElementById("pomodoro-toggle").textContent = "Start";
-});
+    if (pomodoroToggleBtn) {
+      pomodoroToggleBtn.textContent = "Start";
+    }
+  });
+}
 
 /* ------------------------------------------------------------
    DARK MODE TOGGLE
 ------------------------------------------------------------ */
 
-document.getElementById("settings-theme-toggle").addEventListener("click", () => {
-  const root = document.documentElement;
-  const current = root.getAttribute("data-theme");
-  const next = current === "light" ? "dark" : "light";
-  root.setAttribute("data-theme", next);
-});
+const themeToggleBtn = document.getElementById("settings-theme-toggle");
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener("click", () => {
+    const root = document.documentElement;
+    const current = root.getAttribute("data-theme") || "light";
+    const next = current === "light" ? "dark" : "light";
+    root.setAttribute("data-theme", next);
+    localStorage.setItem("aura-theme", next);
+  });
+}
+
+/* Load theme from storage */
+const savedTheme = localStorage.getItem("aura-theme");
+if (savedTheme) {
+  document.documentElement.setAttribute("data-theme", savedTheme);
+}

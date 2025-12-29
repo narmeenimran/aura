@@ -17,29 +17,89 @@
 
 <body>
 
-  <!-- ONBOARDING -->
+  <!-- ONBOARDING WIZARD -->
   <div id="onboarding-screen" class="onboarding-screen">
-    <div class="onboarding-card">
-      <h1 class="onboarding-title">welcome</h1>
-      <p class="onboarding-sub">what’s your name?</p>
+    <div class="onboarding-steps">
 
-      <input
-        id="onboarding-name-input"
-        class="text-input"
-        type="text"
-        placeholder="enter your name"
-      />
+      <!-- STEP 1: NAME -->
+      <div class="onboarding-card is-active" data-step="1">
+        <h1 class="onboarding-title">what’s your name?</h1>
+        <p class="onboarding-sub">this is your space now</p>
 
-      <button id="onboarding-submit" class="primary-button full-width">
-        continue
-      </button>
+        <input
+          id="onboarding-name-input"
+          class="text-input"
+          type="text"
+          placeholder="enter your name"
+        />
+
+        <button id="onboarding-next-1" class="primary-button full-width">
+          continue
+        </button>
+      </div>
+
+      <!-- STEP 2: AGE -->
+      <div class="onboarding-card" data-step="2">
+        <h1 class="onboarding-title">how old are you?</h1>
+        <p class="onboarding-sub">don’t worry, i won’t tell anyone</p>
+
+        <input
+          id="onboarding-age-input"
+          class="text-input"
+          type="number"
+          min="1"
+          max="120"
+          placeholder="enter your age"
+        />
+
+        <button id="onboarding-next-2" class="primary-button full-width">
+          continue
+        </button>
+      </div>
+
+      <!-- STEP 3: PURPOSE -->
+      <div class="onboarding-card" data-step="3">
+        <h1 class="onboarding-title">what brings you to aura?</h1>
+        <p class="onboarding-sub">choose as many as you like</p>
+
+        <div class="onboarding-checkboxes">
+          <label class="checkbox-row">
+            <input type="checkbox" name="purpose" value="increase productivity" />
+            <span>increase productivity</span>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" name="purpose" value="excel academically" />
+            <span>excel academically</span>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" name="purpose" value="improve focus" />
+            <span>improve focus</span>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" name="purpose" value="reduce procrastination" />
+            <span>reduce procrastination</span>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" name="purpose" value="other" />
+            <span>other</span>
+          </label>
+        </div>
+
+        <button id="onboarding-finish" class="primary-button full-width">
+          finish
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- APP ROOT -->
   <div id="app-root" class="app-root" style="display:none;">
 
-    <!-- SIDEBAR (DESKTOP) -->
+    <!-- SIDEBAR (DESKTOP, HIDDEN BY CSS ON MOBILE) -->
     <aside class="aura-sidebar">
       <div class="sidebar-header">Aura</div>
       <nav class="sidebar-nav">
@@ -54,14 +114,11 @@
     <!-- APP SHELL -->
     <div class="aura-app-shell">
 
-      <!-- TOPBAR (FIXED) -->
+      <!-- TOPBAR (DESKTOP, HIDDEN ON MOBILE) -->
       <header class="aura-topbar">
         <h2 id="topbar-title" class="topbar-title">Home</h2>
         <div id="profile-button" class="profile-circle"></div>
       </header>
-
-      <!-- SWIPE LAYER -->
-      <div id="swipe-layer" class="swipe-layer"></div>
 
       <!-- SCREENS WRAPPER -->
       <main class="aura-screens no-padding">
@@ -142,7 +199,7 @@
         <section class="aura-screen" data-screen="timer">
           <h3 class="screen-title">Timer</h3>
 
-          <!-- TIMER PICKER (NEW) -->
+          <!-- TIMER PICKER -->
           <div class="timer-picker">
             <div class="timer-picker-column">
               <input id="timer-hours" type="number" min="0" max="23" value="0">

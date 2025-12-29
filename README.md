@@ -2,10 +2,10 @@ htht# YOUR PROJECT TITLE
 #### Video Demo:  <URL HERE>
 #### Description:
 Aura — A Mobile‑First Productivity Web App
-A modern, iOS‑inspired productivity environment combining flashcards, notes, a Pomodoro timer, and a customizable user experience.
+An iOS‑inspired productivity environment combining flashcards, notes, a Pomodoro timer, and a customizable user experience.
 
 Overview
-Aura is a mobile‑first productivity web application designed to feel like a native iOS app. It brings together four core tools—Flashcards, Notes, a Pomodoro Timer, and a customizable Settings panel—into a single, elegant interface. The project focuses heavily on user experience, visual polish, and intuitive interaction. Every screen, animation, and component is crafted to feel soft, modern, and familiar to users who enjoy Apple’s design language.
+Aura is a mobile‑first productivity web application designed to feel like a native iOS app. It brings together four core tools — Flashcards, Notes, a Pomodoro Timer, and a customizable Settings panel—into a single interface. The project focuses heavily on user experience, visual polish, and intuitive interaction. Every screen, animation, and component is crafted to feel familiar to users who enjoy Apple’s design language.
 
 The app uses localStorage to persist all user data, including decks, flashcards, notes, timer preferences, theme settings, and the user’s name. This ensures that the experience feels personal and consistent across sessions without requiring a backend or authentication system.
 
@@ -15,48 +15,10 @@ Project Structure
 The project consists of three main files that I wrote and maintained:
 
 1. index.html — Application Structure
-This file defines the full layout of the application. It contains:
-
-The onboarding screen where users enter their name
-
-The main app shell
-
-Five primary screens: Home, Flashcards, Notes, Timer, and Settings
-
-A bottom navigation bar styled like iOS
-
-Overlays for the profile editor and note editor
-
-The slide‑in deck viewer for flashcards
-
-Input fields for the customizable Pomodoro timer
-
-The HTML is intentionally structured with semantic sections and clear IDs to make JavaScript interactions predictable and maintainable. I debated whether to use a component‑based framework like React, but ultimately chose pure HTML + JS to maintain simplicity and avoid unnecessary overhead for a mobile‑first project.
+This file defines the full layout of the application. It contains: The onboarding screen where users enter their name, The main app shell, Five primary screens: Home, Flashcards, Notes, Timer, and Settings, A bottom navigation bar styled like iOS, Overlays for the profile editor and note editor, The slide‑in deck viewer for flashcards, Input fields for the customizable Pomodoro timer, The HTML is intentionally structured with semantic sections and clear IDs to make JavaScript interactions predictable and maintainable. I debated whether to use a component‑based framework like React, but ultimately chose pure HTML + JS to maintain simplicity and avoid unnecessary overhead for a mobile‑first project.
 
 2. style.css — Full iOS‑17 Soft‑Glass Design System
-This is the largest and most visually impactful file in the project. It implements a complete design system inspired by iOS 17, including:
-
-Soft‑glass backgrounds
-
-Medium blur effects
-
-Rounded corners
-
-Subtle shadows
-
-A purple accent color
-
-Responsive mobile‑first layout
-
-A dainty, centered onboarding card
-
-A redesigned timer picker
-
-Equal‑sized flashcard buttons
-
-A full dark mode theme
-
-A full‑screen note editor styled like Apple Notes
+This is the largest and most visually impactful file in the project. It implements a complete design system inspired by iOS 17, including: Soft‑glass backgrounds, Medium blur effects, Rounded corners, Subtle shadows, A purple accent color, Responsive mobile‑first layout, A dainty, centered onboarding card, A redesigned timer picker, Equal‑sized flashcard buttons, A full dark mode theme, A full‑screen note editor styled like Apple Notes
 
 One of the biggest design debates was how “strong” the glass effect should be. I experimented with subtle, medium, and strong blur levels before settling on medium glass, which strikes the best balance between readability and aesthetic depth.
 
