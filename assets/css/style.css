@@ -47,13 +47,13 @@ html[data-theme="dark"] {
 }
 
 /* -----------------------------------------------------------
-   GLOBAL RESET (iPhone FIX)
+   GLOBAL RESET
 ----------------------------------------------------------- */
 
 html, body {
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow-x: hidden !important;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
   width: 100%;
   max-width: 100%;
   background: var(--bg);
@@ -71,20 +71,41 @@ body {
 }
 
 /* -----------------------------------------------------------
+   SIDEBAR (DESKTOP ONLY)
+----------------------------------------------------------- */
+
+.aura-sidebar {
+  width: 240px;
+  background: var(--surface-strong);
+  backdrop-filter: blur(var(--blur-soft));
+  border-right: 1px solid var(--border);
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 950;
+}
+
+/* HIDE SIDEBAR ON MOBILE */
+@media (max-width: 880px) {
+  .aura-sidebar {
+    display: none !important;
+  }
+}
+
+/* -----------------------------------------------------------
    TOPBAR (DESKTOP ONLY)
 ----------------------------------------------------------- */
 
 .aura-topbar {
   position: fixed;
   top: env(safe-area-inset-top);
-  left: 0;
-  width: 100%;
+  left: 240px;
+  width: calc(100% - 240px);
   height: var(--topbar-height);
 
   background: rgba(255, 255, 255, 0);
   backdrop-filter: blur(var(--blur-soft));
-  -webkit-backdrop-filter: blur(var(--blur-soft));
-
   border-bottom: 1px solid var(--border);
 
   display: flex;
@@ -99,11 +120,6 @@ body {
 @media (max-width: 880px) {
   .aura-topbar {
     display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
   }
 }
 
@@ -114,14 +130,29 @@ body {
 }
 
 /* -----------------------------------------------------------
+   APP SHELL LAYOUT
+----------------------------------------------------------- */
+
+.aura-app-shell {
+  margin-left: 240px;
+}
+
+/* REMOVE SIDEBAR SPACE ON MOBILE */
+@media (max-width: 880px) {
+  .aura-app-shell {
+    margin-left: 0 !important;
+  }
+}
+
+/* -----------------------------------------------------------
    SCREEN WRAPPER
 ----------------------------------------------------------- */
 
 .aura-screens {
   position: relative;
   width: 100%;
-  margin: 0 !important;
-  padding-left: 0 !important;
+  margin: 0;
+  padding-left: 0;
 
   height: calc(100dvh - var(--bottom-nav-height));
   overflow-y: auto;
@@ -129,7 +160,7 @@ body {
   padding-bottom: var(--bottom-nav-height);
 }
 
-/* ADD TOPBAR SPACE ON DESKTOP ONLY */
+/* ADD TOPBAR SPACE ON DESKTOP */
 @media (min-width: 881px) {
   .aura-screens {
     padding-top: var(--topbar-height);
@@ -138,7 +169,7 @@ body {
 }
 
 .aura-screen > *:first-child {
-  margin-top: 0 !important;
+  margin-top: 0;
   padding-top: 6px;
 }
 
@@ -326,7 +357,7 @@ body {
 }
 
 /* -----------------------------------------------------------
-   TIMER (POMODORO)
+   TIMER
 ----------------------------------------------------------- */
 
 .timer-wrapper {
@@ -430,8 +461,6 @@ body {
 
   background: rgba(255, 255, 255, 0);
   backdrop-filter: blur(var(--blur-soft));
-  -webkit-backdrop-filter: blur(var(--blur-soft));
-
   border-top: 1px solid var(--border);
 
   display: flex;
