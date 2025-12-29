@@ -1,5 +1,3 @@
-// flashcards.js — fully fixed deck system with haptics + clean logic
-
 import { storage } from "../utils/storage.js";
 
 const STORAGE_KEY = "aura_flashcards";
@@ -7,10 +5,6 @@ const STORAGE_KEY = "aura_flashcards";
 let decks = [];
 let currentDeckId = null;
 let currentCardIndex = 0;
-
-/* -----------------------------------------------------------
-   LOAD + SAVE
------------------------------------------------------------ */
 
 function loadDecks() {
   const saved = storage.get(STORAGE_KEY);
@@ -26,17 +20,9 @@ function saveDecks() {
   storage.set(STORAGE_KEY, decks);
 }
 
-/* -----------------------------------------------------------
-   HAPTICS
------------------------------------------------------------ */
-
 function vibrate(ms = 10) {
   if (navigator.vibrate) navigator.vibrate(ms);
 }
-
-/* -----------------------------------------------------------
-   ELEMENTS
------------------------------------------------------------ */
 
 let deckGridEl;
 let deckViewerEl;
@@ -57,10 +43,6 @@ let renameDeckBtn;
 let deleteDeckBtn;
 let closeViewerBtn;
 let addDeckBtn;
-
-/* -----------------------------------------------------------
-   RENDER DECK GRID
------------------------------------------------------------ */
 
 function renderDeckGrid() {
   deckGridEl.innerHTML = "";
@@ -87,10 +69,6 @@ function renderDeckGrid() {
   });
 }
 
-/* -----------------------------------------------------------
-   OPEN DECK VIEWER
------------------------------------------------------------ */
-
 function openDeck(id) {
   const deck = decks.find((d) => d.id === id);
   if (!deck) return;
@@ -105,20 +83,12 @@ function openDeck(id) {
   vibrate(10);
 }
 
-/* -----------------------------------------------------------
-   CLOSE DECK VIEWER
------------------------------------------------------------ */
-
 function closeDeckViewer() {
   deckViewerEl.classList.remove("is-visible");
   currentDeckId = null;
   currentCardIndex = 0;
   vibrate(10);
 }
-
-/* -----------------------------------------------------------
-   UPDATE FLASHCARD CONTENT
------------------------------------------------------------ */
 
 function updateFlashcard() {
   const deck = decks.find((d) => d.id === currentDeckId);
@@ -137,18 +107,10 @@ function updateFlashcard() {
   flashcardProgressEl.textContent = `${currentCardIndex + 1} / ${deck.cards.length}`;
 }
 
-/* -----------------------------------------------------------
-   FLIP CARD
------------------------------------------------------------ */
-
 function flipCard() {
   flashcardEl.classList.toggle("is-flipped");
   vibrate(10);
 }
-
-/* -----------------------------------------------------------
-   NEXT / PREV
------------------------------------------------------------ */
 
 function nextCard() {
   const deck = decks.find((d) => d.id === currentDeckId);
@@ -172,10 +134,6 @@ function prevCard() {
   vibrate(10);
 }
 
-/* -----------------------------------------------------------
-   ADD DECK
------------------------------------------------------------ */
-
 function addDeck() {
   const name = prompt("Deck name:");
   if (!name || !name.trim()) return;
@@ -191,10 +149,6 @@ function addDeck() {
   renderDeckGrid();
   vibrate(15);
 }
-
-/* -----------------------------------------------------------
-   ADD CARD
------------------------------------------------------------ */
 
 function addCard() {
   const deck = decks.find((d) => d.id === currentDeckId);
@@ -213,10 +167,6 @@ function addCard() {
   renderDeckGrid();
   vibrate(15);
 }
-
-/* -----------------------------------------------------------
-   EDIT CARD
------------------------------------------------------------ */
 
 function editCard() {
   const deck = decks.find((d) => d.id === currentDeckId);
@@ -239,10 +189,6 @@ function editCard() {
   vibrate(15);
 }
 
-/* -----------------------------------------------------------
-   DELETE CARD
------------------------------------------------------------ */
-
 function deleteCard() {
   const deck = decks.find((d) => d.id === currentDeckId);
   if (!deck || deck.cards.length === 0) return;
@@ -262,10 +208,6 @@ function deleteCard() {
   vibrate(20);
 }
 
-/* -----------------------------------------------------------
-   RENAME DECK
------------------------------------------------------------ */
-
 function renameDeck() {
   const deck = decks.find((d) => d.id === currentDeckId);
   if (!deck) return;
@@ -281,10 +223,6 @@ function renameDeck() {
   vibrate(15);
 }
 
-/* -----------------------------------------------------------
-   DELETE DECK
------------------------------------------------------------ */
-
 function deleteDeck() {
   const confirmDelete = confirm("Delete this deck?");
   if (!confirmDelete) return;
@@ -296,10 +234,6 @@ function deleteDeck() {
   closeDeckViewer();
   vibrate(20);
 }
-
-/* -----------------------------------------------------------
-   INIT
------------------------------------------------------------ */
 
 export function initFlashcards() {
   deckGridEl = document.getElementById("deck-grid");

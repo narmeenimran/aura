@@ -1,5 +1,3 @@
-// storage.js — simple wrapper around localStorage with JSON safety
-
 export const storage = {
   get(key) {
     try {

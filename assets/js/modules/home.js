@@ -1,22 +1,12 @@
-// home.js — simple to‑do list for the Home screen
-
 import { storage } from "../utils/storage.js";
 
 const STORAGE_KEY = "aura_todos";
 
 let todos = [];
 
-/* -----------------------------------------------------------
-   HAPTICS
------------------------------------------------------------ */
-
 function vibrate(ms = 10) {
   if (navigator.vibrate) navigator.vibrate(ms);
 }
-
-/* -----------------------------------------------------------
-   LOAD + SAVE
------------------------------------------------------------ */
 
 function loadTodos() {
   const saved = storage.get(STORAGE_KEY);
@@ -27,16 +17,8 @@ function saveTodos() {
   storage.set(STORAGE_KEY, todos);
 }
 
-/* -----------------------------------------------------------
-   ELEMENTS
------------------------------------------------------------ */
-
 let todoListEl;
 let addTodoBtn;
-
-/* -----------------------------------------------------------
-   RENDER LIST
------------------------------------------------------------ */
 
 function renderTodos() {
   todoListEl.innerHTML = "";
@@ -58,7 +40,6 @@ function renderTodos() {
       <button class="ghost-button small delete-btn">✕</button>
     `;
 
-    // Toggle done
     li.querySelector("input").addEventListener("change", () => {
       item.done = !item.done;
       saveTodos();
@@ -66,7 +47,6 @@ function renderTodos() {
       vibrate(10);
     });
 
-    // Delete
     li.querySelector(".delete-btn").addEventListener("click", () => {
       todos.splice(index, 1);
       saveTodos();
@@ -77,10 +57,6 @@ function renderTodos() {
     todoListEl.appendChild(li);
   });
 }
-
-/* -----------------------------------------------------------
-   ADD TODO
------------------------------------------------------------ */
 
 function addTodo() {
   const text = prompt("New task:");
@@ -95,10 +71,6 @@ function addTodo() {
   renderTodos();
   vibrate(15);
 }
-
-/* -----------------------------------------------------------
-   INIT
------------------------------------------------------------ */
 
 export function initHome() {
   todoListEl = document.getElementById("todo-list");

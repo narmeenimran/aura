@@ -1,15 +1,9 @@
-// notes.js — notes system with formatting toolbar + modal editor + haptics
-
 import { storage } from "../utils/storage.js";
 
 const STORAGE_KEY = "aura_notes";
 
 let notes = [];
 let currentNoteId = null;
-
-/* -----------------------------------------------------------
-   LOAD + SAVE
------------------------------------------------------------ */
 
 function loadNotes() {
   const saved = storage.get(STORAGE_KEY);
@@ -20,36 +14,21 @@ function saveNotes() {
   storage.set(STORAGE_KEY, notes);
 }
 
-/* -----------------------------------------------------------
-   HAPTICS
------------------------------------------------------------ */
-
 function vibrate(ms = 10) {
   if (navigator.vibrate) navigator.vibrate(ms);
 }
 
-/* -----------------------------------------------------------
-   ELEMENTS
------------------------------------------------------------ */
-
 let notesListEl;
 let searchInput;
 let addNoteBtn;
-
 let overlayEl;
 let titleLabelEl;
 let titleInputEl;
 let contentEl;
-
 let saveBtn;
 let deleteBtn;
 let closeBtn;
-
 let toolbarButtons;
-
-/* -----------------------------------------------------------
-   RENDER NOTES LIST
------------------------------------------------------------ */
 
 function renderNotesList(filter = "") {
   notesListEl.innerHTML = "";
@@ -80,10 +59,6 @@ function renderNotesList(filter = "") {
   });
 }
 
-/* -----------------------------------------------------------
-   OPEN NOTE
------------------------------------------------------------ */
-
 function openNote(id) {
   const note = notes.find((n) => n.id === id);
   if (!note) return;
@@ -100,10 +75,6 @@ function openNote(id) {
   vibrate(10);
 }
 
-/* -----------------------------------------------------------
-   CLOSE NOTE
------------------------------------------------------------ */
-
 function closeNoteEditor() {
   overlayEl.classList.remove("is-visible");
   overlayEl.setAttribute("aria-hidden", "true");
@@ -112,10 +83,6 @@ function closeNoteEditor() {
   titleInputEl.value = "";
   contentEl.innerHTML = "";
 }
-
-/* -----------------------------------------------------------
-   ADD NOTE
------------------------------------------------------------ */
 
 function addNote() {
   currentNoteId = null;
@@ -129,10 +96,6 @@ function addNote() {
 
   vibrate(10);
 }
-
-/* -----------------------------------------------------------
-   SAVE NOTE
------------------------------------------------------------ */
 
 function saveNote() {
   const title = titleInputEl.value.trim();
@@ -162,10 +125,6 @@ function saveNote() {
   vibrate(15);
 }
 
-/* -----------------------------------------------------------
-   DELETE NOTE
------------------------------------------------------------ */
-
 function deleteNote() {
   if (!currentNoteId) return;
 
@@ -179,18 +138,10 @@ function deleteNote() {
   vibrate(20);
 }
 
-/* -----------------------------------------------------------
-   TOOLBAR FORMATTING
------------------------------------------------------------ */
-
 function applyFormat(command, value = null) {
   document.execCommand(command, false, value);
   vibrate(5);
 }
-
-/* -----------------------------------------------------------
-   INIT
------------------------------------------------------------ */
 
 export function initNotes() {
   notesListEl = document.getElementById("notes-list");
@@ -211,30 +162,20 @@ export function initNotes() {
   loadNotes();
   renderNotesList();
 
-  /* Search */
   searchInput.addEventListener("input", () => {
     renderNotesList(searchInput.value);
   });
 
-  /* Add note */
   addNoteBtn.addEventListener("click", addNote);
-
-  /* Save */
   saveBtn.addEventListener("click", saveNote);
-
-  /* Delete */
   deleteBtn.addEventListener("click", deleteNote);
-
-  /* Close */
   closeBtn.addEventListener("click", closeNoteEditor);
 
-  /* Close overlay when clicking outside */
   overlayEl.addEventListener("click", (evt) => {
     if (evt.target === overlayEl) closeNoteEditor();
   });
 
-  /* Toolbar buttons */
-  toolbarButtons.forEach((btn) => {
+    toolbarButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const format = btn.dataset.format;
       const color = btn.dataset.color || null;

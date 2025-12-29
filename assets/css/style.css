@@ -1,7 +1,3 @@
-/* -----------------------------------------------------------
-   iOS 17 SOFT-GLASS — ROOT VARIABLES
------------------------------------------------------------ */
-
 :root {
   --accent: #7b5cff;
   --accent-strong: #5b3bff;
@@ -28,10 +24,6 @@
   --transition-med: 0.25s ease;
 }
 
-/* -----------------------------------------------------------
-   GLOBAL RESET
------------------------------------------------------------ */
-
 html, body {
   margin: 0;
   padding: 0;
@@ -47,27 +39,15 @@ html, body {
   box-sizing: border-box;
 }
 
-/* -----------------------------------------------------------
-   REMOVE DESKTOP UI COMPLETELY
------------------------------------------------------------ */
-
 .aura-sidebar,
 .aura-topbar {
   display: none !important;
 }
 
-/* -----------------------------------------------------------
-   APP SHELL
------------------------------------------------------------ */
-
 .aura-app-shell {
   width: 100%;
   margin: 0;
 }
-
-/* -----------------------------------------------------------
-   SCREENS WRAPPER
------------------------------------------------------------ */
 
 .aura-screens {
   width: 100%;
@@ -88,10 +68,6 @@ html, body {
   opacity: 1;
 }
 
-/* -----------------------------------------------------------
-   GLASS CARD (iOS 17)
------------------------------------------------------------ */
-
 .glass-card {
   background: var(--glass);
   backdrop-filter: blur(var(--blur));
@@ -101,10 +77,6 @@ html, body {
   margin-bottom: 16px;
   box-shadow: var(--shadow);
 }
-
-/* -----------------------------------------------------------
-   BUTTONS — iOS STYLE
------------------------------------------------------------ */
 
 button {
   font-family: inherit;
@@ -117,7 +89,6 @@ button:active {
   transform: scale(0.97);
 }
 
-/* Primary (purple) */
 .primary-button {
   background: var(--accent);
   color: white;
@@ -128,7 +99,6 @@ button:active {
   box-shadow: var(--shadow);
 }
 
-/* Secondary (glass) */
 .secondary-button {
   background: var(--glass);
   backdrop-filter: blur(var(--blur));
@@ -139,7 +109,6 @@ button:active {
   color: var(--accent-strong);
 }
 
-/* Ghost (white) */
 .ghost-button {
   background: white;
   border: 1px solid #e0e0e0;
@@ -148,14 +117,9 @@ button:active {
   font-size: 1rem;
 }
 
-/* Full width helper */
 .full-width {
   width: 100%;
 }
-
-/* -----------------------------------------------------------
-   HOME
------------------------------------------------------------ */
 
 .home-greeting {
   font-size: 2.4rem;
@@ -183,10 +147,6 @@ button:active {
   align-items: center;
 }
 
-/* -----------------------------------------------------------
-   FLASHCARDS
------------------------------------------------------------ */
-
 .screen-title {
   font-size: 1.6rem;
   margin-bottom: 16px;
@@ -209,7 +169,6 @@ button:active {
   cursor: pointer;
 }
 
-/* Slide-in viewer */
 #deck-viewer-panel {
   position: fixed;
   top: 0;
@@ -228,7 +187,6 @@ button:active {
   right: 0;
 }
 
-/* Flashcard */
 .flashcard {
   width: 100%;
   height: 260px;
@@ -267,10 +225,6 @@ button:active {
   transform: rotateY(180deg);
 }
 
-/* -----------------------------------------------------------
-   NOTES
------------------------------------------------------------ */
-
 .note-search {
   background: white;
   border: 1px solid #e0e0e0;
@@ -285,10 +239,6 @@ button:active {
   flex-direction: column;
   gap: 12px;
 }
-
-/* -----------------------------------------------------------
-   FULL-SCREEN NOTE EDITOR (iOS Notes)
------------------------------------------------------------ */
 
 #note-editor-overlay .overlay-content {
   width: 100%;
@@ -334,10 +284,6 @@ button:active {
   overflow-y: auto;
 }
 
-/* -----------------------------------------------------------
-   TIMER
------------------------------------------------------------ */
-
 .timer-wrapper {
   display: flex;
   flex-direction: column;
@@ -365,10 +311,6 @@ button:active {
   font-weight: 600;
 }
 
-/* -----------------------------------------------------------
-   OVERLAYS
------------------------------------------------------------ */
-
 .aura-overlay {
   position: fixed;
   inset: 0;
@@ -386,10 +328,6 @@ button:active {
   display: flex;
   opacity: 1;
 }
-
-/* -----------------------------------------------------------
-   BOTTOM NAV (iOS STYLE)
------------------------------------------------------------ */
 
 .aura-bottom-nav {
   position: fixed;

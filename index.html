@@ -17,7 +17,6 @@
 
 <body>
 
-  <!-- ONBOARDING -->
   <div id="onboarding-screen" class="onboarding-screen">
     <div class="onboarding-card">
       <h1 class="onboarding-title">welcome</h1>
@@ -36,10 +35,8 @@
     </div>
   </div>
 
-  <!-- APP ROOT -->
   <div id="app-root" class="app-root" style="display:none;">
 
-    <!-- SIDEBAR (DESKTOP) -->
     <aside class="aura-sidebar">
       <div class="sidebar-header">Aura</div>
       <nav class="sidebar-nav">
@@ -51,22 +48,17 @@
       </nav>
     </aside>
 
-    <!-- APP SHELL -->
     <div class="aura-app-shell">
 
-      <!-- TOPBAR (FIXED) -->
       <header class="aura-topbar">
         <h2 id="topbar-title" class="topbar-title">Home</h2>
         <div id="profile-button" class="profile-circle"></div>
       </header>
 
-      <!-- SWIPE LAYER -->
       <div id="swipe-layer" class="swipe-layer"></div>
 
-      <!-- SCREENS WRAPPER -->
       <main class="aura-screens no-padding">
 
-        <!-- HOME -->
         <section class="aura-screen is-active" data-screen="home">
           <h1 id="home-greeting" class="home-greeting">hello,</h1>
 
@@ -79,7 +71,6 @@
           </div>
         </section>
 
-        <!-- FLASHCARDS -->
         <section class="aura-screen" data-screen="flashcards">
           <h3 class="screen-title">Flashcards</h3>
 
@@ -89,7 +80,6 @@
             New deck
           </button>
 
-          <!-- Slide-in Deck Viewer -->
           <div id="deck-viewer-panel" class="deck-viewer-panel">
             <div class="deck-viewer-header">
               <h2 id="deck-viewer-title">Deck</h2>
@@ -118,7 +108,6 @@
           </div>
         </section>
 
-        <!-- NOTES -->
         <section class="aura-screen" data-screen="notes">
           <h3 class="screen-title">Notes</h3>
 
@@ -138,7 +127,6 @@
           </button>
         </section>
 
-        <!-- TIMER -->
         <section class="aura-screen" data-screen="timer">
           <h3 class="screen-title">Timer</h3>
 
@@ -157,7 +145,6 @@
           </div>
         </section>
 
-        <!-- SETTINGS -->
         <section class="aura-screen" data-screen="settings">
           <h3 class="screen-title">Settings</h3>
 
@@ -178,7 +165,6 @@
 
       </main>
 
-      <!-- BOTTOM NAV -->
       <nav class="aura-bottom-nav">
         <button class="bottom-nav-item is-active" data-screen-target="home">Home</button>
         <button class="bottom-nav-item" data-screen-target="flashcards">Flashcards</button>
@@ -190,7 +176,6 @@
     </div>
   </div>
 
-  <!-- PROFILE OVERLAY -->
   <div id="profile-overlay" class="aura-overlay" aria-hidden="true">
     <div class="overlay-content profile-modal">
       <h2>Profile</h2>
@@ -216,7 +201,6 @@
     </div>
   </div>
 
-  <!-- NOTES EDITOR OVERLAY (N2: fade modal, with toolbar) -->
   <div id="note-editor-overlay" class="aura-overlay" aria-hidden="true">
     <div class="overlay-content note-modal">
       <h2 id="note-editor-title-label">New note</h2>
@@ -228,7 +212,6 @@
         placeholder="Title"
       />
 
-      <!-- TOOLBAR -->
       <div class="note-toolbar">
         <button data-format="bold"><b>B</b></button>
         <button data-format="italic"><i>I</i></button>

@@ -1,14 +1,8 @@
-// app.js — navigation, transitions, swipe gestures, haptics
-
 import { initHome } from "./modules/home.js";
 import { initFlashcards } from "./modules/flashcards.js";
 import { initNotes } from "./modules/notes.js";
 import { initTimer } from "./modules/timer.js";
 import { initProfile } from "./modules/profile.js";
-
-/* -----------------------------------------------------------
-   ELEMENTS
------------------------------------------------------------ */
 
 const onboardingScreen = document.getElementById("onboarding-screen");
 const onboardingInput = document.getElementById("onboarding-name-input");
@@ -27,10 +21,6 @@ const changeNameBtn = document.getElementById("settings-change-name");
 const profileButton = document.getElementById("profile-button");
 const swipeLayer = document.getElementById("swipe-layer");
 
-/* -----------------------------------------------------------
-   NAME STORAGE
------------------------------------------------------------ */
-
 function loadName() {
   return localStorage.getItem("aura_username") || null;
 }
@@ -43,10 +33,6 @@ export function updateGreeting() {
   const name = loadName();
   homeGreeting.textContent = name ? `hello, ${name.toLowerCase()}` : "hello,";
 }
-
-/* -----------------------------------------------------------
-   ONBOARDING
------------------------------------------------------------ */
 
 function handleOnboarding() {
   const saved = loadName();
@@ -70,10 +56,6 @@ function handleOnboarding() {
   });
 }
 
-/* -----------------------------------------------------------
-   CHANGE NAME
------------------------------------------------------------ */
-
 function initChangeName() {
   changeNameBtn.addEventListener("click", () => {
     const current = loadName() || "";
@@ -85,17 +67,9 @@ function initChangeName() {
   });
 }
 
-/* -----------------------------------------------------------
-   HAPTICS
------------------------------------------------------------ */
-
 function vibrate(ms = 10) {
   if (navigator.vibrate) navigator.vibrate(ms);
 }
-
-/* -----------------------------------------------------------
-   SCREEN SWITCHING (S1 TRANSITION)
------------------------------------------------------------ */
 
 let currentScreen = "home";
 
@@ -129,10 +103,6 @@ function initNavigation() {
     });
   });
 }
-
-/* -----------------------------------------------------------
-   SWIPE NAVIGATION (W2)
------------------------------------------------------------ */
 
 let startX = 0;
 let isSwiping = false;
@@ -179,10 +149,6 @@ function initSwipeNavigation() {
   });
 }
 
-/* -----------------------------------------------------------
-   THEME TOGGLE
------------------------------------------------------------ */
-
 function initThemeToggle() {
   themeToggle.addEventListener("click", () => {
     const html = document.documentElement;
@@ -198,10 +164,6 @@ function initThemeToggle() {
   }
 }
 
-/* -----------------------------------------------------------
-   PROFILE BUTTON
------------------------------------------------------------ */
-
 function initProfileButton() {
   profileButton.addEventListener("click", () => {
     const overlay = document.getElementById("profile-overlay");
@@ -210,10 +172,6 @@ function initProfileButton() {
     vibrate(10);
   });
 }
-
-/* -----------------------------------------------------------
-   INIT APP
------------------------------------------------------------ */
 
 function initApp() {
   handleOnboarding();

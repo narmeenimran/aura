@@ -1,5 +1,3 @@
-// navigation.js — handles switching screens and syncing nav (sidebar + bottom nav)
-
 export function initNavigation() {
   const screens = Array.from(
     document.querySelectorAll(".aura-screen[data-screen]")
