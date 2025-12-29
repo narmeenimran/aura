@@ -1,5 +1,3 @@
-// app.js — main entry for Aura
-
 import { initIntro } from "./modules/intro.js";
 import { initNavigation } from "./modules/navigation.js";
 import { initTheme } from "./modules/theme.js";

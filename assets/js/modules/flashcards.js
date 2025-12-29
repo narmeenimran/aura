@@ -1,4 +1,4 @@
-// flashcards.js — vertical flip + deck CRUD + viewer overlay
+// flashcards.js — clean vertical flip + deck CRUD + overlay
 
 import { storage } from "../utils/storage.js";
 import { updateHomeStats } from "./home.js";
@@ -16,6 +16,8 @@ let titleEl;
 let frontEl;
 let backEl;
 let progressEl;
+let flashcardEl;
+
 let flipBtn;
 let prevBtn;
 let nextBtn;
@@ -26,53 +28,34 @@ let renameDeckBtn;
 let deleteDeckBtn;
 let closeBtn;
 let addDeckBtn;
-let flashcardEl;
 
-// Default starter decks
+/* -----------------------------------------------------------
+   DEFAULT STARTER DECKS
+----------------------------------------------------------- */
 function defaultDecks() {
   return [
     {
       id: "1",
       name: "Neuroscience basics",
       cards: [
-        {
-          front: "What is a neuron?",
-          back: "A specialized cell that transmits nerve impulses."
-        },
-        {
-          front: "What is synaptic plasticity?",
-          back: "The ability of synapses to strengthen or weaken over time."
-        }
+        { front: "What is a neuron?", back: "A cell that transmits nerve impulses." },
+        { front: "What is synaptic plasticity?", back: "The ability of synapses to strengthen or weaken." }
       ]
     },
     {
       id: "2",
       name: "Cognitive biases",
       cards: [
-        {
-          front: "Confirmation bias",
-          back: "Seeking information that confirms existing beliefs."
-        },
-        {
-          front: "Anchoring",
-          back: "Relying too heavily on the first piece of information seen."
-        }
-      ]
-    },
-    {
-      id: "3",
-      name: "Language learning",
-      cards: [
-        {
-          front: "Best way to retain vocabulary?",
-          back: "Spaced repetition and active recall."
-        }
+        { front: "Confirmation bias", back: "Seeking info that confirms existing beliefs." },
+        { front: "Anchoring", back: "Relying too heavily on the first piece of information." }
       ]
     }
   ];
 }
 
-// Load decks
+/* -----------------------------------------------------------
+   LOAD + SAVE
+----------------------------------------------------------- */
 function loadDecks() {
   const saved = storage.get(STORAGE_KEY);
   if (Array.isArray(saved) && saved.length) {
@@ -83,15 +66,17 @@ function loadDecks() {
   }
 }
 
-// Save decks
 function saveDecks() {
   storage.set(STORAGE_KEY, decks);
   updateHomeStats();
 }
 
-// Render deck list (Flashcards screen)
+/* -----------------------------------------------------------
+   RENDER DECK LIST
+----------------------------------------------------------- */
 function renderDeckList() {
   if (!deckListEl) return;
+
   deckListEl.innerHTML = "";
 
   if (!decks.length) {
@@ -103,29 +88,39 @@ function renderDeckList() {
   }
 
   decks.forEach((deck) => {
-    const btn = document.createElement("button");
-    btn.className = "deck-card";
-    btn.dataset.deckId = deck.id;
-    btn.textContent = `${deck.name} (${deck.cards.length})`;
-    btn.addEventListener("click", () => openDeck(deck.id));
-    deckListEl.appendChild(btn);
+    const card = document.createElement("button");
+    card.className = "deck-card";
+    card.dataset.deckId = deck.id;
+
+    card.innerHTML = `
+      <div style="font-weight:600; margin-bottom:4px;">${deck.name}</div>
+      <div style="font-size:0.85rem; color:var(--text-muted);">
+        ${deck.cards.length} cards
+      </div>
+    `;
+
+    card.addEventListener("click", () => openDeck(deck.id));
+    deckListEl.appendChild(card);
   });
 }
 
-// Find deck
-function findDeckById(id) {
+/* -----------------------------------------------------------
+   HELPERS
+----------------------------------------------------------- */
+function findDeck(id) {
   return decks.find((d) => d.id === id) || null;
 }
 
-// Current deck
 function getCurrentDeck() {
-  return currentDeckId ? findDeckById(currentDeckId) : null;
+  return currentDeckId ? findDeck(currentDeckId) : null;
 }
 
-// Update flashcard view
+/* -----------------------------------------------------------
+   FLASHCARD VIEW UPDATE
+----------------------------------------------------------- */
 function updateFlashcardView() {
   const deck = getCurrentDeck();
-  if (!deck || !frontEl || !backEl || !progressEl) return;
+  if (!deck) return;
 
   if (!deck.cards.length) {
     frontEl.textContent = "This deck is empty. Add your first card.";
@@ -140,58 +135,53 @@ function updateFlashcardView() {
   }
 
   const card = deck.cards[currentCardIndex];
+
   frontEl.textContent = card.front;
   backEl.textContent = card.back;
-
   progressEl.textContent = `${currentCardIndex + 1} / ${deck.cards.length}`;
 }
 
-// Open overlay
+/* -----------------------------------------------------------
+   OVERLAY CONTROL
+----------------------------------------------------------- */
 function openOverlay() {
-  if (!overlayEl) return;
   overlayEl.classList.add("is-visible");
   overlayEl.setAttribute("aria-hidden", "false");
 }
 
-// Close overlay
 function closeOverlay() {
-  if (!overlayEl) return;
   overlayEl.classList.remove("is-visible");
   overlayEl.setAttribute("aria-hidden", "true");
+
   currentDeckId = null;
   currentCardIndex = 0;
 
-  // Reset flip state
-  if (flashcardEl) {
-    flashcardEl.classList.remove("is-flipped");
-  }
+  flashcardEl.classList.remove("is-flipped");
 }
 
-// Open deck
+/* -----------------------------------------------------------
+   OPEN DECK
+----------------------------------------------------------- */
 function openDeck(deckId) {
-  const deck = findDeckById(deckId);
-  if (!deck || !titleEl) return;
+  const deck = findDeck(deckId);
+  if (!deck) return;
 
   currentDeckId = deckId;
   currentCardIndex = 0;
 
   titleEl.textContent = deck.name;
+  flashcardEl.classList.remove("is-flipped");
   updateFlashcardView();
   openOverlay();
-
-  // Reset flip state
-  if (flashcardEl) {
-    flashcardEl.classList.remove("is-flipped");
-  }
 }
 
-// Flip card (vertical flip)
+/* -----------------------------------------------------------
+   CARD ACTIONS
+----------------------------------------------------------- */
 function flipCard() {
-  if (!flashcardEl) return;
   flashcardEl.classList.toggle("is-flipped");
 }
 
-// Prev card
 function prevCard() {
   const deck = getCurrentDeck();
   if (!deck || !deck.cards.length) return;
@@ -203,7 +193,6 @@ function prevCard() {
   updateFlashcardView();
 }
 
-// Next card
 function nextCard() {
   const deck = getCurrentDeck();
   if (!deck || !deck.cards.length) return;
@@ -214,7 +203,6 @@ function nextCard() {
   updateFlashcardView();
 }
 
-// Add card
 function addCard() {
   const deck = getCurrentDeck();
   if (!deck) return;
@@ -229,13 +217,11 @@ function addCard() {
   saveDecks();
 
   currentCardIndex = deck.cards.length - 1;
-
   flashcardEl.classList.remove("is-flipped");
   updateFlashcardView();
   renderDeckList();
 }
 
-// Edit card
 function editCard() {
   const deck = getCurrentDeck();
   if (!deck || !deck.cards.length) return;
@@ -257,7 +243,6 @@ function editCard() {
   renderDeckList();
 }
 
-// Delete card
 function deleteCard() {
   const deck = getCurrentDeck();
   if (!deck || !deck.cards.length) return;
@@ -278,7 +263,23 @@ function deleteCard() {
   renderDeckList();
 }
 
-// Delete deck
+/* -----------------------------------------------------------
+   DECK ACTIONS
+----------------------------------------------------------- */
+function renameDeck() {
+  const deck = getCurrentDeck();
+  if (!deck) return;
+
+  const newName = window.prompt("Rename deck:", deck.name);
+  if (!newName) return;
+
+  deck.name = newName;
+  saveDecks();
+
+  titleEl.textContent = deck.name;
+  renderDeckList();
+}
+
 function deleteDeck() {
   const deck = getCurrentDeck();
   if (!deck) return;
@@ -295,36 +296,20 @@ function deleteDeck() {
   closeOverlay();
 }
 
-// Rename deck
-function renameDeck() {
-  const deck = getCurrentDeck();
-  if (!deck || !titleEl) return;
-
-  const newName = window.prompt("Rename deck:", deck.name);
-  if (!newName) return;
-
-  deck.name = newName;
-  saveDecks();
-
-  titleEl.textContent = deck.name;
-  renderDeckList();
-}
-
-// Add deck
 function addDeck() {
   const name = window.prompt("Deck name:");
   if (!name) return;
 
   const id = String(Date.now());
-  const deck = { id, name, cards: [] };
+  decks.push({ id, name, cards: [] });
 
-  decks.push(deck);
   saveDecks();
-
   renderDeckList();
 }
 
-// Init
+/* -----------------------------------------------------------
+   INIT
+----------------------------------------------------------- */
 export function initFlashcards() {
   deckListEl = document.getElementById("deck-list");
   overlayEl = document.getElementById("deck-viewer-overlay");
@@ -348,22 +333,18 @@ export function initFlashcards() {
   loadDecks();
   renderDeckList();
 
-  if (flipBtn) flipBtn.addEventListener("click", flipCard);
-  if (prevBtn) prevBtn.addEventListener("click", prevCard);
-  if (nextBtn) nextBtn.addEventListener("click", nextCard);
-  if (addCardBtn) addCardBtn.addEventListener("click", addCard);
-  if (editCardBtn) editCardBtn.addEventListener("click", editCard);
-  if (deleteCardBtn) deleteCardBtn.addEventListener("click", deleteCard);
-  if (renameDeckBtn) renameDeckBtn.addEventListener("click", renameDeck);
-  if (deleteDeckBtn) deleteDeckBtn.addEventListener("click", deleteDeck);
-  if (closeBtn) closeBtn.addEventListener("click", closeOverlay);
-  if (addDeckBtn) addDeckBtn.addEventListener("click", addDeck);
+  flipBtn.addEventListener("click", flipCard);
+  prevBtn.addEventListener("click", prevCard);
+  nextBtn.addEventListener("click", nextCard);
+  addCardBtn.addEventListener("click", addCard);
+  editCardBtn.addEventListener("click", editCard);
+  deleteCardBtn.addEventListener("click", deleteCard);
+  renameDeckBtn.addEventListener("click", renameDeck);
+  deleteDeckBtn.addEventListener("click", deleteDeck);
+  closeBtn.addEventListener("click", closeOverlay);
+  addDeckBtn.addEventListener("click", addDeck);
 
-  if (overlayEl) {
-    overlayEl.addEventListener("click", (evt) => {
-      if (evt.target === overlayEl) {
-        closeOverlay();
-      }
-    });
-  }
+  overlayEl.addEventListener("click", (evt) => {
+    if (evt.target === overlayEl) closeOverlay();
+  });
 }

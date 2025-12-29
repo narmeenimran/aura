@@ -3,20 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aura</title>
+  <title>aura</title>
 
-  <!-- Manifest -->
-  <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#faf9ff" />
-
-  <!-- Icons -->
-  <link rel="icon" href="/assets/img/icon-192.png" sizes="192x192" />
-  <link rel="icon" href="/assets/img/icon-512.png" sizes="512x512" />
-
-  <!-- Styles -->
   <link rel="stylesheet" href="/assets/css/style.css" />
+  <link rel="manifest" href="/manifest.webmanifest" />
 
-  <!-- Fonts -->
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
     rel="stylesheet"
@@ -25,25 +16,12 @@
 
 <body>
 
-  <!-- Splash -->
-  <div id="aura-splash" class="aura-splash"></div>
-
-  <!-- Intro -->
-  <div id="intro-screen" class="aura-intro" aria-hidden="true">
-    <div class="aura-intro-content">
-      <h1 class="intro-title">Aura</h1>
-      <p class="intro-subtitle">Focus, learn, and think clearly.</p>
-    </div>
-  </div>
-
   <!-- App Root -->
-  <div id="app-root" class="app-root" aria-hidden="true">
+  <div class="app-root">
 
-    <!-- Floating Pastel Sidebar -->
+    <!-- Floating Sidebar (Desktop Only) -->
     <aside class="aura-sidebar">
-      <div class="sidebar-header">
-        <span class="sidebar-app-name">Aura</span>
-      </div>
+      <div class="sidebar-header">Aura</div>
       <nav class="sidebar-nav">
         <button class="sidebar-item is-active" data-screen-target="home">Home</button>
         <button class="sidebar-item" data-screen-target="timer">Timer</button>
@@ -54,7 +32,7 @@
     </aside>
 
     <!-- App Shell -->
-    <div id="app-shell" class="aura-app-shell">
+    <div class="aura-app-shell">
 
       <!-- Topbar -->
       <header class="aura-topbar">
@@ -64,59 +42,42 @@
       <!-- Screens -->
       <main class="aura-screens">
 
-        <!-- HOME -->
+        <!-- HOME (H2 Dashboard) -->
         <section class="aura-screen is-active" data-screen="home">
-          <h3 class="screen-title">Today</h3>
+          <h3 class="screen-title">Welcome back</h3>
 
-          <!-- Stats -->
-          <div class="screen-section-card">
-            <div class="screen-section-grid">
-              <div class="stat-card">
-                <p class="stat-label">Focus time today</p>
+          <div class="glass-card">
+            <div class="stats-grid">
+              <div class="stat-item">
+                <p class="stat-label">Focus today</p>
                 <p id="home-focus-minutes" class="stat-value">0 min</p>
               </div>
-              <div class="stat-card">
+              <div class="stat-item">
                 <p class="stat-label">Flashcards</p>
                 <p id="home-deck-count" class="stat-value">0</p>
               </div>
-              <div class="stat-card">
+              <div class="stat-item">
                 <p class="stat-label">Notes</p>
                 <p id="home-note-count" class="stat-value">0</p>
               </div>
             </div>
           </div>
 
-          <!-- Featured Decks (Horizontal Scroll) -->
-          <div class="screen-section-card">
-            <h4>Your decks</h4>
-            <div id="home-deck-preview" class="home-deck-preview">
-              <!-- Filled dynamically by home.js -->
-            </div>
-          </div>
-
-          <!-- Quick Actions -->
-          <div class="screen-section-card">
+          <div class="glass-card">
             <h4>Quick actions</h4>
             <div class="button-row wrap">
-              <button class="primary-button" data-screen-target="timer">
-                Start focus session
-              </button>
-              <button class="secondary-button" data-screen-target="flashcards">
-                Review flashcards
-              </button>
-              <button class="secondary-button" data-screen-target="notes">
-                Capture a note
-              </button>
+              <button class="primary-button" data-screen-target="timer">Start focus session</button>
+              <button class="secondary-button" data-screen-target="flashcards">Review flashcards</button>
+              <button class="secondary-button" data-screen-target="notes">Add note</button>
             </div>
           </div>
         </section>
 
         <!-- TIMER -->
         <section class="aura-screen" data-screen="timer">
-          <h3 class="screen-title">Pomodoro timer</h3>
+          <h3 class="screen-title">Pomodoro Timer</h3>
 
-          <div class="screen-section-card">
-
+          <div class="glass-card">
             <div class="timer-mode-tabs">
               <button class="timer-mode-tab is-active" data-mode="focus">Focus</button>
               <button class="timer-mode-tab" data-mode="shortBreak">Short break</button>
@@ -139,42 +100,40 @@
 
         <!-- FLASHCARDS -->
         <section class="aura-screen" data-screen="flashcards">
-          <h3 class="screen-title">Flashcard decks</h3>
+          <h3 class="screen-title">Flashcard Decks</h3>
 
-          <div class="screen-section-card">
-            <div class="button-row">
-              <button id="add-deck-button" class="primary-button">New deck</button>
-            </div>
-
-            <div id="deck-list" class="deck-list"></div>
+          <div class="glass-card">
+            <button id="add-deck-button" class="primary-button full-width">New deck</button>
           </div>
+
+          <div id="deck-list" class="deck-list"></div>
         </section>
 
         <!-- NOTES -->
         <section class="aura-screen" data-screen="notes">
           <h3 class="screen-title">Notes</h3>
 
-          <div class="screen-section-card">
+          <div class="glass-card">
             <input
               type="text"
               id="note-search-input"
               class="text-input"
               placeholder="Search notes..."
             />
-
-            <div id="notes-list" class="notes-list"></div>
-
-            <button id="add-note-button" class="primary-button full-width">
-              Add note
-            </button>
           </div>
+
+          <div id="notes-list" class="notes-list"></div>
+
+          <button id="add-note-button" class="primary-button full-width">
+            Add note
+          </button>
         </section>
 
         <!-- SETTINGS -->
         <section class="aura-screen" data-screen="settings">
           <h3 class="screen-title">Settings</h3>
 
-          <div class="screen-section-card">
+          <div class="glass-card">
             <p class="settings-label">Appearance</p>
             <button id="settings-theme-toggle" class="secondary-button full-width">
               Toggle light / dark
@@ -202,10 +161,9 @@
 
       <div class="overlay-header-row">
         <h2 id="deck-viewer-title">Deck</h2>
-        <button id="rename-deck-button" class="ghost-button">Rename deck</button>
+        <button id="rename-deck-button" class="ghost-button">Rename</button>
       </div>
 
-      <!-- NEW FLIP STRUCTURE -->
       <div id="flashcard" class="flashcard">
         <div class="flashcard-inner">
           <div id="flashcard-front" class="flashcard-face flashcard-front"></div>
@@ -220,7 +178,7 @@
         <button id="flashcard-prev" class="secondary-button">Prev</button>
         <button id="flashcard-next" class="secondary-button">Next</button>
         <button id="add-card-button" class="secondary-button">Add card</button>
-        <button id="edit-card-button" class="secondary-button">Edit card</button>
+        <button id="edit-card-button" class="secondary-button">Edit</button>
         <button id="delete-card-button" class="ghost-button">Delete card</button>
         <button id="delete-deck-button" class="ghost-button">Delete deck</button>
         <button id="close-deck-viewer" class="ghost-button full-width">Close</button>
@@ -282,14 +240,6 @@
     </div>
   </div>
 
-  <!-- Scripts -->
   <script type="module" src="/assets/js/app.js"></script>
-
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/service-worker.js").catch(() => {});
-    }
-  </script>
-
 </body>
 </html>

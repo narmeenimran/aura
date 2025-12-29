@@ -1,4 +1,4 @@
-// home.js — updates home stats + horizontal scroll deck previews
+// home.js — dashboard stats + clean quick actions
 
 import { storage } from "../utils/storage.js";
 
@@ -6,12 +6,17 @@ const FOCUS_MIN_KEY = "aura_focus_minutes_today";
 const DECKS_KEY = "aura_decks";
 const NOTES_KEY = "aura_notes";
 
+/* -----------------------------------------------------------
+   TODAY KEY
+----------------------------------------------------------- */
 function getTodayKey() {
   const d = new Date();
   return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 }
 
-// Update stats (focus minutes, deck count, note count)
+/* -----------------------------------------------------------
+   UPDATE HOME STATS
+----------------------------------------------------------- */
 export function updateHomeStats() {
   const focusEl = document.getElementById("home-focus-minutes");
   const deckEl = document.getElementById("home-deck-count");
@@ -28,100 +33,19 @@ export function updateHomeStats() {
   // Deck count
   if (deckEl) {
     const decks = storage.get(DECKS_KEY);
-    const count = Array.isArray(decks) ? decks.length : 0;
-    deckEl.textContent = String(count);
+    deckEl.textContent = Array.isArray(decks) ? decks.length : 0;
   }
 
   // Note count
   if (noteEl) {
     const notes = storage.get(NOTES_KEY);
-    const count = Array.isArray(notes) ? notes.length : 0;
-    noteEl.textContent = String(count);
+    noteEl.textContent = Array.isArray(notes) ? notes.length : 0;
   }
 }
 
-// Render horizontal scroll deck previews (H3)
-function renderHomeDeckPreview() {
-  const container = document.getElementById("home-deck-preview");
-  if (!container) return;
-
-  const decks = storage.get(DECKS_KEY);
-  container.innerHTML = "";
-
-  if (!Array.isArray(decks) || decks.length === 0) {
-    const empty = document.createElement("p");
-    empty.textContent = "No decks yet. Create your first one.";
-    empty.className = "overlay-meta";
-    container.appendChild(empty);
-    return;
-  }
-
-  // Show up to 5 decks in horizontal scroll
-  const previewDecks = decks.slice(0, 5);
-
-  previewDecks.forEach((deck) => {
-    const card = document.createElement("div");
-    card.className = "home-deck-card";
-    card.dataset.deckId = deck.id;
-
-    const title = document.createElement("div");
-    title.style.fontWeight = "600";
-    title.style.marginBottom = "4px";
-    title.textContent = deck.name;
-
-    const count = document.createElement("div");
-    count.style.fontSize = "0.85rem";
-    count.style.color = "var(--aura-text-muted)";
-    count.textContent = `${deck.cards.length} cards`;
-
-    card.appendChild(title);
-    card.appendChild(count);
-
-    // Clicking opens the deck viewer
-    card.addEventListener("click", () => {
-      const openEvent = new CustomEvent("openDeckFromHome", {
-        detail: { deckId: deck.id }
-      });
-      window.dispatchEvent(openEvent);
-    });
-
-    container.appendChild(card);
-  });
-}
-
-// Listen for deck opening from Home
-function attachDeckOpenListener() {
-  window.addEventListener("openDeckFromHome", (evt) => {
-    const deckId = evt.detail.deckId;
-
-    // Try to find the deck button in the Flashcards screen
-    const deckButton = document.querySelector(
-      `.deck-card[data-deck-id="${deckId}"]`
-    );
-
-    if (deckButton) {
-      deckButton.click();
-    } else {
-      // Navigate to Flashcards screen first
-      const flashcardsNav = document.querySelector(
-        '[data-screen-target="flashcards"]'
-      );
-      if (flashcardsNav) {
-        flashcardsNav.click();
-        setTimeout(() => {
-          const btn = document.querySelector(
-            `.deck-card[data-deck-id="${deckId}"]`
-          );
-          if (btn) btn.click();
-        }, 150);
-      }
-    }
-  });
-}
-
-// Init Home
+/* -----------------------------------------------------------
+   INIT HOME
+----------------------------------------------------------- */
 export function initHome() {
   updateHomeStats();
-  renderHomeDeckPreview();
-  attachDeckOpenListener();
 }

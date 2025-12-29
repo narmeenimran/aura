@@ -1,5 +1,3 @@
-// intro.js — handles splash + intro transitions
-
 export function initIntro() {
   const splash = document.getElementById("aura-splash");
   const intro = document.getElementById("intro-screen");

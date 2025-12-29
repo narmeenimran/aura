@@ -1,161 +1,130 @@
 /* -----------------------------------------------------------
-   AURA — FINAL THEME (2025)
-   Vertical Flip (FLIP‑B)
-   Full-width mobile flashcards (M1)
-   Floating pastel sidebar (S2‑C)
-   Clean dark mode (D3)
-   Spacious Home + Horizontal deck row (H3)
+   AURA — FINAL GLASSMORPHISM THEME (G‑Soft + T1 Pastel Tint)
+   Classic Layout (A) + Dashboard Home (H2)
+   Mobile‑First Vertical Scrolling Only
 ----------------------------------------------------------- */
 
-/* Pastel gradient colors (20% opacity) */
 :root {
-  --pastel-lavender: rgba(232, 217, 255, 0.20);
-  --pastel-peach: rgba(255, 220, 229, 0.20);
-  --pastel-mint: rgba(217, 255, 232, 0.20);
-  --pastel-blue: rgba(220, 234, 255, 0.20);
+  --bg: #faf9ff;
+  --text: #1b1633;
+  --text-muted: #6a628f;
 
-  /* Light theme base */
-  --aura-bg: #faf9ff;
-  --aura-surface: #ffffff;
-  --aura-surface-soft: #f7f5ff;
-  --aura-border-subtle: rgba(28, 22, 58, 0.10);
-  --aura-text: #1b1633;
-  --aura-text-muted: #6a628f;
-  --aura-accent: #7b5cff;
-  --aura-accent-soft: rgba(123, 92, 255, 0.15);
-  --aura-accent-strong: #5b3bff;
+  --surface: rgba(255, 255, 255, 0.35);
+  --surface-dark: rgba(20, 20, 30, 0.35);
 
-  --aura-radius-lg: 20px;
-  --aura-radius-md: 14px;
-  --aura-radius-sm: 8px;
+  --border: rgba(255, 255, 255, 0.25);
+  --border-dark: rgba(255, 255, 255, 0.1);
 
-  --aura-shadow-soft: 0 18px 45px rgba(35, 26, 81, 0.15);
-  --aura-shadow-subtle: 0 10px 30px rgba(35, 26, 81, 0.10);
+  --blur-soft: 18px;
+
+  --pastel-lav: rgba(232, 217, 255, 0.25);
+  --pastel-peach: rgba(255, 220, 229, 0.25);
+  --pastel-mint: rgba(217, 255, 232, 0.25);
+  --pastel-blue: rgba(220, 234, 255, 0.25);
+
+  --accent: #7b5cff;
+  --accent-soft: rgba(123, 92, 255, 0.15);
+  --accent-strong: #5b3bff;
+
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --radius-sm: 8px;
+
+  --shadow-soft: 0 18px 45px rgba(35, 26, 81, 0.15);
 
   --transition-fast: 0.18s ease-out;
   --transition-med: 0.28s ease-out;
 }
 
 /* -----------------------------------------------------------
-   DARK MODE — CLEAN (NO GRADIENT)
+   DARK MODE
 ----------------------------------------------------------- */
 
 html[data-theme="dark"] {
-  --aura-bg: #0b0b11;
-  --aura-surface: #11111a;
-  --aura-surface-soft: #181824;
-  --aura-border-subtle: rgba(255, 255, 255, 0.08);
-  --aura-text: #f8f7ff;
-  --aura-text-muted: #b3b0d0;
-  --aura-shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
-  --aura-shadow-subtle: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --bg: #0b0b11;
+  --text: #f8f7ff;
+  --text-muted: #b3b0d0;
+
+  --surface: rgba(20, 20, 30, 0.45);
+  --border: rgba(255, 255, 255, 0.08);
+
+  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
 }
 
 /* -----------------------------------------------------------
-   GLOBAL BACKGROUND
-   Light mode = dual pastel glow
-   Dark mode = clean solid
+   GLOBAL
 ----------------------------------------------------------- */
 
 body {
   margin: 0;
   padding: 0;
-  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
   font-family: "Inter", sans-serif;
-  color: var(--aura-text);
-  overflow-x: hidden;
-
-  background:
-    radial-gradient(circle at top,
-      var(--pastel-lavender),
-      var(--pastel-peach),
-      var(--pastel-mint),
-      var(--pastel-blue)
-    ),
-    radial-gradient(circle at bottom,
-      var(--pastel-lavender),
-      var(--pastel-peach),
-      var(--pastel-mint),
-      var(--pastel-blue)
-    ),
-    var(--aura-bg);
-
-  background-size: 100% 60%, 100% 60%, cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-
-  display: flex;
-  justify-content: center;
+  overflow-x: hidden; /* MOBILE‑ONLY VERTICAL SCROLLING */
 }
-
-html[data-theme="dark"] body {
-  background: var(--aura-bg);
-}
-
-/* -----------------------------------------------------------
-   APP ROOT
------------------------------------------------------------ */
 
 .app-root {
-  width: 100%;
-  max-width: 1100px;
-  padding: 16px;
   display: flex;
-  gap: 24px;
+  width: 100%;
   min-height: 100vh;
+  padding: 16px;
+  gap: 20px;
 }
 
 /* -----------------------------------------------------------
-   FLOATING PASTEL SIDEBAR (S2‑C)
+   FLOATING SIDEBAR (DESKTOP ONLY)
 ----------------------------------------------------------- */
 
 .aura-sidebar {
   display: none;
   width: 220px;
-  background:
-    radial-gradient(circle at center,
-      rgba(232, 217, 255, 0.35),
-      rgba(255, 220, 229, 0.35),
-      rgba(217, 255, 232, 0.35),
-      rgba(220, 234, 255, 0.35)
-    ),
-    var(--aura-surface);
 
-  background-blend-mode: soft-light;
-  border-radius: var(--aura-radius-lg);
+  background: linear-gradient(
+      135deg,
+      var(--pastel-lav),
+      var(--pastel-peach),
+      var(--pastel-mint),
+      var(--pastel-blue)
+    ),
+    var(--surface);
+
+  backdrop-filter: blur(var(--blur-soft));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+
   padding: 20px;
-  border: 1px solid var(--aura-border-subtle);
-  box-shadow: 0 20px 50px rgba(123, 92, 255, 0.25); /* G2 medium glow */
+  height: fit-content;
   position: sticky;
   top: 20px;
-  height: fit-content;
 }
 
-html[data-theme="dark"] .aura-sidebar {
-  background: var(--aura-surface);
-  box-shadow: var(--aura-shadow-soft);
+.sidebar-header {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 16px;
 }
 
 .sidebar-item {
-  background: transparent;
-  border: none;
+  width: 100%;
   padding: 12px 14px;
-  border-radius: var(--aura-radius-md);
-  color: var(--aura-text-muted);
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  text-align: left;
   cursor: pointer;
   transition: var(--transition-fast);
-  width: 100%;
-  text-align: left;
-  font-size: 0.95rem;
 }
 
 .sidebar-item:hover {
-  background: var(--aura-accent-soft);
+  background: var(--accent-soft);
 }
 
 .sidebar-item.is-active {
-  background: var(--aura-accent-soft);
-  color: var(--aura-accent-strong);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
 }
 
 /* -----------------------------------------------------------
@@ -164,10 +133,11 @@ html[data-theme="dark"] .aura-sidebar {
 
 .aura-app-shell {
   flex: 1;
-  background: var(--aura-surface);
-  border-radius: var(--aura-radius-lg);
-  border: 1px solid var(--aura-border-subtle);
-  box-shadow: var(--aura-shadow-soft);
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-soft));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -179,17 +149,17 @@ html[data-theme="dark"] .aura-sidebar {
 
 .aura-topbar {
   padding: 20px 24px;
-  border-bottom: 1px solid var(--aura-border-subtle);
-  background: var(--aura-surface-soft);
-  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-soft));
 }
 
 .topbar-title {
   margin: 0;
-  font-size: 0.9rem;
-  letter-spacing: 0.15em;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--aura-text-muted);
+  color: var(--text-muted);
 }
 
 /* -----------------------------------------------------------
@@ -198,91 +168,124 @@ html[data-theme="dark"] .aura-sidebar {
 
 .aura-screens {
   flex: 1;
-  padding: 32px;
+  padding: 28px;
   overflow-y: auto;
 }
 
 .aura-screen {
   display: none;
   flex-direction: column;
-  gap: 32px; /* Spacious layout */
+  gap: 28px;
 }
 
 .aura-screen.is-active {
   display: flex;
 }
 
+.screen-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
 /* -----------------------------------------------------------
-   CARDS
+   GLASS CARDS (G‑Soft + T1 Pastel Tint)
 ----------------------------------------------------------- */
 
-.screen-section-card {
-  background:
-    radial-gradient(circle at center,
-      var(--pastel-lavender),
+.glass-card {
+  background: linear-gradient(
+      135deg,
+      var(--pastel-lav),
       var(--pastel-peach),
       var(--pastel-mint),
       var(--pastel-blue)
     ),
-    var(--aura-surface);
+    var(--surface);
 
-  background-blend-mode: soft-light;
-  border-radius: var(--aura-radius-lg);
+  backdrop-filter: blur(var(--blur-soft));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
   padding: 24px;
-  border: 1px solid var(--aura-border-subtle);
-  box-shadow: var(--aura-shadow-subtle);
-}
-
-html[data-theme="dark"] .screen-section-card {
-  background: var(--aura-surface);
+  box-shadow: var(--shadow-soft);
 }
 
 /* -----------------------------------------------------------
-   HOME — Horizontal Scroll Deck Row (H3)
+   HOME DASHBOARD (H2)
 ----------------------------------------------------------- */
 
-.home-deck-preview {
+.stats-grid {
   display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-  scrollbar-width: thin;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-.home-deck-card {
-  min-width: 150px;
-  padding: 16px;
-  border-radius: var(--aura-radius-lg);
+.stat-item {
+  flex: 1;
+  min-width: 120px;
+}
 
-  background:
-    radial-gradient(circle at center,
-      var(--pastel-lavender),
-      var(--pastel-peach),
-      var(--pastel-mint),
-      var(--pastel-blue)
-    ),
-    var(--aura-surface);
+.stat-label {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
 
-  background-blend-mode: soft-light;
-  border: 1px solid var(--aura-border-subtle);
-  box-shadow: var(--aura-shadow-subtle);
+.stat-value {
+  margin: 6px 0 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
 
+/* -----------------------------------------------------------
+   BUTTONS
+----------------------------------------------------------- */
+
+.primary-button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: var(--transition-fast);
 }
 
-.home-deck-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--aura-shadow-soft);
+.primary-button:hover {
+  box-shadow: var(--shadow-soft);
 }
 
-html[data-theme="dark"] .home-deck-card {
-  background: var(--aura-surface);
+.secondary-button {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border: 1px solid var(--accent-soft);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.ghost-button {
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.button-row {
+  display: flex;
+  gap: 12px;
+}
+
+.wrap {
+  flex-wrap: wrap;
 }
 
 /* -----------------------------------------------------------
-   FLASHCARDS — Vertical 3D Flip (FLIP‑B)
-   Full-width mobile (M1)
+   FLASHCARDS — Vertical Flip
 ----------------------------------------------------------- */
 
 .flashcard {
@@ -311,76 +314,63 @@ html[data-theme="dark"] .home-deck-card {
   height: 100%;
   backface-visibility: hidden;
 
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-soft));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
   padding: 24px;
-  border-radius: var(--aura-radius-lg);
-
-  background:
-    radial-gradient(circle at center,
-      rgba(232, 217, 255, 0.35),
-      rgba(255, 220, 229, 0.35),
-      rgba(217, 255, 232, 0.35),
-      rgba(220, 234, 255, 0.35)
-    ),
-    var(--aura-surface);
-
-  background-blend-mode: soft-light;
-  border: 1px solid var(--aura-border-subtle);
-  box-shadow: var(--aura-shadow-soft);
+  box-shadow: var(--shadow-soft);
 }
 
 .flashcard-back {
   transform: rotateX(180deg);
 }
 
-html[data-theme="dark"] .flashcard-face {
-  background: var(--aura-surface);
-}
-
 /* -----------------------------------------------------------
-   BUTTONS
+   DECK LIST
 ----------------------------------------------------------- */
 
-.primary-button {
-  background: var(--aura-accent);
-  color: white;
-  border: none;
-  padding: 12px 16px;
-  border-radius: var(--aura-radius-md);
+.deck-card {
+  width: 100%;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-soft));
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
   cursor: pointer;
   transition: var(--transition-fast);
 }
 
-.primary-button:hover {
-  box-shadow: var(--aura-shadow-soft);
-}
-
-.secondary-button {
-  background: var(--aura-accent-soft);
-  color: var(--aura-accent-strong);
-  border: 1px solid var(--aura-accent-soft);
-  padding: 12px 16px;
-  border-radius: var(--aura-radius-md);
-  cursor: pointer;
-}
-
-.ghost-button {
-  background: transparent;
-  border: 1px solid var(--aura-border-subtle);
-  padding: 12px 16px;
-  border-radius: var(--aura-radius-md);
-  color: var(--aura-text-muted);
+.deck-card:hover {
+  background: var(--accent-soft);
 }
 
 /* -----------------------------------------------------------
-   BOTTOM NAV (Mobile)
+   NOTES
+----------------------------------------------------------- */
+
+.text-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-soft));
+  color: var(--text);
+}
+
+/* -----------------------------------------------------------
+   BOTTOM NAV (MOBILE)
 ----------------------------------------------------------- */
 
 .aura-bottom-nav {
   display: flex;
   padding: 12px;
   gap: 6px;
-  border-top: 1px solid var(--aura-border-subtle);
-  background: var(--aura-surface-soft);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-soft));
 }
 
 .bottom-nav-item {
@@ -389,12 +379,12 @@ html[data-theme="dark"] .flashcard-face {
   border-radius: 999px;
   background: transparent;
   border: none;
-  color: var(--aura-text-muted);
+  color: var(--text-muted);
 }
 
 .bottom-nav-item.is-active {
-  background: var(--aura-accent-soft);
-  color: var(--aura-accent-strong);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
 }
 
 /* -----------------------------------------------------------
