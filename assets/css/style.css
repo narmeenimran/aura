@@ -3,7 +3,6 @@
 ----------------------------------------------------------- */
 
 :root {
-  --topbar-height: 80px;
   --bottom-nav-height: 70px;
 
   --bg: #f7f6fb;
@@ -31,22 +30,6 @@
 }
 
 /* -----------------------------------------------------------
-   DARK MODE
------------------------------------------------------------ */
-
-html[data-theme="dark"] {
-  --bg: #0b0b11;
-  --text: #ffffff;
-  --text-muted: rgba(255,255,255,0.6);
-
-  --surface: rgba(20, 20, 30, 0.45);
-  --surface-strong: rgba(20, 20, 30, 0.65);
-  --border: rgba(255, 255, 255, 0.08);
-
-  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
-}
-
-/* -----------------------------------------------------------
    GLOBAL RESET
 ----------------------------------------------------------- */
 
@@ -55,7 +38,7 @@ html, body {
   padding: 0;
   overflow-x: hidden;
   width: 100%;
-  max-width: 100%;
+  height: 100%;
   background: var(--bg);
   color: var(--text);
   font-family: "Inter", sans-serif;
@@ -65,77 +48,22 @@ html, body {
   box-sizing: border-box;
 }
 
-body {
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-}
-
 /* -----------------------------------------------------------
-   SIDEBAR (DESKTOP ONLY)
+   REMOVE ALL DESKTOP UI
 ----------------------------------------------------------- */
 
-.aura-sidebar {
-  width: 240px;
-  background: var(--surface-strong);
-  backdrop-filter: blur(var(--blur-soft));
-  border-right: 1px solid var(--border);
-  padding: 20px;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  z-index: 950;
-}
-
-/* HIDE SIDEBAR ON MOBILE */
-@media (max-width: 880px) {
-  .aura-sidebar {
-    display: none !important;
-  }
-}
-
-/* -----------------------------------------------------------
-   TOPBAR (DESKTOP ONLY)
------------------------------------------------------------ */
-
+.aura-sidebar,
 .aura-topbar {
-  position: fixed;
-  top: env(safe-area-inset-top);
-  left: 240px;
-  width: calc(100% - 240px);
-  height: var(--topbar-height);
-
-  background: rgba(255, 255, 255, 0);
-  backdrop-filter: blur(var(--blur-soft));
-  border-bottom: 1px solid var(--border);
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-
-  z-index: 900;
-}
-
-/* HIDE TOPBAR ON MOBILE */
-@media (max-width: 880px) {
-  .aura-topbar {
-    display: none !important;
-  }
+  display: none !important;
 }
 
 /* -----------------------------------------------------------
-   APP SHELL LAYOUT
+   APP SHELL (MOBILE ONLY)
 ----------------------------------------------------------- */
 
 .aura-app-shell {
-  margin-left: 240px;
-}
-
-/* REMOVE SIDEBAR SPACE ON MOBILE */
-@media (max-width: 880px) {
-  .aura-app-shell {
-    margin-left: 0 !important;
-  }
+  margin: 0 !important;
+  width: 100%;
 }
 
 /* -----------------------------------------------------------
@@ -143,23 +71,10 @@ body {
 ----------------------------------------------------------- */
 
 .aura-screens {
-  position: relative;
   width: 100%;
-  margin: 0;
-  padding-left: 0;
-
   height: calc(100dvh - var(--bottom-nav-height));
   overflow-y: auto;
-
   padding-bottom: var(--bottom-nav-height);
-}
-
-/* ADD TOPBAR SPACE ON DESKTOP */
-@media (min-width: 881px) {
-  .aura-screens {
-    padding-top: var(--topbar-height);
-    height: calc(100dvh - var(--topbar-height));
-  }
 }
 
 /* -----------------------------------------------------------
@@ -169,14 +84,12 @@ body {
 .aura-screen {
   display: none;
   opacity: 0;
-  transform: translateX(0);
-  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  transition: opacity var(--transition-fast);
 }
 
 .aura-screen.is-active {
   display: block;
   opacity: 1;
-  transform: translateX(0);
 }
 
 /* -----------------------------------------------------------
@@ -228,16 +141,10 @@ body {
   padding: 18px;
   border-radius: var(--radius-lg);
   background: var(--surface);
-  backdrop-filter: blur(var(--blur-soft));
   border: 1px solid var(--border);
   box-shadow: var(--shadow-soft);
   cursor: pointer;
   text-align: left;
-  transition: transform var(--transition-fast);
-}
-
-.deck-card:hover {
-  transform: translateY(-3px);
 }
 
 /* Slide-in viewer */
@@ -245,8 +152,7 @@ body {
   position: fixed;
   top: 0;
   right: -100%;
-  width: 92%;
-  max-width: 420px;
+  width: 100%;
   height: 100dvh;
   background: var(--surface-strong);
   backdrop-filter: blur(var(--blur-soft));
@@ -256,13 +162,8 @@ body {
   z-index: 999;
 }
 
-/* FIX PANEL WIDTH ON MOBILE */
-@media (max-width: 880px) {
-  .deck-viewer-panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    right: -100% !important;
-  }
+.deck-viewer-panel.is-visible {
+  right: 0;
 }
 
 /* Flashcard */
@@ -271,13 +172,6 @@ body {
   height: 260px;
   perspective: 1400px;
   margin-bottom: 12px;
-}
-
-/* FIX FLASHCARD WIDTH ON MOBILE */
-@media (max-width: 880px) {
-  .flashcard {
-    width: 100% !important;
-  }
 }
 
 .flashcard-inner {
@@ -355,17 +249,10 @@ body {
   width: 100%;
   max-width: 420px;
   background: var(--surface-strong);
-  backdrop-filter: blur(var(--blur-soft));
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   padding: 28px;
   box-shadow: var(--shadow-soft);
-  transform: scale(0.95);
-  transition: transform var(--transition-fast);
-}
-
-.aura-overlay.is-visible .overlay-content {
-  transform: scale(1);
 }
 
 /* -----------------------------------------------------------
@@ -387,13 +274,6 @@ body {
   justify-content: space-around;
   align-items: center;
   z-index: 900;
-}
-
-/* HIDE BOTTOM NAV ON DESKTOP */
-@media (min-width: 881px) {
-  .aura-bottom-nav {
-    display: none !important;
-  }
 }
 
 .bottom-nav-item {
