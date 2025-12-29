@@ -1,191 +1,405 @@
-import { initHome } from "./modules/home.js";
-import { initFlashcards } from "./modules/flashcards.js";
-import { initNotes } from "./modules/notes.js";
-import { initTimer } from "./modules/timer.js";
-import { initProfile } from "./modules/profile.js";
+/* ============================================================
+   AURA — FULL UPDATED APP.JS
+   iOS‑17 Soft‑Glass Edition
+   Clean, modern, mobile‑first
+============================================================ */
+
+/* ------------------------------------------------------------
+   GLOBAL STATE
+------------------------------------------------------------ */
+
+let userName = localStorage.getItem("aura-name") || "";
+let decks = JSON.parse(localStorage.getItem("aura-decks") || "{}");
+let notes = JSON.parse(localStorage.getItem("aura-notes") || "[]");
+
+let currentDeck = null;
+let currentCardIndex = 0;
+
+let timerInterval = null;
+let totalSeconds = 1500; // default 25 min
+let remainingSeconds = totalSeconds;
+
+/* ------------------------------------------------------------
+   ELEMENTS
+------------------------------------------------------------ */
 
 const onboardingScreen = document.getElementById("onboarding-screen");
-const onboardingInput = document.getElementById("onboarding-name-input");
-const onboardingSubmit = document.getElementById("onboarding-submit");
-
 const appRoot = document.getElementById("app-root");
-const homeGreeting = document.getElementById("home-greeting");
 
-const navButtons = document.querySelectorAll("[data-screen-target]");
 const screens = document.querySelectorAll(".aura-screen");
-const topbarTitle = document.getElementById("topbar-title");
+const navButtons = document.querySelectorAll(".bottom-nav-item");
 
-const themeToggle = document.getElementById("settings-theme-toggle");
-const changeNameBtn = document.getElementById("settings-change-name");
+const deckGrid = document.getElementById("deck-grid");
+const deckViewer = document.getElementById("deck-viewer-panel");
 
-const profileButton = document.getElementById("profile-button");
-const swipeLayer = document.getElementById("swipe-layer");
+const flashcard = document.getElementById("flashcard");
+const flashcardFront = document.getElementById("flashcard-front");
+const flashcardBack = document.getElementById("flashcard-back");
+const flashcardProgress = document.getElementById("flashcard-progress");
 
-function loadName() {
-  return localStorage.getItem("aura_username") || null;
+const notesList = document.getElementById("notes-list");
+const noteEditorOverlay = document.getElementById("note-editor-overlay");
+const noteEditorContent = document.getElementById("note-editor-content");
+const noteEditorTitle = document.getElementById("note-editor-title-input");
+
+const timerDisplay = document.getElementById("pomodoro-time");
+const hourInput = document.getElementById("timer-hours");
+const minuteInput = document.getElementById("timer-minutes");
+
+/* ------------------------------------------------------------
+   ONBOARDING
+------------------------------------------------------------ */
+
+if (!userName) {
+  onboardingScreen.style.display = "flex";
+} else {
+  onboardingScreen.style.display = "none";
+  appRoot.style.display = "block";
+  document.getElementById("home-greeting").textContent = `hello, ${userName}`;
 }
 
-function saveName(name) {
-  localStorage.setItem("aura_username", name);
+document.getElementById("onboarding-submit").addEventListener("click", () => {
+  const name = document.getElementById("onboarding-name-input").value.trim();
+  if (!name) return;
+
+  localStorage.setItem("aura-name", name);
+  userName = name;
+
+  onboardingScreen.style.display = "none";
+  appRoot.style.display = "block";
+
+  document.getElementById("home-greeting").textContent = `hello, ${userName}`;
+});
+
+/* ------------------------------------------------------------
+   NAVIGATION
+------------------------------------------------------------ */
+
+navButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const target = btn.dataset.screenTarget;
+
+    screens.forEach(s => s.classList.remove("is-active"));
+    document.querySelector(`[data-screen="${target}"]`).classList.add("is-active");
+
+    navButtons.forEach(b => b.classList.remove("is-active"));
+    btn.classList.add("is-active");
+  });
+});
+
+/* ------------------------------------------------------------
+   FLASHCARDS — RENDER DECKS
+------------------------------------------------------------ */
+
+function saveDecks() {
+  localStorage.setItem("aura-decks", JSON.stringify(decks));
 }
 
-export function updateGreeting() {
-  const name = loadName();
-  homeGreeting.textContent = name ? `hello, ${name.toLowerCase()}` : "hello,";
+function renderDecks() {
+  deckGrid.innerHTML = "";
+
+  Object.keys(decks).forEach(deckName => {
+    const card = document.createElement("div");
+    card.className = "deck-card";
+    card.textContent = deckName;
+
+    card.addEventListener("click", () => openDeck(deckName));
+    deckGrid.appendChild(card);
+  });
 }
 
-function handleOnboarding() {
-  const saved = loadName();
+renderDecks();
 
-  if (saved) {
-    onboardingScreen.style.display = "none";
-    appRoot.style.display = "flex";
-    updateGreeting();
+/* ------------------------------------------------------------
+   FLASHCARDS — OPEN DECK
+------------------------------------------------------------ */
+
+function openDeck(name) {
+  currentDeck = name;
+  currentCardIndex = 0;
+
+  document.getElementById("deck-viewer-title").textContent = name;
+  deckViewer.classList.add("is-visible");
+
+  renderFlashcard();
+}
+
+document.getElementById("close-deck-viewer").addEventListener("click", () => {
+  deckViewer.classList.remove("is-visible");
+});
+
+/* ------------------------------------------------------------
+   FLASHCARDS — RENDER CARD
+------------------------------------------------------------ */
+
+function renderFlashcard() {
+  const deck = decks[currentDeck];
+  if (!deck || deck.length === 0) {
+    flashcardFront.textContent = "No cards yet";
+    flashcardBack.textContent = "";
+    flashcardProgress.textContent = "";
     return;
   }
 
-  onboardingSubmit.addEventListener("click", () => {
-    const name = onboardingInput.value.trim();
-    if (!name) return;
+  const card = deck[currentCardIndex];
 
-    saveName(name);
-    updateGreeting();
+  flashcardFront.textContent = card.front;
+  flashcardBack.textContent = card.back;
 
-    onboardingScreen.style.display = "none";
-    appRoot.style.display = "flex";
+  flashcardProgress.textContent = `${currentCardIndex + 1} / ${deck.length}`;
+}
+
+/* ------------------------------------------------------------
+   FLASHCARDS — BUTTONS
+------------------------------------------------------------ */
+
+document.getElementById("flashcard-flip").addEventListener("click", () => {
+  flashcard.classList.toggle("is-flipped");
+});
+
+document.getElementById("flashcard-next").addEventListener("click", () => {
+  const deck = decks[currentDeck];
+  if (!deck) return;
+
+  currentCardIndex = (currentCardIndex + 1) % deck.length;
+  flashcard.classList.remove("is-flipped");
+  renderFlashcard();
+});
+
+document.getElementById("flashcard-prev").addEventListener("click", () => {
+  const deck = decks[currentDeck];
+  if (!deck) return;
+
+  currentCardIndex = (currentCardIndex - 1 + deck.length) % deck.length;
+  flashcard.classList.remove("is-flipped");
+  renderFlashcard();
+});
+
+/* ------------------------------------------------------------
+   FLASHCARDS — ADD CARD
+------------------------------------------------------------ */
+
+document.getElementById("add-card-button").addEventListener("click", () => {
+  const front = prompt("Front:");
+  const back = prompt("Back:");
+
+  if (!front || !back) return;
+
+  decks[currentDeck].push({ front, back });
+  saveDecks();
+  renderFlashcard();
+});
+
+/* ------------------------------------------------------------
+   FLASHCARDS — EDIT CARD
+------------------------------------------------------------ */
+
+document.getElementById("edit-card-button").addEventListener("click", () => {
+  const deck = decks[currentDeck];
+  if (!deck) return;
+
+  const card = deck[currentCardIndex];
+
+  const newFront = prompt("Edit front:", card.front);
+  const newBack = prompt("Edit back:", card.back);
+
+  if (!newFront || !newBack) return;
+
+  card.front = newFront;
+  card.back = newBack;
+
+  saveDecks();
+  renderFlashcard();
+});
+
+/* ------------------------------------------------------------
+   FLASHCARDS — DELETE CARD
+------------------------------------------------------------ */
+
+document.getElementById("delete-card-button").addEventListener("click", () => {
+  const deck = decks[currentDeck];
+  if (!deck) return;
+
+  deck.splice(currentCardIndex, 1);
+
+  if (currentCardIndex >= deck.length) currentCardIndex = 0;
+
+  saveDecks();
+  renderFlashcard();
+});
+
+/* ------------------------------------------------------------
+   FLASHCARDS — ADD DECK
+------------------------------------------------------------ */
+
+document.getElementById("add-deck-button").addEventListener("click", () => {
+  const name = prompt("Deck name:");
+  if (!name) return;
+
+  decks[name] = [];
+  saveDecks();
+  renderDecks();
+});
+
+/* ------------------------------------------------------------
+   NOTES — RENDER LIST
+------------------------------------------------------------ */
+
+function saveNotes() {
+  localStorage.setItem("aura-notes", JSON.stringify(notes));
+}
+
+function renderNotes() {
+  notesList.innerHTML = "";
+
+  notes.forEach((note, index) => {
+    const card = document.createElement("div");
+    card.className = "glass-card";
+    card.innerHTML = `
+      <h3>${note.title || "Untitled"}</h3>
+      <p>${note.content.slice(0, 80)}...</p>
+    `;
+
+    card.addEventListener("click", () => openNoteEditor(index));
+    notesList.appendChild(card);
   });
 }
 
-function initChangeName() {
-  changeNameBtn.addEventListener("click", () => {
-    const current = loadName() || "";
-    const newName = prompt("Enter your new name:", current);
-    if (!newName || !newName.trim()) return;
+renderNotes();
 
-    saveName(newName.trim());
-    updateGreeting();
-  });
-}
+/* ------------------------------------------------------------
+   NOTES — OPEN EDITOR
+------------------------------------------------------------ */
 
-function vibrate(ms = 10) {
-  if (navigator.vibrate) navigator.vibrate(ms);
-}
+function openNoteEditor(index = null) {
+  noteEditorOverlay.classList.add("is-visible");
 
-let currentScreen = "home";
-
-function switchScreen(target) {
-  if (target === currentScreen) return;
-
-  const newScreen = document.querySelector(`.aura-screen[data-screen="${target}"]`);
-  const oldScreen = document.querySelector(`.aura-screen[data-screen="${currentScreen}"]`);
-
-  if (!newScreen || !oldScreen) return;
-
-  vibrate(10);
-
-  oldScreen.classList.remove("is-active");
-  newScreen.classList.add("is-active");
-
-  currentScreen = target;
-
-  navButtons.forEach((btn) => {
-    btn.classList.toggle("is-active", btn.dataset.screenTarget === target);
-  });
-
-  topbarTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
-}
-
-function initNavigation() {
-  navButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const target = btn.dataset.screenTarget;
-      switchScreen(target);
-    });
-  });
-}
-
-let startX = 0;
-let isSwiping = false;
-
-const screenOrder = ["home", "flashcards", "notes", "timer", "settings"];
-
-function getNextScreen(direction) {
-  const index = screenOrder.indexOf(currentScreen);
-  if (direction === "left") {
-    return screenOrder[index + 1] || null;
+  if (index === null) {
+    noteEditorTitle.value = "";
+    noteEditorContent.innerHTML = "";
+    noteEditorOverlay.dataset.editing = "new";
   } else {
-    return screenOrder[index - 1] || null;
+    const note = notes[index];
+    noteEditorTitle.value = note.title;
+    noteEditorContent.innerHTML = note.content;
+    noteEditorOverlay.dataset.editing = index;
   }
 }
 
-function initSwipeNavigation() {
-  swipeLayer.addEventListener("touchstart", (e) => {
-    startX = e.touches[0].clientX;
-    isSwiping = true;
-  });
+/* ------------------------------------------------------------
+   NOTES — CLOSE EDITOR
+------------------------------------------------------------ */
 
-  swipeLayer.addEventListener("touchend", (e) => {
-    if (!isSwiping) return;
-    isSwiping = false;
+document.getElementById("close-note-editor").addEventListener("click", () => {
+  noteEditorOverlay.classList.remove("is-visible");
+});
 
-    const endX = e.changedTouches[0].clientX;
-    const diff = endX - startX;
+/* ------------------------------------------------------------
+   NOTES — SAVE NOTE
+------------------------------------------------------------ */
 
-    if (Math.abs(diff) < 40) return;
+document.getElementById("save-note-button").addEventListener("click", () => {
+  const title = noteEditorTitle.value.trim();
+  const content = noteEditorContent.innerHTML.trim();
 
-    if (diff < 0) {
-      const next = getNextScreen("left");
-      if (next) {
-        vibrate(15);
-        switchScreen(next);
-      }
-    } else {
-      const prev = getNextScreen("right");
-      if (prev) {
-        vibrate(15);
-        switchScreen(prev);
-      }
+  if (!content) return;
+
+  const editing = noteEditorOverlay.dataset.editing;
+
+  if (editing === "new") {
+    notes.push({ title, content });
+  } else {
+    notes[editing] = { title, content };
+  }
+
+  saveNotes();
+  renderNotes();
+  noteEditorOverlay.classList.remove("is-visible");
+});
+
+/* ------------------------------------------------------------
+   NOTES — DELETE NOTE
+------------------------------------------------------------ */
+
+document.getElementById("delete-note-button").addEventListener("click", () => {
+  const editing = noteEditorOverlay.dataset.editing;
+  if (editing === "new") return;
+
+  notes.splice(editing, 1);
+  saveNotes();
+  renderNotes();
+  noteEditorOverlay.classList.remove("is-visible");
+});
+
+/* ------------------------------------------------------------
+   TIMER — CUSTOM TIME
+------------------------------------------------------------ */
+
+function getCustomTime() {
+  const h = parseInt(hourInput.value) || 0;
+  const m = parseInt(minuteInput.value) || 0;
+  return h * 3600 + m * 60;
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(remainingSeconds / 60);
+  const s = remainingSeconds % 60;
+  timerDisplay.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+/* ------------------------------------------------------------
+   TIMER — START / STOP
+------------------------------------------------------------ */
+
+document.getElementById("pomodoro-toggle").addEventListener("click", () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    document.getElementById("pomodoro-toggle").textContent = "Start";
+    return;
+  }
+
+  totalSeconds = getCustomTime();
+  remainingSeconds = totalSeconds;
+
+  updateTimerDisplay();
+
+  timerInterval = setInterval(() => {
+    remainingSeconds--;
+
+    if (remainingSeconds <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      remainingSeconds = 0;
     }
-  });
-}
 
-function initThemeToggle() {
-  themeToggle.addEventListener("click", () => {
-    const html = document.documentElement;
-    const current = html.getAttribute("data-theme");
-    const next = current === "light" ? "dark" : "light";
-    html.setAttribute("data-theme", next);
-    localStorage.setItem("aura_theme", next);
-  });
+    updateTimerDisplay();
+  }, 1000);
 
-  const saved = localStorage.getItem("aura_theme");
-  if (saved) {
-    document.documentElement.setAttribute("data-theme", saved);
-  }
-}
+  document.getElementById("pomodoro-toggle").textContent = "Pause";
+});
 
-function initProfileButton() {
-  profileButton.addEventListener("click", () => {
-    const overlay = document.getElementById("profile-overlay");
-    overlay.classList.add("is-visible");
-    overlay.setAttribute("aria-hidden", "false");
-    vibrate(10);
-  });
-}
+/* ------------------------------------------------------------
+   TIMER — RESET
+------------------------------------------------------------ */
 
-function initApp() {
-  handleOnboarding();
-  initNavigation();
-  initSwipeNavigation();
-  initThemeToggle();
-  initChangeName();
-  initProfileButton();
+document.getElementById("pomodoro-reset").addEventListener("click", () => {
+  clearInterval(timerInterval);
+  timerInterval = null;
 
-  initHome();
-  initFlashcards();
-  initNotes();
-  initTimer();
-  initProfile();
-}
+  remainingSeconds = getCustomTime();
+  updateTimerDisplay();
 
-initApp();
+  document.getElementById("pomodoro-toggle").textContent = "Start";
+});
+
+/* ------------------------------------------------------------
+   DARK MODE TOGGLE
+------------------------------------------------------------ */
+
+document.getElementById("settings-theme-toggle").addEventListener("click", () => {
+  const root = document.documentElement;
+  const current = root.getAttribute("data-theme");
+  const next = current === "light" ? "dark" : "light";
+  root.setAttribute("data-theme", next);
+});
