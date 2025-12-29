@@ -3,6 +3,7 @@
 ----------------------------------------------------------- */
 
 :root {
+  --topbar-height: 80px;
   --bottom-nav-height: 70px;
 
   --bg: #f7f6fb;
@@ -70,20 +71,65 @@ body {
 }
 
 /* -----------------------------------------------------------
-   SCREEN WRAPPER (NO TOP NAVBAR)
+   TOPBAR (DESKTOP ONLY)
+----------------------------------------------------------- */
+
+.aura-topbar {
+  position: fixed;
+  top: env(safe-area-inset-top);
+  left: 0;
+  width: 100%;
+  height: var(--topbar-height);
+
+  background: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(var(--blur-soft));
+  -webkit-backdrop-filter: blur(var(--blur-soft));
+
+  border-bottom: 1px solid var(--border);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+
+  z-index: 900;
+}
+
+/* HIDE TOPBAR ON MOBILE */
+@media (max-width: 880px) {
+  .aura-topbar {
+    display: none !important;
+  }
+}
+
+.topbar-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* -----------------------------------------------------------
+   SCREEN WRAPPER
 ----------------------------------------------------------- */
 
 .aura-screens {
   position: relative;
   width: 100%;
   margin: 0 !important;
-  padding: 0 !important;
+  padding-left: 0 !important;
 
-  /* iPhone FIX — dynamic viewport height */
   height: calc(100dvh - var(--bottom-nav-height));
-
   overflow-y: auto;
+
   padding-bottom: var(--bottom-nav-height);
+}
+
+/* ADD TOPBAR SPACE ON DESKTOP ONLY */
+@media (min-width: 881px) {
+  .aura-screens {
+    padding-top: var(--topbar-height);
+    height: calc(100dvh - var(--topbar-height));
+  }
 }
 
 .aura-screen > *:first-child {
@@ -367,7 +413,7 @@ body {
 }
 
 /* -----------------------------------------------------------
-   BOTTOM NAV (TRANSPARENT)
+   BOTTOM NAV (MOBILE ONLY)
 ----------------------------------------------------------- */
 
 .aura-bottom-nav {
@@ -389,6 +435,13 @@ body {
   z-index: 900;
 }
 
+/* HIDE BOTTOM NAV ON DESKTOP */
+@media (min-width: 881px) {
+  .aura-bottom-nav {
+    display: none !important;
+  }
+}
+
 .bottom-nav-item {
   background: transparent;
   border: none;
@@ -399,14 +452,4 @@ body {
 
 .bottom-nav-item.is-active {
   color: var(--accent-strong);
-}
-
-/* -----------------------------------------------------------
-   RESPONSIVE
------------------------------------------------------------ */
-
-@media (min-width: 880px) {
-  .aura-bottom-nav {
-    display: none;
-  }
 }
