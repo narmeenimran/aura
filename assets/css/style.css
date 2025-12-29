@@ -67,16 +67,6 @@ html, body {
 }
 
 /* -----------------------------------------------------------
-   APP LAYOUT
------------------------------------------------------------ */
-
-.aura-app-shell {
-  width: 100%;
-  max-width: 100%;
-  padding: 0 16px;
-}
-
-/* -----------------------------------------------------------
    TOPBAR
 ----------------------------------------------------------- */
 
@@ -99,6 +89,23 @@ html, body {
   margin: 0;
   font-size: 1.4rem;
   font-weight: 600;
+}
+
+/* -----------------------------------------------------------
+   NAVBAR FIX — ENSURES CONTENT NEVER HIDES UNDER TOPBAR
+----------------------------------------------------------- */
+
+.aura-screens {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 140px);
+  overflow-y: auto;
+  padding-top: 130px; /* FIXED */
+}
+
+.aura-screen > *:first-child {
+  margin-top: 0 !important;
+  padding-top: 6px;
 }
 
 /* -----------------------------------------------------------
@@ -129,14 +136,6 @@ html, body {
 /* -----------------------------------------------------------
    SCREEN SYSTEM (S1 TRANSITIONS)
 ----------------------------------------------------------- */
-
-.aura-screens {
-  position: relative;
-  width: 100%;
-  height: calc(100vh - 140px);
-  overflow-y: auto;
-  padding-top: 100px;
-}
 
 .aura-screen {
   display: none;
@@ -179,11 +178,6 @@ html, body {
   background: var(--surface);
   border: 1px solid var(--border);
   backdrop-filter: blur(var(--blur-soft));
-}
-
-.todo-checkbox {
-  width: 20px;
-  height: 20px;
 }
 
 /* -----------------------------------------------------------
@@ -293,6 +287,33 @@ html, body {
   border: 1px solid var(--border);
   background: var(--surface);
   backdrop-filter: blur(var(--blur-soft));
+}
+
+/* NOTES TOOLBAR */
+.note-toolbar {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(var(--blur-soft));
+}
+
+.note-toolbar button {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text);
+  font-size: 0.9rem;
+  transition: background var(--transition-fast);
+}
+
+.note-toolbar button:hover {
+  background: var(--accent-soft);
 }
 
 /* -----------------------------------------------------------

@@ -1,4 +1,4 @@
-// storage.js — safe wrapper for localStorage (used by flashcards + notes)
+// storage.js — simple wrapper around localStorage with JSON safety
 
 export const storage = {
   get(key) {

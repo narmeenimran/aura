@@ -1,4 +1,4 @@
-// notes.js — clean notes system with modal editor + haptics
+// notes.js — notes system with formatting toolbar + modal editor + haptics
 
 import { storage } from "../utils/storage.js";
 
@@ -13,12 +13,7 @@ let currentNoteId = null;
 
 function loadNotes() {
   const saved = storage.get(STORAGE_KEY);
-  if (Array.isArray(saved)) {
-    notes = saved;
-  } else {
-    notes = [];
-    saveNotes();
-  }
+  notes = Array.isArray(saved) ? saved : [];
 }
 
 function saveNotes() {
@@ -50,6 +45,8 @@ let saveBtn;
 let deleteBtn;
 let closeBtn;
 
+let toolbarButtons;
+
 /* -----------------------------------------------------------
    RENDER NOTES LIST
 ----------------------------------------------------------- */
@@ -62,10 +59,7 @@ function renderNotesList(filter = "") {
   );
 
   if (filtered.length === 0) {
-    const empty = document.createElement("p");
-    empty.textContent = "No notes yet.";
-    empty.className = "overlay-meta";
-    notesListEl.appendChild(empty);
+    notesListEl.innerHTML = `<p class="overlay-meta">No notes yet.</p>`;
     return;
   }
 
@@ -75,10 +69,10 @@ function renderNotesList(filter = "") {
     card.dataset.noteId = note.id;
 
     card.innerHTML = `
-      <div style="font-weight:600; margin-bottom:4px;">${note.title}</div>
-      <div style="font-size:0.85rem; color:var(--text-muted);">
+      <strong>${note.title}</strong>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-top:6px;">
         ${new Date(note.updated).toLocaleDateString()}
-      </div>
+      </p>
     `;
 
     card.addEventListener("click", () => openNote(note.id));
@@ -87,7 +81,7 @@ function renderNotesList(filter = "") {
 }
 
 /* -----------------------------------------------------------
-   OPEN NOTE (MODAL)
+   OPEN NOTE
 ----------------------------------------------------------- */
 
 function openNote(id) {
@@ -150,8 +144,6 @@ function saveNote() {
 
   if (currentNoteId) {
     const note = notes.find((n) => n.id === currentNoteId);
-    if (!note) return;
-
     note.title = title;
     note.content = content;
     note.updated = now;
@@ -177,8 +169,7 @@ function saveNote() {
 function deleteNote() {
   if (!currentNoteId) return;
 
-  const confirmDelete = window.confirm("Delete this note?");
-  if (!confirmDelete) return;
+  if (!confirm("Delete this note?")) return;
 
   notes = notes.filter((n) => n.id !== currentNoteId);
 
@@ -186,6 +177,15 @@ function deleteNote() {
   renderNotesList(searchInput.value);
   closeNoteEditor();
   vibrate(20);
+}
+
+/* -----------------------------------------------------------
+   TOOLBAR FORMATTING
+----------------------------------------------------------- */
+
+function applyFormat(command, value = null) {
+  document.execCommand(command, false, value);
+  vibrate(5);
 }
 
 /* -----------------------------------------------------------
@@ -205,6 +205,8 @@ export function initNotes() {
   saveBtn = document.getElementById("save-note-button");
   deleteBtn = document.getElementById("delete-note-button");
   closeBtn = document.getElementById("close-note-editor");
+
+  toolbarButtons = document.querySelectorAll(".note-toolbar button");
 
   loadNotes();
   renderNotesList();
@@ -229,5 +231,14 @@ export function initNotes() {
   /* Close overlay when clicking outside */
   overlayEl.addEventListener("click", (evt) => {
     if (evt.target === overlayEl) closeNoteEditor();
+  });
+
+  /* Toolbar buttons */
+  toolbarButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const format = btn.dataset.format;
+      const color = btn.dataset.color || null;
+      applyFormat(format, color);
+    });
   });
 }

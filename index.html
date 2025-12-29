@@ -216,7 +216,7 @@
     </div>
   </div>
 
-  <!-- NOTES EDITOR OVERLAY (N2: fade modal) -->
+  <!-- NOTES EDITOR OVERLAY (N2: fade modal, with toolbar) -->
   <div id="note-editor-overlay" class="aura-overlay" aria-hidden="true">
     <div class="overlay-content note-modal">
       <h2 id="note-editor-title-label">New note</h2>
@@ -227,6 +227,15 @@
         type="text"
         placeholder="Title"
       />
+
+      <!-- TOOLBAR -->
+      <div class="note-toolbar">
+        <button data-format="bold"><b>B</b></button>
+        <button data-format="italic"><i>I</i></button>
+        <button data-format="underline"><u>U</u></button>
+        <button data-format="hiliteColor" data-color="#fff59d">H</button>
+        <button data-format="insertUnorderedList">• List</button>
+      </div>
 
       <div id="note-editor-content" class="note-editor" contenteditable="true"></div>
 

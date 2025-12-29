@@ -109,15 +109,11 @@ function switchScreen(target) {
 
   vibrate(10);
 
-  // Hide old
   oldScreen.classList.remove("is-active");
-
-  // Show new
   newScreen.classList.add("is-active");
 
   currentScreen = target;
 
-  // Update navbar + title
   navButtons.forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.screenTarget === target);
   });
@@ -158,10 +154,6 @@ function initSwipeNavigation() {
     isSwiping = true;
   });
 
-  swipeLayer.addEventListener("touchmove", (e) => {
-    if (!isSwiping) return;
-  });
-
   swipeLayer.addEventListener("touchend", (e) => {
     if (!isSwiping) return;
     isSwiping = false;
@@ -169,18 +161,15 @@ function initSwipeNavigation() {
     const endX = e.changedTouches[0].clientX;
     const diff = endX - startX;
 
-    // Natural sensitivity (H1)
     if (Math.abs(diff) < 40) return;
 
     if (diff < 0) {
-      // Swipe left → next screen
       const next = getNextScreen("left");
       if (next) {
         vibrate(15);
         switchScreen(next);
       }
     } else {
-      // Swipe right → previous screen
       const prev = getNextScreen("right");
       if (prev) {
         vibrate(15);
@@ -234,12 +223,11 @@ function initApp() {
   initChangeName();
   initProfileButton();
 
-  // Initialize modules
   initHome();
   initFlashcards();
   initNotes();
   initTimer();
-  initProfile();      
+  initProfile();
 }
 
 initApp();

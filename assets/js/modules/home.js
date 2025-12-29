@@ -1,64 +1,77 @@
-// home.js — minimal home screen + premade list + add/remove
+// home.js — simple to‑do list for the Home screen
 
-const TODO_KEY = "aura_todo_list";
+import { storage } from "../utils/storage.js";
+
+const STORAGE_KEY = "aura_todos";
+
+let todos = [];
 
 /* -----------------------------------------------------------
-   PREMADE WELLNESS LIST
+   HAPTICS
 ----------------------------------------------------------- */
 
-const PREMADE_LIST = [
-  "drink water",
-  "stretch for 5 minutes",
-  "take a walk",
-  "journal one thought"
-];
+function vibrate(ms = 10) {
+  if (navigator.vibrate) navigator.vibrate(ms);
+}
 
 /* -----------------------------------------------------------
    LOAD + SAVE
 ----------------------------------------------------------- */
 
 function loadTodos() {
-  const saved = localStorage.getItem(TODO_KEY);
-
-  // If no saved list → use premade list
-  if (!saved) {
-    saveTodos(PREMADE_LIST);
-    return [...PREMADE_LIST];
-  }
-
-  try {
-    const parsed = JSON.parse(saved);
-    if (Array.isArray(parsed)) return parsed;
-    return [...PREMADE_LIST];
-  } catch {
-    return [...PREMADE_LIST];
-  }
+  const saved = storage.get(STORAGE_KEY);
+  todos = Array.isArray(saved) ? saved : [];
 }
 
-function saveTodos(list) {
-  localStorage.setItem(TODO_KEY, JSON.stringify(list));
+function saveTodos() {
+  storage.set(STORAGE_KEY, todos);
 }
+
+/* -----------------------------------------------------------
+   ELEMENTS
+----------------------------------------------------------- */
+
+let todoListEl;
+let addTodoBtn;
 
 /* -----------------------------------------------------------
    RENDER LIST
 ----------------------------------------------------------- */
 
-function renderTodoList() {
-  const list = loadTodos();
+function renderTodos() {
   todoListEl.innerHTML = "";
 
-  list.forEach((item, index) => {
+  if (todos.length === 0) {
+    todoListEl.innerHTML = `<p class="overlay-meta">No tasks yet.</p>`;
+    return;
+  }
+
+  todos.forEach((item, index) => {
     const li = document.createElement("li");
     li.className = "todo-item";
 
     li.innerHTML = `
-      <input type="checkbox" class="todo-checkbox" data-index="${index}">
-      <span class="todo-text">${item}</span>
+      <input type="checkbox" ${item.done ? "checked" : ""} />
+      <span style="flex:1; ${item.done ? "text-decoration: line-through; opacity:0.6;" : ""}">
+        ${item.text}
+      </span>
+      <button class="ghost-button small delete-btn">✕</button>
     `;
 
-    // When checked → remove item
-    li.querySelector(".todo-checkbox").addEventListener("change", () => {
-      removeTodo(index);
+    // Toggle done
+    li.querySelector("input").addEventListener("change", () => {
+      item.done = !item.done;
+      saveTodos();
+      renderTodos();
+      vibrate(10);
+    });
+
+    // Delete
+    li.querySelector(".delete-btn").addEventListener("click", () => {
+      todos.splice(index, 1);
+      saveTodos();
+      renderTodos();
+      vibrate(15);
     });
 
     todoListEl.appendChild(li);
@@ -66,44 +79,33 @@ function renderTodoList() {
 }
 
 /* -----------------------------------------------------------
-   ADD ITEM
+   ADD TODO
 ----------------------------------------------------------- */
 
 function addTodo() {
-  const text = prompt("what do you want to do?");
+  const text = prompt("New task:");
   if (!text || !text.trim()) return;
 
-  const list = loadTodos();
-  list.push(text.trim());
-  saveTodos(list);
+  todos.push({
+    text: text.trim(),
+    done: false
+  });
 
-  renderTodoList();
-}
-
-/* -----------------------------------------------------------
-   REMOVE ITEM
------------------------------------------------------------ */
-
-function removeTodo(index) {
-  const list = loadTodos();
-  list.splice(index, 1);
-  saveTodos(list);
-
-  renderTodoList();
+  saveTodos();
+  renderTodos();
+  vibrate(15);
 }
 
 /* -----------------------------------------------------------
    INIT
 ----------------------------------------------------------- */
 
-let todoListEl;
-let addButton;
-
 export function initHome() {
   todoListEl = document.getElementById("todo-list");
-  addButton = document.getElementById("todo-add-button");
+  addTodoBtn = document.getElementById("todo-add-button");
 
-  renderTodoList();
+  loadTodos();
+  renderTodos();
 
-  addButton.addEventListener("click", addTodo);
+  addTodoBtn.addEventListener("click", addTodo);
 }
