@@ -3,6 +3,9 @@
 ----------------------------------------------------------- */
 
 :root {
+  --topbar-height: 80px; /* FIXED HEIGHT */
+  --bottom-nav-height: 70px;
+
   --bg: #f7f6fb;
   --text: #1b1633;
   --text-muted: #6a628f;
@@ -62,12 +65,8 @@ html, body {
   box-sizing: border-box;
 }
 
-.no-padding {
-  padding: 0 !important;
-}
-
 /* -----------------------------------------------------------
-   TOPBAR
+   TOPBAR (TRANSPARENT)
 ----------------------------------------------------------- */
 
 .aura-topbar {
@@ -75,13 +74,19 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  padding: 20px 16px;
-  background: var(--surface-strong);
+  height: var(--topbar-height);
+
+  background: rgba(255, 255, 255, 0); /* FULLY TRANSPARENT */
   backdrop-filter: blur(var(--blur-soft));
+  -webkit-backdrop-filter: blur(var(--blur-soft));
+
   border-bottom: 1px solid var(--border);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 16px;
+
   z-index: 900;
 }
 
@@ -92,20 +97,38 @@ html, body {
 }
 
 /* -----------------------------------------------------------
-   NAVBAR FIX — ENSURES CONTENT NEVER HIDES UNDER TOPBAR
+   SCREEN WRAPPER (NO OVERLAP)
 ----------------------------------------------------------- */
 
 .aura-screens {
   position: relative;
   width: 100%;
-  height: calc(100vh - 140px);
+  height: calc(100vh - var(--topbar-height) - var(--bottom-nav-height));
   overflow-y: auto;
-  padding-top: 130px; /* FIXED */
+  padding-top: var(--topbar-height);
+  padding-bottom: var(--bottom-nav-height);
 }
 
 .aura-screen > *:first-child {
   margin-top: 0 !important;
   padding-top: 6px;
+}
+
+/* -----------------------------------------------------------
+   SCREEN TRANSITIONS
+----------------------------------------------------------- */
+
+.aura-screen {
+  display: none;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.aura-screen.is-active {
+  display: block;
+  opacity: 1;
+  transform: translateX(0);
 }
 
 /* -----------------------------------------------------------
@@ -131,23 +154,6 @@ html, body {
   inset: 0;
   z-index: 50;
   pointer-events: none;
-}
-
-/* -----------------------------------------------------------
-   SCREEN SYSTEM (S1 TRANSITIONS)
------------------------------------------------------------ */
-
-.aura-screen {
-  display: none;
-  opacity: 0;
-  transform: translateX(10px);
-  transition: opacity var(--transition-fast), transform var(--transition-fast);
-}
-
-.aura-screen.is-active {
-  display: block;
-  opacity: 1;
-  transform: translateX(0);
 }
 
 /* -----------------------------------------------------------
@@ -317,7 +323,7 @@ html, body {
 }
 
 /* -----------------------------------------------------------
-   TIMER (POMODORO RING)
+   TIMER (POMODORO)
 ----------------------------------------------------------- */
 
 .timer-wrapper {
@@ -354,7 +360,7 @@ html, body {
 }
 
 /* -----------------------------------------------------------
-   OVERLAYS (PROFILE + NOTES)
+   OVERLAYS
 ----------------------------------------------------------- */
 
 .aura-overlay {
@@ -409,7 +415,7 @@ html, body {
 }
 
 /* -----------------------------------------------------------
-   BOTTOM NAV
+   BOTTOM NAV (OPTIONALLY TRANSPARENT)
 ----------------------------------------------------------- */
 
 .aura-bottom-nav {
@@ -417,12 +423,17 @@ html, body {
   bottom: 0;
   left: 0;
   width: 100%;
-  background: var(--surface-strong);
+  height: var(--bottom-nav-height);
+
+  background: rgba(255, 255, 255, 0); /* TRANSPARENT */
   backdrop-filter: blur(var(--blur-soft));
+  -webkit-backdrop-filter: blur(var(--blur-soft));
+
   border-top: 1px solid var(--border);
+
   display: flex;
   justify-content: space-around;
-  padding: 10px 0;
+  align-items: center;
   z-index: 900;
 }
 
