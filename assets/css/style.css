@@ -3,7 +3,6 @@
 ----------------------------------------------------------- */
 
 :root {
-  --topbar-height: 80px;
   --bottom-nav-height: 70px;
 
   --bg: #f7f6fb;
@@ -47,7 +46,7 @@ html[data-theme="dark"] {
 }
 
 /* -----------------------------------------------------------
-   GLOBAL RESET (LEFT ALIGNMENT FIX)
+   GLOBAL RESET (iPhone FIX)
 ----------------------------------------------------------- */
 
 html, body {
@@ -55,6 +54,7 @@ html, body {
   padding: 0 !important;
   overflow-x: hidden !important;
   width: 100%;
+  max-width: 100%;
   background: var(--bg);
   color: var(--text);
   font-family: "Inter", sans-serif;
@@ -64,51 +64,25 @@ html, body {
   box-sizing: border-box;
 }
 
-/* -----------------------------------------------------------
-   TOPBAR (TRANSPARENT)
------------------------------------------------------------ */
-
-.aura-topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: var(--topbar-height);
-
-  background: rgba(255, 255, 255, 0);
-  backdrop-filter: blur(var(--blur-soft));
-  -webkit-backdrop-filter: blur(var(--blur-soft));
-
-  border-bottom: 1px solid var(--border);
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-
-  z-index: 900;
-}
-
-.topbar-title {
-  margin: 0;
-  font-size: 1.4rem;
-  font-weight: 600;
+body {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 /* -----------------------------------------------------------
-   SCREEN WRAPPER (NO OVERLAP, NO SHIFT)
+   SCREEN WRAPPER (NO TOP NAVBAR)
 ----------------------------------------------------------- */
 
 .aura-screens {
   position: relative;
   width: 100%;
   margin: 0 !important;
-  padding-left: 0 !important;
+  padding: 0 !important;
 
-  height: calc(100vh - var(--topbar-height) - var(--bottom-nav-height));
+  /* iPhone FIX — dynamic viewport height */
+  height: calc(100dvh - var(--bottom-nav-height));
+
   overflow-y: auto;
-
-  padding-top: var(--topbar-height);
   padding-bottom: var(--bottom-nav-height);
 }
 
@@ -118,7 +92,7 @@ html, body {
 }
 
 /* -----------------------------------------------------------
-   SCREEN TRANSITIONS (NO translateX SHIFT)
+   SCREEN TRANSITIONS
 ----------------------------------------------------------- */
 
 .aura-screen {
@@ -132,31 +106,6 @@ html, body {
   display: block;
   opacity: 1;
   transform: translateX(0);
-}
-
-/* -----------------------------------------------------------
-   PROFILE CIRCLE
------------------------------------------------------------ */
-
-.profile-circle {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #b69fff, #ffb4d2, #96e6c8, #a0beff);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-/* -----------------------------------------------------------
-   SWIPE LAYER
------------------------------------------------------------ */
-
-.swipe-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  pointer-events: none;
 }
 
 /* -----------------------------------------------------------
@@ -227,7 +176,7 @@ html, body {
   right: -100%;
   width: 92%;
   max-width: 420px;
-  height: 100vh;
+  height: 100dvh;
   background: var(--surface-strong);
   backdrop-filter: blur(var(--blur-soft));
   border-left: 1px solid var(--border);
@@ -423,7 +372,7 @@ html, body {
 
 .aura-bottom-nav {
   position: fixed;
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom);
   left: 0;
   width: 100%;
   height: var(--bottom-nav-height);
