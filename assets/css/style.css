@@ -3,7 +3,7 @@
 ----------------------------------------------------------- */
 
 :root {
-  --topbar-height: 80px; /* FIXED HEIGHT */
+  --topbar-height: 80px;
   --bottom-nav-height: 70px;
 
   --bg: #f7f6fb;
@@ -47,15 +47,14 @@ html[data-theme="dark"] {
 }
 
 /* -----------------------------------------------------------
-   GLOBAL
+   GLOBAL RESET (LEFT ALIGNMENT FIX)
 ----------------------------------------------------------- */
 
 html, body {
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
   width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: "Inter", sans-serif;
@@ -76,7 +75,7 @@ html, body {
   width: 100%;
   height: var(--topbar-height);
 
-  background: rgba(255, 255, 255, 0); /* FULLY TRANSPARENT */
+  background: rgba(255, 255, 255, 0);
   backdrop-filter: blur(var(--blur-soft));
   -webkit-backdrop-filter: blur(var(--blur-soft));
 
@@ -97,14 +96,18 @@ html, body {
 }
 
 /* -----------------------------------------------------------
-   SCREEN WRAPPER (NO OVERLAP)
+   SCREEN WRAPPER (NO OVERLAP, NO SHIFT)
 ----------------------------------------------------------- */
 
 .aura-screens {
   position: relative;
   width: 100%;
+  margin: 0 !important;
+  padding-left: 0 !important;
+
   height: calc(100vh - var(--topbar-height) - var(--bottom-nav-height));
   overflow-y: auto;
+
   padding-top: var(--topbar-height);
   padding-bottom: var(--bottom-nav-height);
 }
@@ -115,13 +118,13 @@ html, body {
 }
 
 /* -----------------------------------------------------------
-   SCREEN TRANSITIONS
+   SCREEN TRANSITIONS (NO translateX SHIFT)
 ----------------------------------------------------------- */
 
 .aura-screen {
   display: none;
   opacity: 0;
-  transform: translateX(10px);
+  transform: translateX(0); /* FIXED */
   transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
 
@@ -415,7 +418,7 @@ html, body {
 }
 
 /* -----------------------------------------------------------
-   BOTTOM NAV (OPTIONALLY TRANSPARENT)
+   BOTTOM NAV (TRANSPARENT)
 ----------------------------------------------------------- */
 
 .aura-bottom-nav {
@@ -425,7 +428,7 @@ html, body {
   width: 100%;
   height: var(--bottom-nav-height);
 
-  background: rgba(255, 255, 255, 0); /* TRANSPARENT */
+  background: rgba(255, 255, 255, 0);
   backdrop-filter: blur(var(--blur-soft));
   -webkit-backdrop-filter: blur(var(--blur-soft));
 
