@@ -10,6 +10,7 @@
 let userName = localStorage.getItem("aura-name") || "";
 let decks = JSON.parse(localStorage.getItem("aura-decks") || "{}");
 let notes = JSON.parse(localStorage.getItem("aura-notes") || "[]");
+let todos = JSON.parse(localStorage.getItem("aura-todos") || "[]");
 
 let currentDeck = null;
 let currentCardIndex = 0;
@@ -98,6 +99,47 @@ navButtons.forEach(btn => {
     navButtons.forEach(b => b.classList.remove("is-active"));
     btn.classList.add("is-active");
   });
+});
+
+/* ------------------------------------------------------------
+   TODO LIST (HOME)
+------------------------------------------------------------ */
+
+function saveTodos() {
+  localStorage.setItem("aura-todos", JSON.stringify(todos));
+}
+
+function renderTodos() {
+  const list = document.getElementById("todo-list");
+  list.innerHTML = "";
+
+  todos.forEach((item, index) => {
+    const li = document.createElement("li");
+    li.className = "todo-item";
+    li.innerHTML = `
+      <span>${item}</span>
+      <button class="ghost-button" data-index="${index}">x</button>
+    `;
+
+    li.querySelector("button").addEventListener("click", () => {
+      todos.splice(index, 1);
+      saveTodos();
+      renderTodos();
+    });
+
+    list.appendChild(li);
+  });
+}
+
+renderTodos();
+
+document.getElementById("todo-add-button").addEventListener("click", () => {
+  const text = prompt("New item:");
+  if (!text) return;
+
+  todos.push(text);
+  saveTodos();
+  renderTodos();
 });
 
 /* ------------------------------------------------------------
