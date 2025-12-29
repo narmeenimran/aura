@@ -1,4 +1,4 @@
-// flashcards.js — smooth soft flip (F2) + full deck system
+// flashcards.js — standard card size + smooth flip + full deck system
 
 import { storage } from "../utils/storage.js";
 
@@ -36,7 +36,6 @@ let overlayEl;
 let overlayTitleEl;
 
 let flashcardEl;
-let flashcardInnerEl;
 let flashcardFrontEl;
 let flashcardBackEl;
 
@@ -142,7 +141,7 @@ function renderCard() {
 }
 
 /* -----------------------------------------------------------
-   FLIP CARD (F2 — smooth soft flip)
+   FLIP CARD (F2)
 ----------------------------------------------------------- */
 
 function flipCard() {
@@ -299,7 +298,6 @@ export function initFlashcards() {
   overlayTitleEl = document.getElementById("deck-viewer-title");
 
   flashcardEl = document.getElementById("flashcard");
-  flashcardInnerEl = document.querySelector(".flashcard-inner");
   flashcardFrontEl = document.getElementById("flashcard-front");
   flashcardBackEl = document.getElementById("flashcard-back");
 

@@ -1,17 +1,47 @@
+// home.js — greeting + editable to‑do list + premade list (PL3)
+
 const TODO_KEY = "aura_todo_list";
+
+/* -----------------------------------------------------------
+   PREMADE WELLNESS LIST (PL3)
+----------------------------------------------------------- */
+
+const PREMADE_LIST = [
+  "drink water",
+  "stretch for 5 minutes",
+  "take a walk",
+  "journal one thought"
+];
+
+/* -----------------------------------------------------------
+   LOAD + SAVE
+----------------------------------------------------------- */
 
 function loadTodos() {
   const saved = localStorage.getItem(TODO_KEY);
+
+  // If no saved list → return premade list
+  if (!saved) {
+    saveTodos(PREMADE_LIST);
+    return [...PREMADE_LIST];
+  }
+
   try {
-    return saved ? JSON.parse(saved) : [];
+    const parsed = JSON.parse(saved);
+    if (Array.isArray(parsed)) return parsed;
+    return [...PREMADE_LIST];
   } catch {
-    return [];
+    return [...PREMADE_LIST];
   }
 }
 
 function saveTodos(list) {
   localStorage.setItem(TODO_KEY, JSON.stringify(list));
 }
+
+/* -----------------------------------------------------------
+   RENDER LIST
+----------------------------------------------------------- */
 
 function renderTodoList() {
   const list = loadTodos();
@@ -26,6 +56,7 @@ function renderTodoList() {
       <span class="todo-text">${item}</span>
     `;
 
+    // When checked → remove item (C3)
     li.querySelector(".todo-checkbox").addEventListener("change", () => {
       removeTodo(index);
     });
@@ -33,6 +64,10 @@ function renderTodoList() {
     todoListEl.appendChild(li);
   });
 }
+
+/* -----------------------------------------------------------
+   ADD ITEM
+----------------------------------------------------------- */
 
 function addTodo() {
   const text = prompt("what do you want to do today?");
@@ -45,6 +80,10 @@ function addTodo() {
   renderTodoList();
 }
 
+/* -----------------------------------------------------------
+   REMOVE ITEM (C3)
+----------------------------------------------------------- */
+
 function removeTodo(index) {
   const list = loadTodos();
   list.splice(index, 1);
@@ -52,6 +91,10 @@ function removeTodo(index) {
 
   renderTodoList();
 }
+
+/* -----------------------------------------------------------
+   INIT
+----------------------------------------------------------- */
 
 let todoListEl;
 let addButton;

@@ -1,4 +1,4 @@
-// notes.js — advanced editor + toolbar + auto-save
+// notes.js — advanced editor + toolbar + full-width search bar + auto-save
 
 import { storage } from "../utils/storage.js";
 
