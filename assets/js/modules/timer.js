@@ -1,8 +1,7 @@
-// timer.js — simple Pomodoro timer (25:00)
+// timer.js — clean Pomodoro timer (25:00) with start/pause/reset
 
-let duration = 25 * 60; // 25 minutes in seconds
-let remaining = duration;
-let interval = null;
+let timeLeft = 25 * 60; // 25 minutes
+let timerInterval = null;
 
 let displayEl;
 let toggleBtn;
@@ -23,7 +22,7 @@ function formatTime(seconds) {
 ----------------------------------------------------------- */
 
 function updateDisplay() {
-  displayEl.textContent = formatTime(remaining);
+  displayEl.textContent = formatTime(timeLeft);
 }
 
 /* -----------------------------------------------------------
@@ -31,21 +30,24 @@ function updateDisplay() {
 ----------------------------------------------------------- */
 
 function startTimer() {
-  if (interval) return;
+  if (timerInterval) return;
 
-  interval = setInterval(() => {
-    remaining--;
+  toggleBtn.textContent = "Pause";
 
-    if (remaining <= 0) {
-      clearInterval(interval);
-      interval = null;
-      remaining = 0;
+  timerInterval = setInterval(() => {
+    timeLeft--;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timeLeft = 0;
+      updateDisplay();
+      toggleBtn.textContent = "Start";
+      return;
     }
 
     updateDisplay();
   }, 1000);
-
-  toggleBtn.textContent = "Pause";
 }
 
 /* -----------------------------------------------------------
@@ -53,21 +55,9 @@ function startTimer() {
 ----------------------------------------------------------- */
 
 function pauseTimer() {
-  clearInterval(interval);
-  interval = null;
+  clearInterval(timerInterval);
+  timerInterval = null;
   toggleBtn.textContent = "Start";
-}
-
-/* -----------------------------------------------------------
-   TOGGLE START/PAUSE
------------------------------------------------------------ */
-
-function toggleTimer() {
-  if (interval) {
-    pauseTimer();
-  } else {
-    startTimer();
-  }
 }
 
 /* -----------------------------------------------------------
@@ -76,8 +66,20 @@ function toggleTimer() {
 
 function resetTimer() {
   pauseTimer();
-  remaining = duration;
+  timeLeft = 25 * 60;
   updateDisplay();
+}
+
+/* -----------------------------------------------------------
+   TOGGLE START/PAUSE
+----------------------------------------------------------- */
+
+function toggleTimer() {
+  if (timerInterval) {
+    pauseTimer();
+  } else {
+    startTimer();
+  }
 }
 
 /* -----------------------------------------------------------

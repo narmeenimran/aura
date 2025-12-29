@@ -1,8 +1,14 @@
+// app.js — full navigation system with iOS-style slide transitions
+
 import { initHome } from "./modules/home.js";
 import { initFlashcards } from "./modules/flashcards.js";
 import { initNotes } from "./modules/notes.js";
 import { initTimer } from "./modules/timer.js";
 import { initProfile } from "./modules/profile.js";
+
+/* -----------------------------------------------------------
+   ELEMENTS
+----------------------------------------------------------- */
 
 const onboardingScreen = document.getElementById("onboarding-screen");
 const onboardingInput = document.getElementById("onboarding-name-input");
@@ -20,6 +26,10 @@ const changeNameBtn = document.getElementById("settings-change-name");
 
 const profileButton = document.getElementById("profile-button");
 
+/* -----------------------------------------------------------
+   NAME STORAGE
+----------------------------------------------------------- */
+
 function loadName() {
   return localStorage.getItem("aura_username") || null;
 }
@@ -36,6 +46,10 @@ export function updateGreeting() {
     homeGreeting.textContent = "hello,";
   }
 }
+
+/* -----------------------------------------------------------
+   ONBOARDING
+----------------------------------------------------------- */
 
 function handleOnboarding() {
   const saved = loadName();
@@ -59,6 +73,10 @@ function handleOnboarding() {
   });
 }
 
+/* -----------------------------------------------------------
+   CHANGE NAME (SETTINGS)
+----------------------------------------------------------- */
+
 function initChangeName() {
   changeNameBtn.addEventListener("click", () => {
     const current = loadName() || "";
@@ -70,19 +88,37 @@ function initChangeName() {
   });
 }
 
+/* -----------------------------------------------------------
+   NAVIGATION — iOS SLIDE TRANSITIONS
+----------------------------------------------------------- */
+
 function switchScreen(target) {
-  screens.forEach((screen) => {
-    screen.classList.remove("is-active");
-    if (screen.dataset.screen === target) {
-      screen.classList.add("is-active");
-    }
+  const newScreen = document.querySelector(`.aura-screen[data-screen="${target}"]`);
+  const oldScreen = document.querySelector(".aura-screen.is-active");
+
+  if (newScreen === oldScreen) return;
+
+  // Prepare new screen
+  newScreen.classList.add("pre-enter");
+  newScreen.style.display = "block";
+
+  requestAnimationFrame(() => {
+    oldScreen.classList.add("slide-left");
+    newScreen.classList.add("slide-in");
   });
 
+  // After animation ends
+  setTimeout(() => {
+    oldScreen.classList.remove("is-active", "slide-left");
+    oldScreen.style.display = "none";
+
+    newScreen.classList.remove("pre-enter", "slide-in");
+    newScreen.classList.add("is-active");
+  }, 300);
+
+  // Update navbar + title
   navButtons.forEach((btn) => {
-    btn.classList.remove("is-active");
-    if (btn.dataset.screenTarget === target) {
-      btn.classList.add("is-active");
-    }
+    btn.classList.toggle("is-active", btn.dataset.screenTarget === target);
   });
 
   topbarTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
@@ -96,6 +132,10 @@ function initNavigation() {
     });
   });
 }
+
+/* -----------------------------------------------------------
+   THEME TOGGLE
+----------------------------------------------------------- */
 
 function initThemeToggle() {
   themeToggle.addEventListener("click", () => {
@@ -112,6 +152,10 @@ function initThemeToggle() {
   }
 }
 
+/* -----------------------------------------------------------
+   PROFILE BUTTON
+----------------------------------------------------------- */
+
 function initProfileButton() {
   profileButton.addEventListener("click", () => {
     const overlay = document.getElementById("profile-overlay");
@@ -120,6 +164,10 @@ function initProfileButton() {
   });
 }
 
+/* -----------------------------------------------------------
+   INIT APP
+----------------------------------------------------------- */
+
 function initApp() {
   handleOnboarding();
   initNavigation();
@@ -127,11 +175,12 @@ function initApp() {
   initChangeName();
   initProfileButton();
 
-  initHome();        
-  initFlashcards(); 
-  initNotes();      
-  initTimer();     
-  initProfile();    
+  // Initialize modules
+  initHome();
+  initFlashcards();
+  initNotes();
+  initTimer();
+  initProfile();
 }
 
 initApp();

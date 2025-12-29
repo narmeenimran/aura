@@ -1,4 +1,10 @@
+// home.js — minimal home screen + premade list + add/remove
+
 const TODO_KEY = "aura_todo_list";
+
+/* -----------------------------------------------------------
+   PREMADE WELLNESS LIST
+----------------------------------------------------------- */
 
 const PREMADE_LIST = [
   "drink water",
@@ -7,9 +13,14 @@ const PREMADE_LIST = [
   "journal one thought"
 ];
 
+/* -----------------------------------------------------------
+   LOAD + SAVE
+----------------------------------------------------------- */
+
 function loadTodos() {
   const saved = localStorage.getItem(TODO_KEY);
 
+  // If no saved list → use premade list
   if (!saved) {
     saveTodos(PREMADE_LIST);
     return [...PREMADE_LIST];
@@ -28,6 +39,10 @@ function saveTodos(list) {
   localStorage.setItem(TODO_KEY, JSON.stringify(list));
 }
 
+/* -----------------------------------------------------------
+   RENDER LIST
+----------------------------------------------------------- */
+
 function renderTodoList() {
   const list = loadTodos();
   todoListEl.innerHTML = "";
@@ -41,6 +56,7 @@ function renderTodoList() {
       <span class="todo-text">${item}</span>
     `;
 
+    // When checked → remove item
     li.querySelector(".todo-checkbox").addEventListener("change", () => {
       removeTodo(index);
     });
@@ -48,6 +64,10 @@ function renderTodoList() {
     todoListEl.appendChild(li);
   });
 }
+
+/* -----------------------------------------------------------
+   ADD ITEM
+----------------------------------------------------------- */
 
 function addTodo() {
   const text = prompt("what do you want to do?");
@@ -60,6 +80,10 @@ function addTodo() {
   renderTodoList();
 }
 
+/* -----------------------------------------------------------
+   REMOVE ITEM
+----------------------------------------------------------- */
+
 function removeTodo(index) {
   const list = loadTodos();
   list.splice(index, 1);
@@ -67,6 +91,10 @@ function removeTodo(index) {
 
   renderTodoList();
 }
+
+/* -----------------------------------------------------------
+   INIT
+----------------------------------------------------------- */
 
 let todoListEl;
 let addButton;

@@ -1,19 +1,19 @@
-// flashcards.js — B2‑B glass grid + slide‑in deck viewer (Option 3)
+// flashcards.js — full flashcard system with slide-in viewer
 
 import { storage } from "../utils/storage.js";
 
-const DECK_KEY = "aura_flashcard_decks";
+const STORAGE_KEY = "aura_flashcards";
 
 let decks = [];
 let currentDeckId = null;
-let currentIndex = 0;
+let currentCardIndex = 0;
 
 /* -----------------------------------------------------------
    LOAD + SAVE
 ----------------------------------------------------------- */
 
 function loadDecks() {
-  const saved = storage.get(DECK_KEY);
+  const saved = storage.get(STORAGE_KEY);
   if (Array.isArray(saved)) {
     decks = saved;
   } else {
@@ -23,140 +23,108 @@ function loadDecks() {
 }
 
 function saveDecks() {
-  storage.set(DECK_KEY, decks);
+  storage.set(STORAGE_KEY, decks);
 }
 
 /* -----------------------------------------------------------
    ELEMENTS
 ----------------------------------------------------------- */
 
-let gridEl;
-
-let panelEl;
-let panelTitleEl;
-
+let deckGridEl;
+let deckViewerEl;
+let deckViewerTitleEl;
 let flashcardEl;
 let flashcardFrontEl;
 let flashcardBackEl;
-
-let progressEl;
+let flashcardProgressEl;
 
 let flipBtn;
-let prevBtn;
 let nextBtn;
+let prevBtn;
 let addCardBtn;
 let editCardBtn;
 let deleteCardBtn;
 let renameDeckBtn;
 let deleteDeckBtn;
-let closePanelBtn;
-
-let addDeckBtn;
+let closeViewerBtn;
 
 /* -----------------------------------------------------------
    RENDER DECK GRID
 ----------------------------------------------------------- */
 
 function renderDeckGrid() {
-  gridEl.innerHTML = "";
+  deckGridEl.innerHTML = "";
 
   if (decks.length === 0) {
-    const empty = document.createElement("p");
-    empty.textContent = "No decks yet.";
-    empty.className = "overlay-meta";
-    gridEl.appendChild(empty);
+    deckGridEl.innerHTML = `<p class="overlay-meta">No decks yet.</p>`;
     return;
   }
 
   decks.forEach((deck) => {
-    const card = document.createElement("div");
+    const card = document.createElement("button");
     card.className = "deck-card";
+    card.dataset.deckId = deck.id;
 
     card.innerHTML = `
       <div class="deck-card-header">
         <strong>${deck.name}</strong>
-        <div class="deck-card-actions">
-          <button class="deck-action-btn" data-edit="${deck.id}">✏️</button>
-          <button class="deck-action-btn" data-delete="${deck.id}">🗑</button>
-        </div>
       </div>
-      <div style="margin-top:6px; font-size:0.85rem; color:var(--text-muted);">
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-top:6px;">
         ${deck.cards.length} cards
-      </div>
+      </p>
     `;
 
-    // Open deck viewer
-    card.addEventListener("click", (evt) => {
-      if (evt.target.dataset.edit || evt.target.dataset.delete) return;
-      openDeck(deck.id);
-    });
-
-    // Edit deck
-    card.querySelector("[data-edit]")?.addEventListener("click", (evt) => {
-      evt.stopPropagation();
-      renameDeck(deck.id);
-    });
-
-    // Delete deck
-    card.querySelector("[data-delete]")?.addEventListener("click", (evt) => {
-      evt.stopPropagation();
-      deleteDeck(deck.id);
-    });
-
-    gridEl.appendChild(card);
+    card.addEventListener("click", () => openDeck(deck.id));
+    deckGridEl.appendChild(card);
   });
 }
 
 /* -----------------------------------------------------------
-   OPEN DECK (SLIDE-IN PANEL)
+   OPEN DECK VIEWER
 ----------------------------------------------------------- */
 
 function openDeck(id) {
-  currentDeckId = id;
-  currentIndex = 0;
-
   const deck = decks.find((d) => d.id === id);
   if (!deck) return;
 
-  panelTitleEl.textContent = deck.name;
+  currentDeckId = id;
+  currentCardIndex = 0;
 
-  panelEl.classList.add("is-visible");
+  deckViewerTitleEl.textContent = deck.name;
 
-  renderCard();
+  updateFlashcard();
+  deckViewerEl.classList.add("is-visible");
 }
 
 /* -----------------------------------------------------------
-   CLOSE PANEL
+   CLOSE DECK VIEWER
 ----------------------------------------------------------- */
 
-function closePanel() {
-  panelEl.classList.remove("is-visible");
-  flashcardEl.classList.remove("is-flipped");
+function closeDeckViewer() {
+  deckViewerEl.classList.remove("is-visible");
+  currentDeckId = null;
+  currentCardIndex = 0;
 }
 
 /* -----------------------------------------------------------
-   RENDER CARD
+   UPDATE FLASHCARD CONTENT
 ----------------------------------------------------------- */
 
-function renderCard() {
+function updateFlashcard() {
   const deck = decks.find((d) => d.id === currentDeckId);
-  if (!deck) return;
-
-  if (deck.cards.length === 0) {
-    flashcardFrontEl.textContent = "No cards yet.";
-    flashcardBackEl.textContent = "Add a card to begin.";
-    progressEl.textContent = "0 / 0";
+  if (!deck || deck.cards.length === 0) {
+    flashcardFrontEl.textContent = "No cards";
+    flashcardBackEl.textContent = "";
+    flashcardProgressEl.textContent = "";
     return;
   }
 
-  const card = deck.cards[currentIndex];
+  const card = deck.cards[currentCardIndex];
 
   flashcardFrontEl.textContent = card.front;
   flashcardBackEl.textContent = card.back;
 
-  progressEl.textContent = `${currentIndex + 1} / ${deck.cards.length}`;
-
-  flashcardEl.classList.remove("is-flipped");
+  flashcardProgressEl.textContent = `${currentCardIndex + 1} / ${deck.cards.length}`;
 }
 
 /* -----------------------------------------------------------
@@ -173,18 +141,22 @@ function flipCard() {
 
 function nextCard() {
   const deck = decks.find((d) => d.id === currentDeckId);
-  if (!deck || deck.cards.length === 0) return;
+  if (!deck) return;
 
-  currentIndex = (currentIndex + 1) % deck.cards.length;
-  renderCard();
+  currentCardIndex = (currentCardIndex + 1) % deck.cards.length;
+  flashcardEl.classList.remove("is-flipped");
+  updateFlashcard();
 }
 
 function prevCard() {
   const deck = decks.find((d) => d.id === currentDeckId);
-  if (!deck || deck.cards.length === 0) return;
+  if (!deck) return;
 
-  currentIndex = (currentIndex - 1 + deck.cards.length) % deck.cards.length;
-  renderCard();
+  currentCardIndex =
+    (currentCardIndex - 1 + deck.cards.length) % deck.cards.length;
+
+  flashcardEl.classList.remove("is-flipped");
+  updateFlashcard();
 }
 
 /* -----------------------------------------------------------
@@ -195,53 +167,15 @@ function addDeck() {
   const name = prompt("Deck name:");
   if (!name || !name.trim()) return;
 
-  decks.push({
+  const newDeck = {
     id: String(Date.now()),
     name: name.trim(),
     cards: []
-  });
+  };
 
+  decks.push(newDeck);
   saveDecks();
   renderDeckGrid();
-}
-
-/* -----------------------------------------------------------
-   RENAME DECK
------------------------------------------------------------ */
-
-function renameDeck(id) {
-  const deck = decks.find((d) => d.id === id);
-  if (!deck) return;
-
-  const newName = prompt("New deck name:", deck.name);
-  if (!newName || !newName.trim()) return;
-
-  deck.name = newName.trim();
-  saveDecks();
-
-  renderDeckGrid();
-
-  if (id === currentDeckId) {
-    panelTitleEl.textContent = deck.name;
-  }
-}
-
-/* -----------------------------------------------------------
-   DELETE DECK
------------------------------------------------------------ */
-
-function deleteDeck(id) {
-  const confirmDelete = window.confirm("Delete this deck?");
-  if (!confirmDelete) return;
-
-  decks = decks.filter((d) => d.id !== id);
-  saveDecks();
-
-  renderDeckGrid();
-
-  if (id === currentDeckId) {
-    closePanel();
-  }
 }
 
 /* -----------------------------------------------------------
@@ -249,20 +183,20 @@ function deleteDeck(id) {
 ----------------------------------------------------------- */
 
 function addCard() {
-  const front = prompt("Front:");
-  if (!front) return;
-
-  const back = prompt("Back:");
-  if (!back) return;
-
   const deck = decks.find((d) => d.id === currentDeckId);
   if (!deck) return;
 
-  deck.cards.push({ front, back });
-  saveDecks();
+  const front = prompt("Front:");
+  if (!front || !front.trim()) return;
 
-  currentIndex = deck.cards.length - 1;
-  renderCard();
+  const back = prompt("Back:");
+  if (!back || !back.trim()) return;
+
+  deck.cards.push({ front: front.trim(), back: back.trim() });
+
+  saveDecks();
+  updateFlashcard();
+  renderDeckGrid();
 }
 
 /* -----------------------------------------------------------
@@ -273,19 +207,20 @@ function editCard() {
   const deck = decks.find((d) => d.id === currentDeckId);
   if (!deck || deck.cards.length === 0) return;
 
-  const card = deck.cards[currentIndex];
+  const card = deck.cards[currentCardIndex];
 
   const newFront = prompt("Edit front:", card.front);
-  if (!newFront) return;
+  if (!newFront || !newFront.trim()) return;
 
   const newBack = prompt("Edit back:", card.back);
-  if (!newBack) return;
+  if (!newBack || !newBack.trim()) return;
 
-  card.front = newFront;
-  card.back = newBack;
+  card.front = newFront.trim();
+  card.back = newBack.trim();
 
   saveDecks();
-  renderCard();
+  updateFlashcard();
+  renderDeckGrid();
 }
 
 /* -----------------------------------------------------------
@@ -296,17 +231,51 @@ function deleteCard() {
   const deck = decks.find((d) => d.id === currentDeckId);
   if (!deck || deck.cards.length === 0) return;
 
-  const confirmDelete = window.confirm("Delete this card?");
+  const confirmDelete = confirm("Delete this card?");
   if (!confirmDelete) return;
 
-  deck.cards.splice(currentIndex, 1);
-  saveDecks();
+  deck.cards.splice(currentCardIndex, 1);
 
-  if (currentIndex >= deck.cards.length) {
-    currentIndex = deck.cards.length - 1;
+  if (currentCardIndex >= deck.cards.length) {
+    currentCardIndex = Math.max(0, deck.cards.length - 1);
   }
 
-  renderCard();
+  saveDecks();
+  updateFlashcard();
+  renderDeckGrid();
+}
+
+/* -----------------------------------------------------------
+   RENAME DECK
+----------------------------------------------------------- */
+
+function renameDeck() {
+  const deck = decks.find((d) => d.id === currentDeckId);
+  if (!deck) return;
+
+  const newName = prompt("New deck name:", deck.name);
+  if (!newName || !newName.trim()) return;
+
+  deck.name = newName.trim();
+  saveDecks();
+
+  deckViewerTitleEl.textContent = deck.name;
+  renderDeckGrid();
+}
+
+/* -----------------------------------------------------------
+   DELETE DECK
+----------------------------------------------------------- */
+
+function deleteDeck() {
+  const confirmDelete = confirm("Delete this deck?");
+  if (!confirmDelete) return;
+
+  decks = decks.filter((d) => d.id !== currentDeckId);
+
+  saveDecks();
+  renderDeckGrid();
+  closeDeckViewer();
 }
 
 /* -----------------------------------------------------------
@@ -314,44 +283,36 @@ function deleteCard() {
 ----------------------------------------------------------- */
 
 export function initFlashcards() {
-  loadDecks();
-
-  gridEl = document.getElementById("deck-grid");
-  addDeckBtn = document.getElementById("add-deck-button");
-
-  panelEl = document.getElementById("deck-viewer-panel");
-  panelTitleEl = document.getElementById("deck-viewer-title");
+  deckGridEl = document.getElementById("deck-grid");
+  deckViewerEl = document.getElementById("deck-viewer-panel");
+  deckViewerTitleEl = document.getElementById("deck-viewer-title");
 
   flashcardEl = document.getElementById("flashcard");
   flashcardFrontEl = document.getElementById("flashcard-front");
   flashcardBackEl = document.getElementById("flashcard-back");
-
-  progressEl = document.getElementById("flashcard-progress");
+  flashcardProgressEl = document.getElementById("flashcard-progress");
 
   flipBtn = document.getElementById("flashcard-flip");
-  prevBtn = document.getElementById("flashcard-prev");
   nextBtn = document.getElementById("flashcard-next");
+  prevBtn = document.getElementById("flashcard-prev");
   addCardBtn = document.getElementById("add-card-button");
   editCardBtn = document.getElementById("edit-card-button");
   deleteCardBtn = document.getElementById("delete-card-button");
   renameDeckBtn = document.getElementById("rename-deck-button");
   deleteDeckBtn = document.getElementById("delete-deck-button");
-  closePanelBtn = document.getElementById("close-deck-viewer");
+  closeViewerBtn = document.getElementById("close-deck-viewer");
 
+  loadDecks();
   renderDeckGrid();
 
-  addDeckBtn.addEventListener("click", addDeck);
-
+  // Buttons
   flipBtn.addEventListener("click", flipCard);
-  prevBtn.addEventListener("click", prevCard);
   nextBtn.addEventListener("click", nextCard);
-
+  prevBtn.addEventListener("click", prevCard);
   addCardBtn.addEventListener("click", addCard);
   editCardBtn.addEventListener("click", editCard);
   deleteCardBtn.addEventListener("click", deleteCard);
-
-  renameDeckBtn.addEventListener("click", () => renameDeck(currentDeckId));
-  deleteDeckBtn.addEventListener("click", () => deleteDeck(currentDeckId));
-
-  closePanelBtn.addEventListener("click", closePanel);
+  renameDeckBtn.addEventListener("click", renameDeck);
+  deleteDeckBtn.addEventListener("click", deleteDeck);
+  closeViewerBtn.addEventListener("click", closeDeckViewer);
 }

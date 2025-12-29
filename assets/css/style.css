@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------
-   AURA — FINAL CSS (B2‑B Glass Grid + Slide‑In Viewer)
+   AURA — FULL PATCHED CSS (iOS slide transitions + full width)
 ----------------------------------------------------------- */
 
 :root {
@@ -49,42 +49,111 @@ html[data-theme="dark"] {
 }
 
 /* -----------------------------------------------------------
-   GLOBAL
+   GLOBAL FIXES — FULL WIDTH + NO SPACING
 ----------------------------------------------------------- */
 
 html, body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: "Inter", sans-serif;
-
-  overflow-x: hidden !important;
-  max-width: 100vw;
 }
 
 * {
   box-sizing: border-box;
-  max-width: 100%;
 }
 
-input, textarea {
-  font-size: 16px !important;
+/* App shell full width */
+.aura-app-shell {
+  width: 100%;
+  max-width: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
 }
 
 /* -----------------------------------------------------------
-   TOPBAR + PROFILE CIRCLE
+   SCREEN SYSTEM — ONLY ONE VISIBLE + SLIDE TRANSITIONS
+----------------------------------------------------------- */
+
+.aura-screens {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 140px); /* topbar + bottom nav */
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0;
+  margin: 0;
+}
+
+/* All screens hidden by default */
+.aura-screen {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding-bottom: 80px;
+  opacity: 0;
+  transform: translateX(0);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Active screen visible */
+.aura-screen.is-active {
+  display: block;
+  opacity: 1;
+}
+
+/* Before entering */
+.pre-enter {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+/* Slide in */
+.slide-in {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Slide out */
+.slide-left {
+  transform: translateX(-20%);
+  opacity: 0;
+}
+
+/* -----------------------------------------------------------
+   TOPBAR (FIXED)
 ----------------------------------------------------------- */
 
 .aura-topbar {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 16px;
   background: var(--surface-strong);
   backdrop-filter: blur(var(--blur-soft));
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  z-index: 900;
 }
+
+.topbar-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* -----------------------------------------------------------
+   PROFILE CIRCLE
+----------------------------------------------------------- */
 
 .profile-circle {
   width: 42px;
@@ -107,7 +176,7 @@ input, textarea {
 ----------------------------------------------------------- */
 
 .home-greeting {
-  margin: 0 0 20px;
+  margin: 100px 0 20px; /* below fixed topbar */
   font-size: 2.4rem;
   font-weight: 600;
   text-transform: lowercase;
@@ -140,8 +209,13 @@ input, textarea {
 }
 
 /* -----------------------------------------------------------
-   FLASHCARDS — GRID (B2‑B Glassmorphism)
+   FLASHCARDS — GRID (B2‑B)
 ----------------------------------------------------------- */
+
+.screen-title {
+  margin-top: 100px; /* below topbar */
+  margin-bottom: 16px;
+}
 
 .deck-grid {
   display: grid;
@@ -172,27 +246,8 @@ input, textarea {
   transform: translateY(-3px);
 }
 
-.deck-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.deck-card-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.deck-action-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-size: 1rem;
-}
-
 /* -----------------------------------------------------------
-   FLASHCARDS — SLIDE-IN VIEWER (Option 3)
+   FLASHCARDS — SLIDE-IN VIEWER
 ----------------------------------------------------------- */
 
 .deck-viewer-panel {
@@ -207,19 +262,12 @@ input, textarea {
   border-left: 1px solid var(--border);
   box-shadow: -10px 0 40px rgba(0,0,0,0.15);
   padding: 24px;
-  transition: right var(--transition-med);
+  transition: right 0.35s ease;
   z-index: 999;
 }
 
 .deck-viewer-panel.is-visible {
   right: 0;
-}
-
-.deck-viewer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
 }
 
 /* -----------------------------------------------------------
@@ -373,7 +421,7 @@ input, textarea {
 }
 
 /* -----------------------------------------------------------
-   BOTTOM NAV
+   BOTTOM NAV (FIXED)
 ----------------------------------------------------------- */
 
 .aura-bottom-nav {
@@ -406,17 +454,14 @@ input, textarea {
    RESPONSIVE
 ----------------------------------------------------------- */
 
-@media (min-width: 880px) {
+@media (max-width: 879px) {
   .aura-sidebar {
-    display: block;
-  }
-  .aura-bottom-nav {
-    display: none;
+    display: none !important;
   }
 }
 
-@media (max-width: 879px) {
-  .aura-sidebar {
+@media (min-width: 880px) {
+  .aura-bottom-nav {
     display: none;
   }
 }

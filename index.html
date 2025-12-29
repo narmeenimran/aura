@@ -54,16 +54,14 @@
     <!-- APP SHELL -->
     <div class="aura-app-shell">
 
-      <!-- TOPBAR -->
+      <!-- TOPBAR (FIXED) -->
       <header class="aura-topbar">
         <h2 id="topbar-title" class="topbar-title">Home</h2>
-
-        <!-- DARKER PASTEL PROFILE CIRCLE -->
         <div id="profile-button" class="profile-circle"></div>
       </header>
 
-      <!-- SCREENS -->
-      <main class="aura-screens">
+      <!-- SCREENS WRAPPER (for sliding pages) -->
+      <main class="aura-screens no-padding">
 
         <!-- HOME -->
         <section class="aura-screen is-active" data-screen="home">
@@ -82,7 +80,6 @@
         <section class="aura-screen" data-screen="flashcards">
           <h3 class="screen-title">Flashcards</h3>
 
-          <!-- Deck Grid -->
           <div id="deck-grid" class="deck-grid"></div>
 
           <button id="add-deck-button" class="primary-button full-width">
@@ -175,11 +172,11 @@
 
       <!-- BOTTOM NAV (MOBILE) -->
       <nav class="aura-bottom-nav">
-        <button class="bottom-nav-item is-active" data-screen-target="home">Home</button>
-        <button class="bottom-nav-item" data-screen-target="flashcards">Flashcards</button>
-        <button class="bottom-nav-item" data-screen-target="notes">Notes</button>
-        <button class="bottom-nav-item" data-screen-target="timer">Timer</button>
-        <button class="bottom-nav-item" data-screen-target="settings">Settings</button>
+        <button class="bottom-nav-item is-active" data-screen-target="home"> Home </button>
+        <button class="bottom-nav-item" data-screen-target="flashcards"> Flashcards </button>
+        <button class="bottom-nav-item" data-screen-target="notes"> Notes </button>
+        <button class="bottom-nav-item" data-screen-target="timer"> Timer </button>
+        <button class="bottom-nav-item" data-screen-target="settings"> Settings </button>
       </nav>
 
     </div>

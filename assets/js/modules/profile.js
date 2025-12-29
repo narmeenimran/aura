@@ -1,6 +1,4 @@
-// profile.js — profile picture + age + name (darker pastel circle)
-
-import { updateGreeting } from "../app.js";
+// profile.js — profile picture + age + name
 
 /* -----------------------------------------------------------
    STORAGE KEYS
@@ -54,7 +52,6 @@ function saveProfile() {
   const newName = prompt("Enter your name (leave blank to keep current):");
   if (newName && newName.trim()) {
     localStorage.setItem(PROFILE_NAME_KEY, newName.trim());
-    updateGreeting();
   }
 
   closeProfile();
