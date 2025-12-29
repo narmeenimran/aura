@@ -1,8 +1,8 @@
 /* -----------------------------------------------------------
-   AURA — PASTEL UNIFIED THEME (C1)
-   Radial Gradient (G2), Medium Softness (R2)
-   Mixed Pastels (E), 20% Opacity (PST‑E)
-   Dual Glow Background (BG‑4)
+   AURA — FINAL THEME
+   Vertical Flip (FLIP‑B)
+   Horizontal Scroll Deck Row (H3)
+   Light Mode Pastel Glow / Dark Mode Clean (D3)
 ----------------------------------------------------------- */
 
 /* Pastel gradient colors (20% opacity) */
@@ -31,10 +31,13 @@
   --aura-shadow-subtle: 0 10px 30px rgba(35, 26, 81, 0.10);
 
   --transition-fast: 0.18s ease-out;
-  --transition-med: 0.24s ease-out;
+  --transition-med: 0.28s ease-out;
 }
 
-/* Dark theme override */
+/* -----------------------------------------------------------
+   DARK MODE — CLEAN (NO GRADIENT)
+----------------------------------------------------------- */
+
 html[data-theme="dark"] {
   --aura-bg: #0b0b11;
   --aura-surface: #11111a;
@@ -47,7 +50,9 @@ html[data-theme="dark"] {
 }
 
 /* -----------------------------------------------------------
-   GLOBAL BACKGROUND — Dual Pastel Glow (BG‑4)
+   GLOBAL BACKGROUND
+   Light mode = dual pastel glow
+   Dark mode = clean solid
 ----------------------------------------------------------- */
 
 body {
@@ -80,8 +85,12 @@ body {
   justify-content: center;
 }
 
+html[data-theme="dark"] body {
+  background: var(--aura-bg);
+}
+
 /* -----------------------------------------------------------
-   APP ROOT LAYOUT
+   APP ROOT
 ----------------------------------------------------------- */
 
 .app-root {
@@ -94,7 +103,7 @@ body {
 }
 
 /* -----------------------------------------------------------
-   SIDEBAR (Desktop)
+   SIDEBAR
 ----------------------------------------------------------- */
 
 .aura-sidebar {
@@ -166,14 +175,14 @@ body {
 
 .aura-screens {
   flex: 1;
-  padding: 20px;
+  padding: 24px;
   overflow-y: auto;
 }
 
 .aura-screen {
   display: none;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 }
 
 .aura-screen.is-active {
@@ -181,7 +190,7 @@ body {
 }
 
 /* -----------------------------------------------------------
-   CARDS (Unified Pastel Theme)
+   CARDS
 ----------------------------------------------------------- */
 
 .screen-section-card {
@@ -196,24 +205,29 @@ body {
 
   background-blend-mode: soft-light;
   border-radius: var(--aura-radius-lg);
-  padding: 18px;
+  padding: 20px;
   border: 1px solid var(--aura-border-subtle);
   box-shadow: var(--aura-shadow-subtle);
 }
 
+html[data-theme="dark"] .screen-section-card {
+  background: var(--aura-surface);
+}
+
 /* -----------------------------------------------------------
-   HOME — Deck Preview Cards
+   HOME — Horizontal Scroll Deck Row (H3)
 ----------------------------------------------------------- */
 
 .home-deck-preview {
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
 }
 
 .home-deck-card {
-  flex: 1;
-  min-width: 140px;
+  min-width: 160px;
   padding: 16px;
   border-radius: var(--aura-radius-lg);
 
@@ -239,11 +253,38 @@ body {
   box-shadow: var(--aura-shadow-soft);
 }
 
+html[data-theme="dark"] .home-deck-card {
+  background: var(--aura-surface);
+}
+
 /* -----------------------------------------------------------
-   FLASHCARDS — Pastel Radial Gradient (Stronger)
+   FLASHCARDS — Vertical 3D Flip (FLIP‑B)
 ----------------------------------------------------------- */
 
 .flashcard {
+  width: 100%;
+  min-height: 160px;
+  perspective: 1200px;
+}
+
+.flashcard-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform var(--transition-med);
+  transform-style: preserve-3d;
+}
+
+.flashcard.is-flipped .flashcard-inner {
+  transform: rotateX(180deg);
+}
+
+.flashcard-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+
   padding: 20px;
   border-radius: var(--aura-radius-lg);
 
@@ -259,17 +300,14 @@ body {
   background-blend-mode: soft-light;
   border: 1px solid var(--aura-border-subtle);
   box-shadow: var(--aura-shadow-soft);
-
-  min-height: 120px;
-  transition: var(--transition-fast);
 }
 
-.flashcard-face {
-  font-size: 1rem;
+.flashcard-back {
+  transform: rotateX(180deg);
 }
 
-.flashcard-face.is-hidden {
-  display: none;
+html[data-theme="dark"] .flashcard-face {
+  background: var(--aura-surface);
 }
 
 /* -----------------------------------------------------------
@@ -308,7 +346,7 @@ body {
 }
 
 /* -----------------------------------------------------------
-   BOTTOM NAV (Mobile)
+   BOTTOM NAV
 ----------------------------------------------------------- */
 
 .aura-bottom-nav {

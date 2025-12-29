@@ -1,4 +1,4 @@
-// home.js — updates home stats + pastel deck previews
+// home.js — updates home stats + horizontal scroll deck previews
 
 import { storage } from "../utils/storage.js";
 
@@ -40,7 +40,7 @@ export function updateHomeStats() {
   }
 }
 
-// Render pastel deck previews on Home
+// Render horizontal scroll deck previews (H3)
 function renderHomeDeckPreview() {
   const container = document.getElementById("home-deck-preview");
   if (!container) return;
@@ -56,8 +56,8 @@ function renderHomeDeckPreview() {
     return;
   }
 
-  // Show first 3 decks
-  const previewDecks = decks.slice(0, 3);
+  // Show up to 5 decks in horizontal scroll
+  const previewDecks = decks.slice(0, 5);
 
   previewDecks.forEach((deck) => {
     const card = document.createElement("div");
@@ -93,15 +93,16 @@ function renderHomeDeckPreview() {
 function attachDeckOpenListener() {
   window.addEventListener("openDeckFromHome", (evt) => {
     const deckId = evt.detail.deckId;
+
+    // Try to find the deck button in the Decks screen
     const deckButton = document.querySelector(
       `.deck-card[data-deck-id="${deckId}"]`
     );
 
-    // If deck exists in the Decks screen, simulate click
     if (deckButton) {
       deckButton.click();
     } else {
-      // If not rendered yet, navigate to Decks screen first
+      // Navigate to Decks screen first
       const decksNav = document.querySelector(
         '[data-screen-target="decks"]'
       );

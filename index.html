@@ -86,7 +86,7 @@
             </div>
           </div>
 
-          <!-- Featured Decks -->
+          <!-- Featured Decks (Horizontal Scroll) -->
           <div class="screen-section-card">
             <h4>Your decks</h4>
             <div id="home-deck-preview" class="home-deck-preview">
@@ -205,9 +205,12 @@
         <button id="rename-deck-button" class="ghost-button">Rename deck</button>
       </div>
 
+      <!-- NEW FLIP STRUCTURE -->
       <div id="flashcard" class="flashcard">
-        <div id="flashcard-front" class="flashcard-face"></div>
-        <div id="flashcard-back" class="flashcard-face is-hidden"></div>
+        <div class="flashcard-inner">
+          <div id="flashcard-front" class="flashcard-face flashcard-front"></div>
+          <div id="flashcard-back" class="flashcard-face flashcard-back"></div>
+        </div>
       </div>
 
       <p id="flashcard-progress" class="overlay-meta"></p>

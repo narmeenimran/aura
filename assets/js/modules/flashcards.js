@@ -1,4 +1,4 @@
-// flashcards.js — pastel flashcards + deck CRUD + viewer overlay
+// flashcards.js — vertical flip + deck CRUD + viewer overlay
 
 import { storage } from "../utils/storage.js";
 import { updateHomeStats } from "./home.js";
@@ -8,7 +8,6 @@ const STORAGE_KEY = "aura_decks";
 let decks = [];
 let currentDeckId = null;
 let currentCardIndex = 0;
-let showingBack = false;
 
 // Elements
 let deckListEl;
@@ -27,6 +26,7 @@ let renameDeckBtn;
 let deleteDeckBtn;
 let closeBtn;
 let addDeckBtn;
+let flashcardEl;
 
 // Default starter decks
 function defaultDecks() {
@@ -143,14 +143,6 @@ function updateFlashcardView() {
   frontEl.textContent = card.front;
   backEl.textContent = card.back;
 
-  if (showingBack) {
-    frontEl.classList.add("is-hidden");
-    backEl.classList.remove("is-hidden");
-  } else {
-    frontEl.classList.remove("is-hidden");
-    backEl.classList.add("is-hidden");
-  }
-
   progressEl.textContent = `${currentCardIndex + 1} / ${deck.cards.length}`;
 }
 
@@ -168,7 +160,11 @@ function closeOverlay() {
   overlayEl.setAttribute("aria-hidden", "true");
   currentDeckId = null;
   currentCardIndex = 0;
-  showingBack = false;
+
+  // Reset flip state
+  if (flashcardEl) {
+    flashcardEl.classList.remove("is-flipped");
+  }
 }
 
 // Open deck
@@ -178,17 +174,21 @@ function openDeck(deckId) {
 
   currentDeckId = deckId;
   currentCardIndex = 0;
-  showingBack = false;
 
   titleEl.textContent = deck.name;
   updateFlashcardView();
   openOverlay();
+
+  // Reset flip state
+  if (flashcardEl) {
+    flashcardEl.classList.remove("is-flipped");
+  }
 }
 
-// Flip card
+// Flip card (vertical flip)
 function flipCard() {
-  showingBack = !showingBack;
-  updateFlashcardView();
+  if (!flashcardEl) return;
+  flashcardEl.classList.toggle("is-flipped");
 }
 
 // Prev card
@@ -199,7 +199,9 @@ function prevCard() {
   currentCardIndex =
     (currentCardIndex - 1 + deck.cards.length) % deck.cards.length;
 
-  showingBack = false;
+  // Reset flip
+  flashcardEl.classList.remove("is-flipped");
+
   updateFlashcardView();
 }
 
@@ -210,7 +212,9 @@ function nextCard() {
 
   currentCardIndex = (currentCardIndex + 1) % deck.cards.length;
 
-  showingBack = false;
+  // Reset flip
+  flashcardEl.classList.remove("is-flipped");
+
   updateFlashcardView();
 }
 
@@ -229,8 +233,8 @@ function addCard() {
   saveDecks();
 
   currentCardIndex = deck.cards.length - 1;
-  showingBack = false;
 
+  flashcardEl.classList.remove("is-flipped");
   updateFlashcardView();
   renderDeckList();
 }
@@ -252,6 +256,7 @@ function editCard() {
   card.back = newBack;
 
   saveDecks();
+  flashcardEl.classList.remove("is-flipped");
   updateFlashcardView();
   renderDeckList();
 }
@@ -272,6 +277,7 @@ function deleteCard() {
   if (currentCardIndex < 0) currentCardIndex = 0;
 
   saveDecks();
+  flashcardEl.classList.remove("is-flipped");
   updateFlashcardView();
   renderDeckList();
 }
@@ -330,6 +336,7 @@ export function initFlashcards() {
   frontEl = document.getElementById("flashcard-front");
   backEl = document.getElementById("flashcard-back");
   progressEl = document.getElementById("flashcard-progress");
+  flashcardEl = document.getElementById("flashcard");
 
   flipBtn = document.getElementById("flashcard-flip");
   prevBtn = document.getElementById("flashcard-prev");
