@@ -1,7 +1,6 @@
 /* ============================================================
    AURA — FULL UPDATED APP.JS
    iOS‑17 Soft‑Glass Edition
-   Clean, modern, mobile‑first
 ============================================================ */
 
 /* ------------------------------------------------------------
@@ -72,6 +71,20 @@ document.getElementById("onboarding-submit").addEventListener("click", () => {
 });
 
 /* ------------------------------------------------------------
+   CHANGE NAME IN SETTINGS
+------------------------------------------------------------ */
+
+document.getElementById("settings-change-name").addEventListener("click", () => {
+  const newName = prompt("Enter your new name:");
+  if (!newName) return;
+
+  userName = newName.trim();
+  localStorage.setItem("aura-name", userName);
+
+  document.getElementById("home-greeting").textContent = `hello, ${userName}`;
+});
+
+/* ------------------------------------------------------------
    NAVIGATION
 ------------------------------------------------------------ */
 
@@ -88,7 +101,7 @@ navButtons.forEach(btn => {
 });
 
 /* ------------------------------------------------------------
-   FLASHCARDS — RENDER DECKS
+   FLASHCARDS — SAVE + RENDER DECKS
 ------------------------------------------------------------ */
 
 function saveDecks() {
@@ -242,7 +255,7 @@ document.getElementById("add-deck-button").addEventListener("click", () => {
 });
 
 /* ------------------------------------------------------------
-   NOTES — RENDER LIST
+   NOTES — SAVE + RENDER
 ------------------------------------------------------------ */
 
 function saveNotes() {
