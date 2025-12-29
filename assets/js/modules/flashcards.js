@@ -89,7 +89,7 @@ function saveDecks() {
   updateHomeStats();
 }
 
-// Render deck list (Decks screen)
+// Render deck list (Flashcards screen)
 function renderDeckList() {
   if (!deckListEl) return;
   deckListEl.innerHTML = "";
@@ -199,9 +199,7 @@ function prevCard() {
   currentCardIndex =
     (currentCardIndex - 1 + deck.cards.length) % deck.cards.length;
 
-  // Reset flip
   flashcardEl.classList.remove("is-flipped");
-
   updateFlashcardView();
 }
 
@@ -212,9 +210,7 @@ function nextCard() {
 
   currentCardIndex = (currentCardIndex + 1) % deck.cards.length;
 
-  // Reset flip
   flashcardEl.classList.remove("is-flipped");
-
   updateFlashcardView();
 }
 

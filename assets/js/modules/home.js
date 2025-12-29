@@ -94,7 +94,7 @@ function attachDeckOpenListener() {
   window.addEventListener("openDeckFromHome", (evt) => {
     const deckId = evt.detail.deckId;
 
-    // Try to find the deck button in the Decks screen
+    // Try to find the deck button in the Flashcards screen
     const deckButton = document.querySelector(
       `.deck-card[data-deck-id="${deckId}"]`
     );
@@ -102,12 +102,12 @@ function attachDeckOpenListener() {
     if (deckButton) {
       deckButton.click();
     } else {
-      // Navigate to Decks screen first
-      const decksNav = document.querySelector(
-        '[data-screen-target="decks"]'
+      // Navigate to Flashcards screen first
+      const flashcardsNav = document.querySelector(
+        '[data-screen-target="flashcards"]'
       );
-      if (decksNav) {
-        decksNav.click();
+      if (flashcardsNav) {
+        flashcardsNav.click();
         setTimeout(() => {
           const btn = document.querySelector(
             `.deck-card[data-deck-id="${deckId}"]`
